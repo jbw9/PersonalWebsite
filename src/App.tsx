@@ -20,28 +20,28 @@ function App() {
     {
       title: "Home",
       icon: (
-        <IconHome className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+        <IconHome className="w-full h-full text-neutral-500 dark:text-neutral-300" />
       ),
       href: "/",
     },
     {
       title: "Search",
       icon: (
-        <IconSearch className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+        <IconSearch className="w-full h-full text-neutral-500 dark:text-neutral-300" />
       ),
       href: "/search",
     },
     {
       title: "Notifications",
       icon: (
-        <IconBell className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+        <IconBell className="w-full h-full text-neutral-500 dark:text-neutral-300" />
       ),
       href: "/notifications",
     },
     {
       title: "Profile",
       icon: (
-        <IconUser className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+        <IconUser className="w-full h-full text-neutral-500 dark:text-neutral-300" />
       ),
       href: "/profile",
     },
@@ -55,7 +55,7 @@ function App() {
   ];
 
   return (
-    <div className="bg-black w-full min-h-screen flex flex-col">
+    <div className="flex flex-col w-full min-h-screen bg-black">
       <MultiStepLoader
         loadingStates={loadingStates}
         loading={loading}
@@ -74,3 +74,11 @@ function App() {
 }
 
 export default App;
+
+// https://ui.aceternity.com/components/compare
+// https://ui.aceternity.com/components/apple-cards-carousel
+// https://ui.aceternity.com/components/focus-cards
+// https://ui.aceternity.com/components/animated-modal
+// https://ui.aceternity.com/components/flip-words
+// https://ui.aceternity.com/components/layout-grid
+// https://ui.aceternity.com/components/wobble-card

@@ -6,6 +6,7 @@ import { IconUser } from "@tabler/icons-react";
 import { MultiStepLoader } from "./components/multi-step-loader";
 import Intro from "./sections/Intro";
 import Projects from "./sections/Projects";
+import CampusInvolvement from "./sections/CampusInvolvements";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -91,6 +92,7 @@ function App() {
         <>
           <Intro />
           <Projects />
+          <CampusInvolvement />
           <FloatingDock
             items={dockItems}
             desktopClassName="fixed bottom-4 left-1/2 -translate-x-1/2"

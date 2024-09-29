@@ -3,7 +3,7 @@ import HelloWave from "../components/HelloWave";
 
 const Intro = () => {
   return (
-    <div className="w-[40%] justify-center mt-14 flex flex-col">
+    <div className="w-[80%] md:w-[40%] justify-center mt-14 flex flex-col">
       <text className="text-5xl font-bold text-white">
         Hello! <HelloWave />
       </text>

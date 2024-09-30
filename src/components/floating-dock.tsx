@@ -149,6 +149,8 @@ function IconContainer({
     e.preventDefault();
     if (title === "Contact Me") {
       window.location.href = "mailto:jonathanbernard265@gmail.com";
+    } else if (title === "Home") {
+      window.location.href = href;
     } else {
       window.open(href, "_blank", "noopener,noreferrer");
     }

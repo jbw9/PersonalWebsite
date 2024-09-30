@@ -30,7 +30,7 @@ function App() {
           />
         </svg>
       ),
-      href: "/profile",
+      href: "/",
     },
     {
       title: "Contact Me",

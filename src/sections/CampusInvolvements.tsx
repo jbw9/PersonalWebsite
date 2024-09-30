@@ -31,7 +31,7 @@ const CampusInvolvement = () => {
     {
       src: "/campusInvolvements/permias.png",
       title: "Indonesian Students Association",
-      category: "Technology Officer",
+      category: "Technology & Fundraising Officer",
       link: "http://iventure.illinois.edu/",
     },
     {
@@ -43,11 +43,11 @@ const CampusInvolvement = () => {
   ];
 
   return (
-    <div className="w-[80%] md:w-[40%] justify-center mt-14 flex flex-col mb-[200px]">
+    <div className="w-[80%] md:w-[40%] justify-center mt-20 flex flex-col mb-[200px]">
       <text className="mb-2 text-4xl font-bold text-white">
         Campus Involvements
       </text>
-      <div className="ml-[-10px]">
+      <div className="ml-[-15px]">
         <Carousel
           items={involvements.map((data, index) => (
             <Card key={index} card={data} />

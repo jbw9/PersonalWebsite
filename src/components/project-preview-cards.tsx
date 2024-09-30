@@ -1,8 +1,9 @@
-"use client";
 import React, { useState } from "react";
 import { cn } from "../lib/utils";
 
-export const Card = React.memo(
+const ASPECT_RATIO = 628 / 942; // Desired aspect ratio (width / height)
+
+const Card = React.memo(
   ({
     card,
     index,
@@ -18,9 +19,10 @@ export const Card = React.memo(
       onMouseEnter={() => setHovered(index)}
       onMouseLeave={() => setHovered(null)}
       className={cn(
-        "rounded-lg relative bg-gray-100 dark:bg-neutral-900 overflow-hidden h-60 md:h-96 w-full transition-all duration-300 ease-out",
+        "rounded-lg relative bg-gray-100 dark:bg-neutral-900 overflow-hidden w-full transition-all duration-300 ease-out",
         hovered !== null && hovered !== index && "blur-sm scale-[0.98]"
       )}
+      style={{ paddingBottom: `${100 / ASPECT_RATIO}%` }}
     >
       <img
         src={process.env.PUBLIC_URL + card.src}
@@ -52,7 +54,7 @@ export function FocusCards({ cards }: { cards: Card[] }) {
   const [hovered, setHovered] = useState<number | null>(null);
 
   return (
-    <div className="grid w-full max-w-5xl grid-cols-1 gap-10 mx-auto md:grid-cols-3">
+    <div className="grid w-full grid-cols-1 gap-4 mx-auto max-w-7xl sm:grid-cols-2 lg:grid-cols-3">
       {cards.map((card, index) => (
         <Card
           key={card.title}

@@ -5,51 +5,55 @@ const CampusInvolvement = () => {
   // Sample data for the cards
   const involvements = [
     {
-      src: "/path-to-image1.jpg",
-      title: "Student Government",
-      category: "Leadership",
-      content: (
-        <p>
-          Served as the Vice President of Student Affairs, organizing
-          campus-wide events and initiatives.
-        </p>
-      ),
+      src: "/campusInvolvements/iventure.png",
+      title: "Iventure Accelerator (10th Cohort)",
+      category: "Full Stack Engineer @Tulip.",
+      link: "http://iventure.illinois.edu/",
     },
     {
-      src: "/path-to-image2.jpg",
-      title: "Debate Club",
-      category: "Academic",
-      content: (
-        <p>
-          Participated in regional debates and won first place in the state-wide
-          competition.
-        </p>
-      ),
+      src: "/campusInvolvements/cozad.png",
+      title: "2024 Cozad New Venture Challenge",
+      category: "Full Stack Engineer @Talenta",
+      link: "http://iventure.illinois.edu/",
     },
     {
-      src: "/path-to-image3.jpg",
-      title: "Environmental Society",
-      category: "Community Service",
-      content: (
-        <p>
-          Led a campus-wide recycling program that increased recycling rates by
-          30%.
-        </p>
-      ),
+      src: "/campusInvolvements/acm.png",
+      title: "ACM UIUC",
+      category: "Full Stack Engineer @SigMobile",
+      link: "http://iventure.illinois.edu/",
     },
-    // Add more involvement items as needed
+    {
+      src: "/campusInvolvements/buildillinois.png",
+      title: "BuildIllinois",
+      category: "Full Stack Engineer",
+      link: "http://iventure.illinois.edu/",
+    },
+    {
+      src: "/campusInvolvements/permias.png",
+      title: "Indonesian Students Association",
+      category: "Technology Officer",
+      link: "http://iventure.illinois.edu/",
+    },
+    {
+      src: "/campusInvolvements/otcr.png",
+      title: "OTCR Consulting",
+      category: "Consultant",
+      link: "http://iventure.illinois.edu/",
+    },
   ];
 
   return (
-    <div className="w-full mt-14 mb-[200px]">
-      <h2 className="mb-8 text-4xl font-bold text-center text-white">
+    <div className="w-[80%] md:w-[40%] justify-center mt-14 flex flex-col mb-[200px]">
+      <text className="mb-2 text-4xl font-bold text-white">
         Campus Involvements
-      </h2>
-      <Carousel
-        items={involvements.map((item, index) => (
-          <Card key={index} card={item} index={index} />
-        ))}
-      />
+      </text>
+      <div className="ml-[-10px]">
+        <Carousel
+          items={involvements.map((data, index) => (
+            <Card key={index} card={data} />
+          ))}
+        />
+      </div>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import React, { useRef, useState } from "react";
 import { cn } from "../lib/utils";
 import {
   MotionValue,
@@ -6,7 +7,6 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-import { useRef, useState } from "react";
 
 export const FloatingDock = ({
   items,
@@ -145,8 +145,17 @@ function IconContainer({
 
   const [hovered, setHovered] = useState(false);
 
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    if (title === "Contact Me") {
+      window.location.href = "mailto:jonathanbernard265@gmail.com";
+    } else {
+      window.open(href, "_blank", "noopener,noreferrer");
+    }
+  };
+
   return (
-    <a href={href}>
+    <a href={href} onClick={handleClick}>
       <motion.div
         ref={ref}
         style={{ width, height }}
@@ -174,3 +183,5 @@ function IconContainer({
     </a>
   );
 }
+
+export default FloatingDock;

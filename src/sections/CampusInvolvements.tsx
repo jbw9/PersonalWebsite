@@ -44,7 +44,7 @@ const CampusInvolvement = () => {
 
   return (
     <div className="w-[80%] md:w-[40%] justify-center mt-20 flex flex-col mb-[200px]">
-      <text className="mb-2 text-4xl font-bold text-white">
+      <text className="mb-2 text-4xl font-bold text-white md:text-5xl">
         Campus Involvements
       </text>
       <div className="ml-[-15px]">

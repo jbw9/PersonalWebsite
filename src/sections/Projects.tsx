@@ -26,7 +26,9 @@ const Projects = () => {
   ];
   return (
     <div className="w-[80%] md:w-[40%] justify-center mt-14 flex flex-col">
-      <text className="mb-2 text-4xl font-bold text-white">Projects</text>
+      <text className="mb-2 text-4xl font-bold text-white md:text-5xl">
+        Projects
+      </text>
       <FocusCards cards={cards} />
     </div>
   );

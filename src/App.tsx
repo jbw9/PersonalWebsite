@@ -7,6 +7,7 @@ import { MultiStepLoader } from "./components/multi-step-loader";
 import Intro from "./sections/Intro";
 import Projects from "./sections/Projects";
 import CampusInvolvement from "./sections/CampusInvolvements";
+import Experience from "./sections/Experience";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -20,18 +21,19 @@ function App() {
   }, []);
 
   const dockItems = [
-    {
-      title: "Home",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
-          <path
-            fill="#d4d4d4"
-            d="M575.8 255.5c0 18-15 32.1-32 32.1l-32 0 .7 160.2c0 2.7-.2 5.4-.5 8.1l0 16.2c0 22.1-17.9 40-40 40l-16 0c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1L416 512l-24 0c-22.1 0-40-17.9-40-40l0-24 0-64c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32 14.3-32 32l0 64 0 24c0 22.1-17.9 40-40 40l-24 0-31.9 0c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2l-16 0c-22.1 0-40-17.9-40-40l0-112c0-.9 0-1.9 .1-2.8l0-69.7-32 0c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"
-          />
-        </svg>
-      ),
-      href: "/",
-    },
+    // include after transfer
+    // {
+    //   title: "Resume",
+    //   icon: (
+    //     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+    //       <path
+    //         fill="#d4d4d4"
+    //         d="M64 0C28.7 0 0 28.7 0 64L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-288-128 0c-17.7 0-32-14.3-32-32L224 0 64 0zM256 0l0 128 128 0L256 0zM112 256l160 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-160 0c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64l160 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-160 0c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64l160 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-160 0c-8.8 0-16-7.2-16-16s7.2-16 16-16z"
+    //       />
+    //     </svg>
+    //   ),
+    //   href: "https://drive.google.com/file/d/1QupyQjus3gm4CEZ5BLZjliUdH5SVqcXq/view?usp=sharing",
+    // },
     {
       title: "Contact Me",
       icon: (
@@ -42,7 +44,7 @@ function App() {
           />
         </svg>
       ),
-      href: "/",
+      href: "jonathanbernard265@gmail.com",
     },
     {
       title: "GitHub",
@@ -71,6 +73,20 @@ function App() {
       target: "_blank",
       rel: "noopener noreferrer",
     },
+    {
+      title: "Instagram",
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+          <path
+            fill="#d4d4d4"
+            d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"
+          />
+        </svg>
+      ),
+      href: "https://www.instagram.com/jonathan.b.w/",
+      target: "_blank",
+      rel: "noopener noreferrer",
+    },
   ];
 
   const loadingStates = [
@@ -92,6 +108,7 @@ function App() {
         <>
           <Intro />
           <Projects />
+          <Experience />
           <CampusInvolvement />
           <FloatingDock
             items={dockItems}

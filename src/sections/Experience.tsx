@@ -92,7 +92,7 @@ const Experience = () => {
       position: "Full Stack Engineer @Tulip.",
       date: "May 2024 - August 2024",
       location: "Chicago, IL",
-      logoUrl: "/experience/iventureLogo.png",
+      logoUrl: "/experience/iventurelogo.png",
       content: (
         <div>
           <p className="mb-4 text-xs font-normal text-neutral-800 dark:text-neutral-200 md:text-sm">

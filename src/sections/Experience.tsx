@@ -96,8 +96,8 @@ const Experience = () => {
       content: (
         <div>
           <p className="mb-4 text-xs font-normal text-neutral-800 dark:text-neutral-200 md:text-sm">
-            The premier startup accelerator at the University of Illinois at
-            Urbana-Champaign.
+            The premier educational accelerator for the top student startups at
+            the University of Illinois and beyond.
           </p>
           <p className="mb-4 text-xs font-normal text-neutral-800 dark:text-neutral-200 md:text-sm">
             Accepted into the accelerator as part of team Tulip. where we

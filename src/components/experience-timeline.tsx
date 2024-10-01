@@ -13,6 +13,7 @@ interface TimelineEntry {
   date: string;
   location: string;
   content: React.ReactNode;
+  logoUrl: string;
 }
 
 export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
@@ -37,41 +38,45 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
 
   return (
     <div className="w-full bg-black" ref={containerRef}>
-      <div className="pt-20 pb-5 mx-auto max-w-7xl">
-        <text className="mb-2 text-5xl font-bold text-white">Experience</text>
+      <div className="pt-20 pb-10 mx-auto max-w-7xl">
+        <h2 className="mb-2 text-5xl font-bold text-white">Experience</h2>
       </div>
 
       <div ref={ref} className="relative mx-auto max-w-7xl">
         {data.map((item, index) => (
-          <div key={index} className="flex justify-start md:gap-10">
+          <div key={index} className="flex justify-start mb-20 md:gap-10">
             <div className="sticky z-40 flex flex-col items-center self-start max-w-xs md:flex-row top-40 lg:max-w-sm md:w-full">
               <div
-                className="absolute flex items-center justify-center w-10 h-10 bg-white rounded-full left-3 md:left-3 dark:bg-black"
+                className="absolute flex items-center justify-center w-10 h-10 overflow-hidden bg-white rounded-full left-3 md:left-3 dark:bg-black"
                 style={{ top: "0.25rem" }}
               >
-                <div className="w-4 h-4 p-2 border rounded-full bg-neutral-200 dark:bg-neutral-800 border-neutral-300 dark:border-neutral-700" />
+                <img
+                  src={item.logoUrl}
+                  alt={`${item.title} logo`}
+                  className="object-cover w-full h-full"
+                />
               </div>
               <div className="hidden md:block md:pl-20">
-                <h3 className="mb-2 text-xl font-bold text-white md:text-5xl">
+                <h3 className="mb-3 text-xl font-bold text-white md:text-5xl">
                   {item.title}
                 </h3>
-                <p className="mb-1 text-lg font-bold text-gray-400">
+                <p className="mb-2 text-lg font-bold text-gray-300">
                   {item.position}
                 </p>
-                <p className="mb-1 text-sm text-gray-500">{item.date}</p>
+                <p className="mb-2 text-sm text-gray-500">{item.date}</p>
                 <p className="text-sm text-gray-500">{item.location}</p>
               </div>
             </div>
 
             <div className="relative w-full pl-20 pr-4 md:pl-4">
-              <div className="block mb-4 text-left md:hidden">
-                <h3 className="mb-2 text-2xl font-bold text-neutral-500 dark:text-neutral-500">
+              <div className="block mb-6 text-left md:hidden">
+                <h3 className="mb-3 text-2xl font-bold text-white">
                   {item.title}
                 </h3>
-                <p className="mb-1 text-lg font-bold text-gray-400">
+                <p className="mb-2 text-lg font-bold text-gray-300">
                   {item.position}
                 </p>
-                <p className="mb-1 text-sm text-gray-500">{item.date}</p>
+                <p className="mb-2 text-sm text-gray-500">{item.date}</p>
                 <p className="text-sm text-gray-500">{item.location}</p>
               </div>
               {item.content}

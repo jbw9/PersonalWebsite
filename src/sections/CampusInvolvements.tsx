@@ -14,31 +14,31 @@ const CampusInvolvement = () => {
       src: "/campusInvolvements/cozad.png",
       title: "2024 Cozad New Venture Challenge",
       category: "Full Stack Engineer @Talenta",
-      link: "http://iventure.illinois.edu/",
+      link: "https://tec.illinois.edu/programs/cozad",
     },
     {
       src: "/campusInvolvements/acm.png",
       title: "ACM UIUC",
       category: "Full Stack Engineer @SigMobile",
-      link: "http://iventure.illinois.edu/",
+      link: "https://www.acm.illinois.edu/",
     },
     {
       src: "/campusInvolvements/buildillinois.png",
       title: "BuildIllinois",
       category: "Full Stack Engineer",
-      link: "http://iventure.illinois.edu/",
+      link: "https://buildillinois.notion.site/",
     },
     {
       src: "/campusInvolvements/permias.png",
       title: "Indonesian Students Association",
       category: "Technology & Fundraising Officer",
-      link: "http://iventure.illinois.edu/",
+      link: "https://permiasuiuc.org/",
     },
     {
       src: "/campusInvolvements/otcr.png",
       title: "OTCR Consulting",
       category: "Consultant",
-      link: "http://iventure.illinois.edu/",
+      link: "https://otcrconsulting.com/",
     },
   ];
 

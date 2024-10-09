@@ -107,8 +107,8 @@ function App() {
       {!loading && (
         <>
           <Intro />
-          <Projects />
           <Experience />
+          <Projects />
           <CampusInvolvement />
           <FloatingDock
             items={dockItems}

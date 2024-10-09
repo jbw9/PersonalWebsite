@@ -41,6 +41,16 @@ const Projects = () => {
       ),
     },
     {
+      title: "Analyzing Chicago Crime Rates",
+      src: "/projects/ggis.png",
+      logo: "/projects/explorify/logo.png",
+      content: (
+        <div>
+          <text className="text-xl text-white">Work on progress....</text>
+        </div>
+      ),
+    },
+    {
       title: "talenta",
       src: "/projects/talenta.png",
       logo: "/projects/explorify/logo.png",

@@ -9,6 +9,7 @@ const Experience = () => {
       date: "May 2024 - Present",
       location: "Chicago, IL",
       logoUrl: "/experience/tuliplogo.png",
+      link: "https://tulip.estate",
       content: (
         <div>
           <p className="mb-4 text-xs font-normal text-neutral-800 dark:text-neutral-200 md:text-sm">
@@ -49,6 +50,7 @@ const Experience = () => {
       date: "May 2024 - August 2024",
       location: "Peoria, IL",
       logoUrl: "/experience/wehearyoulogo.png",
+      link: "https://wehearyouopensdoors.com/",
       content: (
         <div>
           <p className="mb-4 text-xs font-normal text-neutral-800 dark:text-neutral-200 md:text-sm">
@@ -93,6 +95,7 @@ const Experience = () => {
       date: "May 2024 - August 2024",
       location: "Chicago, IL",
       logoUrl: "/experience/iventurelogo.png",
+      link: "http://iventure.illinois.edu/",
       content: (
         <div>
           <p className="mb-4 text-xs font-normal text-neutral-800 dark:text-neutral-200 md:text-sm">

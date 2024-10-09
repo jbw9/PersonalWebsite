@@ -9,7 +9,7 @@ const Projects = () => {
       logo: "/projects/explorify/logo.png",
       content: (
         <div>
-          <text className="text-xl text-white">Work on progress....</text>
+          <text className="text-xl text-white">Work in progress....</text>
         </div>
       ),
     },
@@ -26,7 +26,7 @@ const Projects = () => {
       logo: "projects/explorify/logo.png",
       content: (
         <div>
-          <text className="text-xl text-white">Work on progress....</text>
+          <text className="text-xl text-white">Work in progress....</text>
         </div>
       ),
     },
@@ -36,7 +36,7 @@ const Projects = () => {
       logo: "projects/explorify/logo.png",
       content: (
         <div>
-          <text className="text-xl text-white">Work on progress....</text>
+          <text className="text-xl text-white">Work in progress....</text>
         </div>
       ),
     },
@@ -46,7 +46,7 @@ const Projects = () => {
       logo: "/projects/explorify/logo.png",
       content: (
         <div>
-          <text className="text-xl text-white">Work on progress....</text>
+          <text className="text-xl text-white">Work in progress....</text>
         </div>
       ),
     },
@@ -56,7 +56,7 @@ const Projects = () => {
       logo: "/projects/explorify/logo.png",
       content: (
         <div>
-          <text className="text-xl text-white">Work on progress....</text>
+          <text className="text-xl text-white">Work in progress....</text>
         </div>
       ),
     },

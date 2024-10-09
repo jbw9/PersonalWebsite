@@ -14,6 +14,7 @@ interface TimelineEntry {
   location: string;
   content: React.ReactNode;
   logoUrl: string;
+  link: string;
 }
 
 export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
@@ -57,9 +58,11 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
                 />
               </div>
               <div className="hidden md:block md:pl-20">
-                <h3 className="mb-3 text-xl font-bold text-white md:text-5xl">
-                  {item.title}
-                </h3>
+                <a href={item.link} target="_blank" rel="noopener noreferrer">
+                  <h3 className="mb-3 text-xl font-bold text-white duration-300 ease-in-out md:text-5xl hover:scale-105">
+                    {item.title}
+                  </h3>
+                </a>
                 <p className="mb-2 text-lg font-bold text-gray-300">
                   {item.position}
                 </p>
@@ -70,9 +73,11 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
 
             <div className="relative w-full pl-20 pr-4 md:pl-4">
               <div className="block mb-6 text-left md:hidden">
-                <h3 className="mb-3 text-2xl font-bold text-white">
-                  {item.title}
-                </h3>
+                <a href={item.link} target="_blank" rel="noopener noreferrer">
+                  <h3 className="mb-3 text-2xl font-bold text-white duration-300 ease-in-out hover:scale-105">
+                    {item.title}
+                  </h3>
+                </a>
                 <p className="mb-2 text-lg font-bold text-gray-300">
                   {item.position}
                 </p>

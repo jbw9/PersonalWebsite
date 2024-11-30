@@ -5,7 +5,7 @@ const Experience = () => {
   const data = [
     {
       title: "Tulip.",
-      position: "Founding Full Stack Engineer",
+      position: "Co-Founder & CTO",
       date: "May 2024 - Present",
       location: "Chicago, IL",
       logoUrl: "/experience/tuliplogo.png",
@@ -91,8 +91,8 @@ const Experience = () => {
     },
     {
       title: "iVenture Accelerator",
-      position: "Full Stack Engineer @Tulip.",
-      date: "May 2024 - August 2024",
+      position: "Founder in Residence.",
+      date: "May 2024 - Present",
       location: "Chicago, IL",
       logoUrl: "/experience/iventurelogo.png",
       link: "http://iventure.illinois.edu/",
@@ -103,9 +103,9 @@ const Experience = () => {
             the University of Illinois and beyond.
           </p>
           <p className="mb-4 text-xs font-normal text-neutral-800 dark:text-neutral-200 md:text-sm">
-            Accepted into the accelerator as part of team Tulip. where we
-            received $20,000 in non-dilutive funding, mentorship, and access to
-            resources to help us grow our startup.
+            Accepted into the accelerator to build tulip. Where we received
+            $20,000 in non-dilutive funding, mentorship, and access to resources
+            to help us grow our startup.
           </p>
           <a
             href="http://iventure.illinois.edu/"

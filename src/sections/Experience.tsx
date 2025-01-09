@@ -6,7 +6,7 @@ const Experience = () => {
     {
       title: "Tulip.",
       position: "Co-Founder & CTO",
-      date: "May 2024 - Present",
+      date: "Jan 2024 - Present",
       location: "Chicago, IL",
       logoUrl: "/experience/tuliplogo.png",
       link: "https://tulip.estate",

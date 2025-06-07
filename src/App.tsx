@@ -3,16 +3,15 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "./components/button";
 import { Card, CardContent } from "./components/card";
 import { Badge } from "./components/badge";
-import {
-  Mail,
-  Github,
-  Linkedin,
-  FileText,
-  ExternalLink,
-  GraduationCap,
-} from "lucide-react";
+import { Mail, Github, Linkedin, FileText, ExternalLink } from "lucide-react";
 import ExperienceTimeline from "./components/experiencetimeline";
-import { experiences, projects, guides, involvements, education } from "./data";
+import {
+  experiences,
+  projects,
+  guides,
+  involvements,
+  education,
+} from "./data/main";
 
 function App() {
   const sectionsRef = useRef<(HTMLElement | null)[]>([]);

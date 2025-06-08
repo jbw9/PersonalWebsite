@@ -5,6 +5,10 @@ import { Badge } from "../components/badge";
 import { ArrowLeft } from "lucide-react";
 import { useEffect } from "react";
 import { guides } from "../data";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 const GuideDetail = () => {
   const { id } = useParams();
@@ -34,6 +38,137 @@ const GuideDetail = () => {
       </div>
     );
   }
+
+  // Custom components for markdown rendering
+  const markdownComponents = {
+    code(props: any) {
+      const { children, className, ...rest } = props;
+      const match = /language-(\w+)/.exec(className || "");
+      return match ? (
+        <SyntaxHighlighter
+          {...rest}
+          PreTag="div"
+          language={match[1]}
+          style={vscDarkPlus as any}
+          className="rounded-md"
+        >
+          {String(children).replace(/\n$/, "")}
+        </SyntaxHighlighter>
+      ) : (
+        <code
+          className="bg-portfolio-accent/20 text-portfolio-blue px-1.5 py-0.5 rounded text-sm font-mono"
+          {...rest}
+        >
+          {children}
+        </code>
+      );
+    },
+    h1(props: any) {
+      return (
+        <h1 className="mt-8 mb-6 text-3xl font-bold text-white first:mt-0">
+          {props.children}
+        </h1>
+      );
+    },
+    h2(props: any) {
+      return (
+        <h2 className="mt-6 mb-4 text-2xl font-semibold text-white">
+          {props.children}
+        </h2>
+      );
+    },
+    h3(props: any) {
+      return (
+        <h3 className="mt-5 mb-3 text-xl font-semibold text-white">
+          {props.children}
+        </h3>
+      );
+    },
+    h4(props: any) {
+      return (
+        <h4 className="mt-4 mb-2 text-lg font-semibold text-white">
+          {props.children}
+        </h4>
+      );
+    },
+    p(props: any) {
+      return (
+        <p className="mb-4 leading-relaxed text-portfolio-light">
+          {props.children}
+        </p>
+      );
+    },
+    ul(props: any) {
+      return (
+        <ul className="pl-6 mb-4 space-y-2 list-disc text-portfolio-light">
+          {props.children}
+        </ul>
+      );
+    },
+    ol(props: any) {
+      return (
+        <ol className="pl-6 mb-4 space-y-2 list-decimal text-portfolio-light">
+          {props.children}
+        </ol>
+      );
+    },
+    li(props: any) {
+      return <li className="text-portfolio-light">{props.children}</li>;
+    },
+    blockquote(props: any) {
+      return (
+        <blockquote className="pl-4 my-4 italic border-l-4 border-portfolio-blue text-portfolio-accent">
+          {props.children}
+        </blockquote>
+      );
+    },
+    a(props: any) {
+      return (
+        <a
+          href={props.href}
+          className="underline text-portfolio-blue hover:text-portfolio-blue/80"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {props.children}
+        </a>
+      );
+    },
+    table(props: any) {
+      return (
+        <div className="my-4 overflow-x-auto">
+          <table className="w-full border border-collapse border-portfolio-accent/30">
+            {props.children}
+          </table>
+        </div>
+      );
+    },
+    th(props: any) {
+      return (
+        <th className="px-4 py-2 font-semibold text-left text-white border border-portfolio-accent/30 bg-portfolio-accent/10">
+          {props.children}
+        </th>
+      );
+    },
+    td(props: any) {
+      return (
+        <td className="px-4 py-2 border border-portfolio-accent/30 text-portfolio-light">
+          {props.children}
+        </td>
+      );
+    },
+    hr() {
+      return <hr className="my-8 border-portfolio-accent/30" />;
+    },
+    strong(props: any) {
+      return (
+        <strong className="font-semibold text-white">{props.children}</strong>
+      );
+    },
+    em(props: any) {
+      return <em className="italic text-portfolio-accent">{props.children}</em>;
+    },
+  };
 
   return (
     <div className="min-h-screen bg-portfolio-dark text-portfolio-light">
@@ -83,9 +218,12 @@ const GuideDetail = () => {
         <Card className="bg-portfolio-slate border-portfolio-accent/20">
           <CardContent className="p-8">
             <div className="prose prose-invert max-w-none">
-              <div className="leading-relaxed whitespace-pre-line text-portfolio-light">
+              <ReactMarkdown
+                components={markdownComponents}
+                remarkPlugins={[remarkGfm]}
+              >
                 {guide.content}
-              </div>
+              </ReactMarkdown>
             </div>
           </CardContent>
         </Card>

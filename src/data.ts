@@ -15,7 +15,7 @@ export interface Project {
   longDescription: string;
   technologies: string[];
   features: string[];
-  github: string;
+  github?: string;
   demo: string;
   image: string;
 }
@@ -97,317 +97,218 @@ export const projects = [
     description:
       "A full-stack IOS app that simplifies the process of finding events around the UIUC campus. With a built in RSVP feature, allowing users to RSVP in less than 3 seconds",
     longDescription:
-      "This comprehensive task management application was built to address the need for efficient team collaboration. The application features real-time updates using Socket.io, allowing team members to see changes instantly. Users can create projects, assign tasks with due dates, set priorities, and track progress through various stages. The application includes user authentication, role-based permissions, and a responsive design that works seamlessly across desktop and mobile devices.",
+      "I first came up with the idea after noticing the difficulty in finding events on the UIUC campus. As theres over 1800 student organizations across the campus, but there is no single platform for organizations to post their events. Therefore, organizations posts events on their individual Instagram accounts. It was also annoying to RSVP for events as we need to fill out a seperate google forms and fill in all of our details from scratch everytime we want to RSVP for an event.\n\nTherefore, I developed explorify! An app that allows our users to easily find events in a all in one platform that aggregates all events throughout the UIUC campus. Our built in RSVP system also allows users to RSVP for events in under 3 seconds, also storing previous answers so users don't need to fill in the form from scratch everytime.",
     technologies: ["React Native", "Supabase", "Nativewind"],
     features: [
       "Explore events posted by 1800+ organizations across UIUC",
       "RSVP for events in under 3 seconds (no third party forms are required anymore)",
       "Let organizers know your dietary restrictions, contact and party size",
+      "Allowing organizers to check in users in the app",
+      "RSVP and Saved events tab",
     ],
-    github: "#",
+    github: undefined,
     demo: "https://apps.apple.com/us/app/explorifyy/id6739402841",
-    image: "/placeholder.svg",
+    image: "/explorify.png",
   },
 ];
 
 export const guides = [
   {
-    id: "scalable-react-apps",
-    title: "Building Scalable React Applications",
+    id: "new-react-app",
+    title: "Creating a new react app with TailwindCSS & Vite",
     description:
-      "A comprehensive guide on structuring large React applications with best practices for state management, component organization, and performance optimization.",
+      "A simple guide to create a new react app with Typescript, TailwindCSS, and Vite",
     category: "React",
-    publishDate: "Nov 2024",
-    content: `# Building Scalable React Applications
-  
-  In this comprehensive guide, we'll explore the best practices for structuring large React applications. As your application grows, maintaining clean architecture becomes crucial for long-term success.
-  
-  ## Table of Contents
-  1. Project Structure
-  2. State Management
-  3. Component Organization
-  4. Performance Optimization
-  5. Testing Strategies
-  
-  ## Project Structure
-  
-  A well-organized project structure is the foundation of any scalable React application. Here's a recommended structure:
-  
-  \`\`\`
-  src/
-  ├── components/
-  │   ├── common/
-  │   ├── layout/
-  │   └── ui/
-  ├── pages/
-  ├── hooks/
-  ├── services/
-  ├── utils/
-  └── types/
-  \`\`\`
-  
-  ## State Management
-  
-  Choosing the right state management solution depends on your application's complexity:
-  
-  - **Local State**: Use React's built-in \`useState\` and \`useReducer\`
-  - **Global State**: Consider Redux Toolkit, Zustand, or Context API
-  - **Server State**: React Query or SWR for data fetching
-  
-  ## Component Organization
-  
-  Follow these principles for better component organization:
-  
-  1. **Single Responsibility**: Each component should have one clear purpose
-  2. **Composition over Inheritance**: Use composition patterns
-  3. **Prop Drilling**: Avoid deep prop drilling with Context or state management
-  
-  ## Performance Optimization
-  
-  Key strategies for optimizing React applications:
-  
-  - Use React.memo for expensive components
-  - Implement code splitting with React.lazy
-  - Optimize bundle size with tree shaking
-  - Use useCallback and useMemo appropriately
-  
-  ## Testing Strategies
-  
-  A comprehensive testing approach includes:
-  
-  - Unit tests for individual components
-  - Integration tests for component interactions
-  - End-to-end tests for critical user flows
-  
-  ## Conclusion
-  
-  Building scalable React applications requires careful planning and adherence to best practices. By following these guidelines, you'll create maintainable and performant applications that can grow with your needs.`,
+    publishDate: "June 2024",
+    content: `# Creating a New React App with TailwindCSS & Vite
+
+This guide will walk you through setting up a modern React application using Vite as the build tool and TailwindCSS for styling, with TypeScript support.
+
+## Making a New React App with Vite
+
+First, create a new React application with TypeScript template using Vite:
+
+\`\`\`bash
+npm create vite@latest . -- --template react-ts
+\`\`\`
+
+This command will scaffold a new React project with TypeScript configuration in your current directory.
+
+## Adding Tailwind CSS
+
+Install TailwindCSS and the Vite plugin:
+
+\`\`\`bash
+npm install tailwindcss @tailwindcss/vite
+\`\`\`
+
+## Configure the Vite Plugin
+
+Add the \`@tailwindcss/vite\` plugin to your Vite configuration file (\`vite.config.ts\`):
+
+\`\`\`typescript
+import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
+
+export default defineConfig({
+  plugins: [
+    tailwindcss(),
+  ],
+})
+\`\`\`
+
+## Import TailwindCSS
+
+Add an \`@import\` to your CSS file that imports Tailwind CSS. This is typically done in your main CSS file (e.g., \`src/index.css\`):
+
+\`\`\`css
+@import 'tailwindcss';
+\`\`\`
+
+## Getting Started
+
+After completing these steps, you'll have a fully configured React application with:
+- **Vite** for fast development and building
+- **TypeScript** for type safety
+- **TailwindCSS** for utility-first styling
+
+You can now start developing your application with modern tooling and best practices!`,
   },
   {
-    id: "ml-python-intro",
-    title: "Introduction to Machine Learning with Python",
+    id: "github-pages-hosting",
+    title: "Deploy React App to GitHub Pages",
     description:
-      "Learn the fundamentals of machine learning using Python, covering algorithms, data preprocessing, and model evaluation techniques.",
-    category: "Machine Learning",
-    publishDate: "Oct 2024",
-    content: `# Introduction to Machine Learning with Python
-  
-  Machine learning has become one of the most powerful tools in data science. This guide will introduce you to the fundamentals using Python.
-  
-  ## What is Machine Learning?
-  
-  Machine learning is a subset of artificial intelligence that enables computers to learn and make decisions from data without being explicitly programmed.
-  
-  ## Types of Machine Learning
-  
-  ### 1. Supervised Learning
-  - **Classification**: Predicting categories or classes
-  - **Regression**: Predicting continuous values
-  
-  ### 2. Unsupervised Learning
-  - **Clustering**: Grouping similar data points
-  - **Dimensionality Reduction**: Reducing feature space
-  
-  ### 3. Reinforcement Learning
-  - Learning through rewards and penalties
-  
-  ## Essential Python Libraries
-  
-  \`\`\`python
-  import pandas as pd           # Data manipulation
-  import numpy as np            # Numerical computing
-  import matplotlib.pyplot as plt  # Visualization
-  import seaborn as sns         # Statistical visualization
-  from sklearn import datasets, model_selection, metrics
-  \`\`\`
-  
-  ## Data Preprocessing
-  
-  Data preprocessing is crucial for successful machine learning:
-  
-  \`\`\`python
-  # Load data
-  data = pd.read_csv('dataset.csv')
-  
-  # Handle missing values
-  data.fillna(data.mean(), inplace=True)
-  
-  # Feature scaling
-  from sklearn.preprocessing import StandardScaler
-  scaler = StandardScaler()
-  X_scaled = scaler.fit_transform(X)
-  \`\`\`
-  
-  ## Building Your First Model
-  
-  Let's create a simple classification model:
-  
-  \`\`\`python
-  from sklearn.model_selection import train_test_split
-  from sklearn.linear_model import LogisticRegression
-  from sklearn.metrics import accuracy_score
-  
-  # Split data
-  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-  
-  # Train model
-  model = LogisticRegression()
-  model.fit(X_train, y_train)
-  
-  # Make predictions
-  y_pred = model.predict(X_test)
-  
-  # Evaluate
-  accuracy = accuracy_score(y_test, y_pred)
-  print(f"Accuracy: {accuracy:.2f}")
-  \`\`\`
-  
-  ## Model Evaluation
-  
-  Key metrics for evaluating models:
-  
-  - **Accuracy**: Correct predictions / Total predictions
-  - **Precision**: True positives / (True positives + False positives)
-  - **Recall**: True positives / (True positives + False negatives)
-  - **F1-Score**: Harmonic mean of precision and recall
-  
-  ## Next Steps
-  
-  To advance your machine learning journey:
-  
-  1. Practice with real datasets
-  2. Learn advanced algorithms
-  3. Explore deep learning frameworks
-  4. Work on end-to-end projects
-  
-  Machine learning is a vast field with endless possibilities. Start with these fundamentals and gradually build your expertise!`,
-  },
-  {
-    id: "database-design",
-    title: "Database Design Principles",
-    description:
-      "Essential database design concepts including normalization, indexing, and query optimization for better application performance.",
-    category: "Database",
-    publishDate: "Sep 2024",
-    content: `# Database Design Principles
-  
-  Effective database design is crucial for building scalable and efficient applications. This guide covers the fundamental principles every developer should know.
-  
-  ## Core Design Principles
-  
-  ### 1. Data Integrity
-  Ensure data accuracy and consistency through:
-  - Primary keys for unique identification
-  - Foreign keys for referential integrity
-  - Constraints for data validation
-  
-  ### 2. Normalization
-  Organize data to reduce redundancy:
-  
-  **First Normal Form (1NF)**
-  - Eliminate repeating groups
-  - Each cell contains atomic values
-  
-  **Second Normal Form (2NF)**
-  - Meet 1NF requirements
-  - Remove partial dependencies
-  
-  **Third Normal Form (3NF)**
-  - Meet 2NF requirements
-  - Remove transitive dependencies
-  
-  ## Entity Relationship Design
-  
-  ### Identifying Entities
-  - **Strong Entities**: Independent existence
-  - **Weak Entities**: Dependent on other entities
-  
-  ### Relationship Types
-  - **One-to-One**: Single record relates to single record
-  - **One-to-Many**: Single record relates to multiple records
-  - **Many-to-Many**: Multiple records relate to multiple records
-  
-  ## Indexing Strategies
-  
-  Indexes improve query performance:
-  
-  \`\`\`sql
-  -- Create index on frequently queried column
-  CREATE INDEX idx_user_email ON users(email);
-  
-  -- Composite index for multi-column queries
-  CREATE INDEX idx_order_date_status ON orders(order_date, status);
-  \`\`\`
-  
-  ### Index Types
-  - **Clustered**: Physical order of data
-  - **Non-clustered**: Logical order separate from physical
-  - **Unique**: Ensures uniqueness
-  - **Partial**: Index with WHERE condition
-  
-  ## Query Optimization
-  
-  ### Best Practices
-  1. **Use appropriate WHERE clauses**
-  2. **Limit result sets with LIMIT/TOP**
-  3. **Avoid SELECT *** in production
-  4. **Use JOINs instead of subqueries when possible**
-  
-  ### Example Optimization
-  \`\`\`sql
-  -- Inefficient
-  SELECT * FROM users WHERE UPPER(name) = 'JOHN';
-  
-  -- Efficient
-  SELECT id, name, email FROM users WHERE name = 'John';
-  CREATE INDEX idx_users_name ON users(name);
-  \`\`\`
-  
-  ## Performance Considerations
-  
-  ### Connection Pooling
-  - Reuse database connections
-  - Configure appropriate pool sizes
-  - Monitor connection usage
-  
-  ### Caching Strategies
-  - **Query Result Caching**: Cache frequent query results
-  - **Application-Level Caching**: Redis, Memcached
-  - **Database-Level Caching**: Built-in query caches
-  
-  ## Security Best Practices
-  
-  ### Access Control
-  - Principle of least privilege
-  - Role-based access control
-  - Regular security audits
-  
-  ### SQL Injection Prevention
-  \`\`\`sql
-  -- Vulnerable
-  SELECT * FROM users WHERE id = ' + userId + ';
-  
-  -- Secure (parameterized query)
-  SELECT * FROM users WHERE id = ?;
-  \`\`\`
-  
-  ## Backup and Recovery
-  
-  ### Backup Strategies
-  - **Full Backups**: Complete database copy
-  - **Incremental Backups**: Changes since last backup
-  - **Transaction Log Backups**: For point-in-time recovery
-  
-  ### Recovery Planning
-  - Define Recovery Point Objective (RPO)
-  - Define Recovery Time Objective (RTO)
-  - Regular recovery testing
-  
-  ## Conclusion
-  
-  Good database design is an investment in your application's future. By following these principles, you'll create databases that are efficient, maintainable, and scalable.
-  
-  Remember: Database design is both an art and a science. Start with solid principles and refine based on your specific requirements and performance metrics.`,
+      "Complete guide to deploy your React application to GitHub Pages with custom domain support",
+    category: "Deployment",
+    publishDate: "June 2024",
+    content: `# Deploy React App to GitHub Pages
+
+This guide will walk you through deploying your React application to GitHub Pages, including setup for both GitHub domains and custom domains.
+
+## Install gh-pages
+
+First, install the gh-pages package as a development dependency:
+
+\`\`\`bash
+npm install gh-pages
+\`\`\`
+
+## Edit package.json
+
+Update your \`package.json\` file with the homepage URL and deployment scripts:
+
+\`\`\`json
+{
+  "name": "my-react-typescript-app",
+  "version": "0.1.0",
+  "homepage": "https://jbw9.github.io/", // for custom domain
+  "homepage": "https://jbw9.github.io/repo-name", // for github domain
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build", 
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  }
+}
+\`\`\`
+
+## Create GitHub Actions Workflow
+
+This will make deployment automatic everytime you push your code to GitHub! Create a workflow file at \`.github/workflows/main.yml\`:
+
+\`\`\`yaml
+name: Deploy static content to Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: CI=false npm run build
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./dist"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+\`\`\`
+
+## Configure Vite
+
+Update your \`vite.config.ts\` file:
+
+\`\`\`typescript
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+export default defineConfig({
+  plugins: [react()],
+  base: "/repo-name/", // remove if using custom domain
+});
+\`\`\`
+
+## GitHub Repository Settings
+
+1. Go to your repository settings
+2. Navigate to "Pages" section
+3. Under "Build and deployment", select "GitHub Actions" as the source
+
+## Custom Domain Setup
+
+If you want to use a custom domain, you'll need to configure DNS records:
+
+### Namecheap DNS Settings
+
+Configure these DNS records in your Namecheap domain management panel:
+
+| Type | Host | Value | TTL |
+|------|------|-------|-----|
+| A Record | @ | 185.199.108.153 | Automatic |
+| A Record | @ | 185.199.109.153 | Automatic |
+| A Record | @ | 185.199.110.153 | Automatic |
+| A Record | @ | 185.199.111.153 | Automatic |
+| CNAME Record | www | username.github.io | 60 min |
+
+## Deployment Process
+
+1. **Manual Deployment**: Run \`npm run deploy\` to deploy manually
+2. **Automatic Deployment**: Push to the main branch to trigger automatic deployment via GitHub Actions
+
+## Troubleshooting
+
+- Ensure your repository is public or you have GitHub Pro for private repository Pages
+- Check that GitHub Pages is enabled in repository settings
+- Verify the base URL in \`vite.config.ts\` matches your deployment path
+- For custom domains, ensure DNS propagation is complete (can take up to 24 hours)
+
+Your React application should now be live on GitHub Pages!`,
   },
 ];
 

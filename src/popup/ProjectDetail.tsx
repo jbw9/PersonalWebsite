@@ -64,13 +64,15 @@ const ProjectDetail = () => {
 
           {/* Action Buttons */}
           <div className="flex gap-4">
-            <Button
-              className="bg-portfolio-blue hover:bg-portfolio-blue/80"
-              onClick={() => window.open(project.github)}
-            >
-              <Github className="w-4 h-4 mr-2" />
-              View Code
-            </Button>
+            {project.github && (
+              <Button
+                className="bg-portfolio-blue hover:bg-portfolio-blue/80"
+                onClick={() => window.open(project.github)}
+              >
+                <Github className="w-4 h-4 mr-2" />
+                View Code
+              </Button>
+            )}
             <Button
               variant="outline"
               className="border-portfolio-accent text-portfolio-light hover:bg-portfolio-slate"
@@ -117,9 +119,13 @@ const ProjectDetail = () => {
             <h2 className="mb-4 text-2xl font-semibold text-white">
               About This Project
             </h2>
-            <p className="leading-relaxed text-portfolio-light">
-              {project.longDescription}
-            </p>
+            <div className="leading-relaxed text-portfolio-light">
+              {project.longDescription.split("\n\n").map((paragraph, index) => (
+                <p key={index} className={index > 0 ? "mt-4" : ""}>
+                  {paragraph}
+                </p>
+              ))}
+            </div>
           </CardContent>
         </Card>
 

@@ -112,7 +112,9 @@ function App() {
             <div className="flex flex-wrap gap-4">
               <Button
                 className="p-3 text-white bg-portfolio-blue hover:bg-portfolio-blue/80"
-                onClick={() => window.open("mailto:your.email@example.com")}
+                onClick={() =>
+                  window.open("mailto:jonathanbernard265@gmail.com")
+                }
                 title="Email"
               >
                 <Mail className="w-5 h-5" />
@@ -183,17 +185,19 @@ function App() {
                       {project.title}
                     </h3>
                     <div className="flex space-x-2">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="w-8 h-8 p-1 text-portfolio-accent hover:text-portfolio-blue"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          window.open(project.github);
-                        }}
-                      >
-                        <Github className="w-4 h-4" />
-                      </Button>
+                      {project.github && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="w-8 h-8 p-1 text-portfolio-accent hover:text-portfolio-blue"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.open(project.github);
+                          }}
+                        >
+                          <Github className="w-4 h-4" />
+                        </Button>
+                      )}
                       <Button
                         size="sm"
                         variant="ghost"
@@ -241,7 +245,7 @@ function App() {
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="mb-12 text-3xl font-bold text-white">
-            Guides & Articles
+            Development Guides
           </h2>
           <div className="space-y-6">
             {guides.map((guide, index) => (

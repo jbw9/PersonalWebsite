@@ -500,7 +500,7 @@ export const education = [
     school: "University of Illinois at Urbana - Champaign",
     image:
       "https://media.licdn.com/dms/image/v2/C4E0BAQGFFDl_Z9pIAA/company-logo_100_100/company-logo_100_100/0/1630611684443/university_of_illinois_at_urbana_champaign_logo?e=1754524800&v=beta&t=yXHWVm7AICqQokMi7Aj7XGmgzURFf3ltojHzoaq3EnQ",
-    period: "2022 - 2026",
+    period: "Aug 2023 - Dec 2026",
     gpa: "3.87/4.0",
     relevantCourses: [
       "Data Structures & Algorithms",

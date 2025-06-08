@@ -4,7 +4,7 @@ import { Card, CardContent } from "../components/card";
 import { Badge } from "../components/badge";
 import { ArrowLeft, Github, ExternalLink } from "lucide-react";
 import { useEffect } from "react";
-import { projects } from "../data/projectdetails";
+import { projects } from "../data";
 
 const ProjectDetail = () => {
   const { id } = useParams();

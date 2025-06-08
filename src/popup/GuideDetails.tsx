@@ -4,7 +4,7 @@ import { Card, CardContent } from "../components/card";
 import { Badge } from "../components/badge";
 import { ArrowLeft } from "lucide-react";
 import { useEffect } from "react";
-import { guides } from "../data/guidedetails";
+import { guides } from "../data";
 
 const GuideDetail = () => {
   const { id } = useParams();

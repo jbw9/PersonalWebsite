@@ -5,13 +5,7 @@ import { Card, CardContent } from "./components/card";
 import { Badge } from "./components/badge";
 import { Mail, Github, Linkedin, FileText, ExternalLink } from "lucide-react";
 import ExperienceTimeline from "./components/experiencetimeline";
-import {
-  experiences,
-  projects,
-  guides,
-  involvements,
-  education,
-} from "./data/main";
+import { experiences, projects, guides, involvements, education } from "./data";
 
 function App() {
   const sectionsRef = useRef<(HTMLElement | null)[]>([]);

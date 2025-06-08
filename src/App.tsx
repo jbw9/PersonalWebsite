@@ -130,7 +130,7 @@ function App() {
               <Button
                 variant="outline"
                 className="p-3 border-portfolio-accent text-portfolio-light hover:bg-portfolio-slate"
-                onClick={() => window.open("https://github.com/yourusername")}
+                onClick={() => window.open("https://github.com/jbw9")}
                 title="GitHub"
               >
                 <Github className="w-5 h-5" />
@@ -139,7 +139,7 @@ function App() {
                 variant="outline"
                 className="p-3 border-portfolio-accent text-portfolio-light hover:bg-portfolio-slate"
                 onClick={() =>
-                  window.open("https://linkedin.com/in/yourprofile")
+                  window.open("https://www.linkedin.com/in/jwidjajakusuma/")
                 }
                 title="LinkedIn"
               >

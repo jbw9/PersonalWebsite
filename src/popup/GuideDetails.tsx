@@ -168,6 +168,16 @@ const GuideDetail = () => {
     em(props: any) {
       return <em className="italic text-portfolio-accent">{props.children}</em>;
     },
+    img(props: any) {
+      return (
+        <img
+          src={props.src}
+          alt={props.alt}
+          className="h-auto max-w-full my-4 rounded-lg"
+          {...props}
+        />
+      );
+    },
   };
 
   return (

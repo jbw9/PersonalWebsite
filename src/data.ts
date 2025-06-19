@@ -663,8 +663,7 @@ export const education = [
     period: "2025",
     image:
       "https://media.licdn.com/dms/image/v2/C4D0BAQGPzdBPNxrmEg/company-logo_100_100/company-logo_100_100/0/1673555093250/y_combinator_logo?e=1754524800&v=beta&t=Zaeq6nS7bCLmXIoIScDFQ_CS78JmcrLyTM9l-d6w_Ro",
-    description:
-      "One of 2000 undergrad and grad students selected for the first ever YC AI Startup School. Link - https://events.ycombinator.com/ai-sus",
+    description: "Event Details - https://events.ycombinator.com/ai-sus",
   },
 ];
 

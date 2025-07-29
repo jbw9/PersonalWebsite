@@ -51,6 +51,15 @@ export interface Involvement {
 export const experiences = [
   {
     title: "Software Engineer Intern",
+    company: "Massive",
+    companyIcon: "/massiveLogo.png",
+    period: "Aug 2025 - Present",
+    description:
+      "Developing an algorithm to predict an artist's annual revenue from 130+ parameters",
+    technologies: ["Python", "OpenAI API", "Flask"],
+  },
+  {
+    title: "Software Engineer Intern",
     company: "Kredivo Group",
     companyIcon:
       "https://media.licdn.com/dms/image/v2/D560BAQEcTpBN5xjLQQ/company-logo_200_200/company-logo_200_200/0/1693461125877/kredivo_group_logo?e=1754524800&v=beta&t=KuobEwkUY_KV9dnjITlcVJMRwO1KZIgUOP9vniH6NXo",

@@ -99,7 +99,7 @@ function App() {
               Hello, I'm <span className="text-portfolio-blue">Jonathan</span>
             </h1>
             <h2 className="mb-8 text-2xl md:text-3xl text-portfolio-accent">
-              SWE Intern @Kredivo Group | CS @UIUC
+              SWE Intern @Massive, Inc. | CS @UIUC
             </h2>
             <p className="max-w-2xl mb-12 text-lg leading-relaxed text-portfolio-light">
               Passionate about building innovative software solutions and

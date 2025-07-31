@@ -51,9 +51,9 @@ export interface Involvement {
 export const experiences = [
   {
     title: "Software Engineer Intern",
-    company: "Massive",
+    company: "Massive, Inc.",
     companyIcon: "/massiveLogo.png",
-    period: "Aug 2025 - Present",
+    period: "Jully 2025 - Present",
     description:
       "Developing an algorithm to predict an artist's annual revenue from 130+ parameters",
     technologies: ["Python", "OpenAI API", "Flask"],

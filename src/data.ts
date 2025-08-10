@@ -61,8 +61,7 @@ export const experiences = [
   {
     title: "Software Engineer Intern",
     company: "Kredivo Group",
-    companyIcon:
-      "https://media.licdn.com/dms/image/v2/D560BAQEcTpBN5xjLQQ/company-logo_200_200/company-logo_200_200/0/1693461125877/kredivo_group_logo?e=1754524800&v=beta&t=KuobEwkUY_KV9dnjITlcVJMRwO1KZIgUOP9vniH6NXo",
+    companyIcon: "https://media.licdn.com/dms/image/v2/D560BAQEcTpBN5xjLQQ/company-logo_200_200/company-logo_200_200/0/1693461125877/kredivo_group_logo?e=1757548800&v=beta&t=2PiSp3Z7TPXoIl_mJSyshLxbbCS9pCEIOshtYek1h2Q",
     period: "Summer 2025",
     description:
       "Developing an MCP server, and integrating it with the company's LLM and customer support system",
@@ -71,8 +70,7 @@ export const experiences = [
   {
     title: "Co-Founder & CTO",
     company: "Tulip",
-    companyIcon:
-      "https://media.licdn.com/dms/image/v2/D560BAQGwgNKT8En_Fw/company-logo_200_200/company-logo_200_200/0/1729296904460/tulipestate_logo?e=1754524800&v=beta&t=aS4WoWT6VvmIVhbPysGi5ZSbaZd9AQLlt2F_8HXRki0",
+    companyIcon: "https://www.tulip.markets/favicon.ico",
     period: "Jan 2024 - May 2025",
     description:
       "Led development of Tulip's mobile app, beta website and Automated Market Maker (AMM) algorithm.",
@@ -82,8 +80,7 @@ export const experiences = [
   {
     title: "Founder in Residence (iV10)",
     company: "Iventure Accelerator",
-    companyIcon:
-      "https://media.licdn.com/dms/image/v2/C4D0BAQGxjXbhDRFjRw/company-logo_100_100/company-logo_100_100/0/1663165310322/iventureaccelerator_logo?e=1754524800&v=beta&t=XmqJmtwGRMC7MhOVqEs5CU4YMfN_GjhcWs_U66cMCoc",
+    companyIcon: "https://media.licdn.com/dms/image/v2/C4D0BAQGxjXbhDRFjRw/company-logo_200_200/company-logo_200_200/0/1663165310322/iventureaccelerator_logo?e=1757548800&v=beta&t=Ap4uGSRh1YnuGtD20BYz-ODgWHvKn0o-atIgXo82u-s",
     period: "Jan 2024 - May 2025",
     description: "Building Tulip",
     technologies: [],
@@ -91,8 +88,7 @@ export const experiences = [
   {
     title: "Software Engineer Intern",
     company: "We Hear You, Inc",
-    companyIcon:
-      "https://media.licdn.com/dms/image/v2/D560BAQFvP6vMuT95LA/company-logo_200_200/company-logo_200_200/0/1726942046647?e=1754524800&v=beta&t=eyNEd3jiRfir4MXf2vf6KMY6YUCrgkovsWswWWXHSLw",
+    companyIcon: "https://media.licdn.com/dms/image/v2/D560BAQFvP6vMuT95LA/company-logo_200_200/company-logo_200_200/0/1726942046647?e=1757548800&v=beta&t=kJ9eyFCvh8F83I4Ylq8zNp_Psh6th7efeIefs-q7mB4",
     period: "Summer 2024",
     description:
       "Developed a real time American Sign Language to English Android application. Optimized translation system through machine learning.",
@@ -655,8 +651,7 @@ export const education = [
   {
     degree: "Bachelor of Science in Computer Science",
     school: "University of Illinois at Urbana - Champaign",
-    image:
-      "https://media.licdn.com/dms/image/v2/C4E0BAQGFFDl_Z9pIAA/company-logo_100_100/company-logo_100_100/0/1630611684443/university_of_illinois_at_urbana_champaign_logo?e=1754524800&v=beta&t=yXHWVm7AICqQokMi7Aj7XGmgzURFf3ltojHzoaq3EnQ",
+    image: "https://brand.illinois.edu/wp-content/uploads/2024/02/Block-I-orange-blue-background.png",
     period: "Aug 2023 - Dec 2026",
     gpa: "3.87/4.0",
     relevantCourses: [
@@ -670,8 +665,7 @@ export const education = [
     degree: "YC AI Startup School",
     school: "Y Combinator",
     period: "2025",
-    image:
-      "https://media.licdn.com/dms/image/v2/C4D0BAQGPzdBPNxrmEg/company-logo_100_100/company-logo_100_100/0/1673555093250/y_combinator_logo?e=1754524800&v=beta&t=Zaeq6nS7bCLmXIoIScDFQ_CS78JmcrLyTM9l-d6w_Ro",
+    image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQEAAAEBCAMAAABPMuDPAAAAQlBMVEXyZSLyZSLyZSLyZSLyZSL6roH91br2ilD+6tr4nGn0eDf7wp3+9e3zbyz3k1z0gUP7uI/5pXX+38n8y6z////yZSKuMvVfAAAABXRSTlOAQMBgICelMzEAAAOgSURBVHhe5MABDQAAAIIw3eifmSB8vA3Zt5vcuGEgCsLeUBSpnxnb4f2vmn068xK5Z8FuFQ8gCB9q80Dw42Pc+3y8UQABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQACBR7GnuAF6MafNKnDsv+xx/+1mv3nOKjDKXwRWbwIWYJl4F6wigvclUCcWaCKCeRKwAtNFoBN4TC1wigjelMA2+S5YRATv+VyfXKC+NYIqEphVQEfgT2Dv0ws8VAT+BEqAXbCJCPwJHAEEuorAn0AAARGBO4H1CCFw7O+JoArIuQVGERH4EhgBBFQE/gQmF9ARnP4EljG5gB5Iiz+BGkBAreTqTyCAgIzAnUAogdMbwSIm0cQCeiAtvgR6MIEqInAkEEBARuBKIJzAwxOB5SsBb822n0dQxSoOJNBFBI4EAgmMp4jAkUAAATWQ6s8SaEFvz8vPIqhiWAYQcEQgEogqMD5FBBcS+BrBBPRAqtcTqIEF2vUIqsgmgIAjApFAaIF6NQKbwPcIKKAHUr2WQI8k4I+gilUcQMARgUggvEC/EkEzAM8E7wu2CxGsdhJFEvBH0MQqDiegV3J1JBBQ4NhFBDqBzyTvC4qIQCawjgwCOgKdQIstoFdydSQQRcD2rSNoVimRQPuPCFaLFF1AR7A5EggloK/BdAIZBPRVqE6ghxLwR7BaoBQCOgKdQDqBLiIQCSQSGJuIoNlJlEVAR3C8TKCkfHX7fLn+T5tASoFjf9X6YmlSCozyYvxVO4kSCegI1r8n0FIJ6IF0igQyCej9txiWZAI6gsfoViWxwPiy+2gzqzi1QLUR2ATSCeiBtBuSfAI6AjsWkguM738I9PQC3ZFADoGxKYC95xfQEZRxA4FRRALHLQSOXSSQXkBHsB75BXQEbWQV0APJruL8AmMVCaQW0BEsI5uAXsn21FsJVJFAZgH9juJmAsVOorsLlLsJIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAm3547QAAoGPFkAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBH6XAwc0AAAAEME2+ncWxOXNAI6Cs14i3Db7AAAAAElFTkSuQmCC",
     description: "Event Details - https://events.ycombinator.com/ai-sus",
   },
 ];
@@ -683,8 +677,7 @@ export const involvements = [
     period: "Aug 2023 - June 2024",
     description:
       "The university's premier consulting organization with a 5% acceptance rate. Led an engagement with a startup to develop and evaluate expansion strategies, resulting in a validated go-to-market plan.",
-    image:
-      "https://media.licdn.com/dms/image/v2/C4E0BAQEjAlC8LwihOQ/company-logo_100_100/company-logo_100_100/0/1631348661882?e=1754524800&v=beta&t=jHh41QTnM_D_uw0HHgi_rc9thn5iFlrp8OyyL8pS5Ks",
+    image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iNCIgZmlsbD0iIzEwN0M0MSIvPgo8dGV4dCB4PSIyNCIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIj5PVENSLHAVDGV4dD4KPC9zdmc+Cg==",
   },
   {
     role: "Technology & Fundraising Officer",
@@ -692,8 +685,7 @@ export const involvements = [
     period: "Aug 2023 - May 2025",
     description:
       "Led development of the official https://permiasuiuc.org/ website. Built with React, Typescript, and Tailwind CSS.",
-    image:
-      "https://media.licdn.com/dms/image/v2/C510BAQGHwSXiJ6nXjA/company-logo_100_100/company-logo_100_100/0/1631353110459?e=1754524800&v=beta&t=Sc0tsniMiGKbag6fxN3tFmekQEJoWCZ6BVpVkuZqBV4",
+    image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iNCIgZmlsbD0iI0RDMjYyNiIvPgo8dGV4dCB4PSIyNCIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIj5QPC90ZXh0Pgo8L3N2Zz4K",
   },
   {
     role: "CS128 Course Assistant",
@@ -701,7 +693,6 @@ export const involvements = [
     period: "Jan 2025 - Present",
     description:
       "Assisting students with course material through hosting office hours and answering forum questions.",
-    image:
-      "https://media.licdn.com/dms/image/v2/D4D0BAQHnn2vmCGlTeg/company-logo_100_100/B4DZYQ355YHsAg-/0/1744039813085/illinoiscds_logo?e=1754524800&v=beta&t=7kKDSDh2F7Gk23eGryH1AT8UB9M9l4gK8_9T82rKcQY",
+    image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iNCIgZmlsbD0iI0ZGNUYwMCIvPgo8dGV4dCB4PSIyNCIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIj5DUzwvdGV4dD4KPC9zdmc+Cg==",
   },
 ];

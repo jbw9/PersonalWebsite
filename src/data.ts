@@ -241,6 +241,28 @@ export const projects = [
     image: "/explorify.png",
   },
   {
+    id: "illinois-marketplace",
+    title: "Illinois Marketplace",
+    description:
+      "A Facebook Marketplace-style platform exclusively for University of Illinois students with anonymous browsing and manual transaction verification.",
+    longDescription:
+      "A secure marketplace platform built exclusively for University of Illinois students using @illinois.edu email verification. The platform features anonymous browsing where non-authenticated users can view products with blurred seller details to maintain privacy while encouraging sign-ups.\n\nThe platform includes comprehensive safety features like content reporting, manual transaction verification for reviews, and a robust authentication system. Built with modern web technologies including React, Supabase for backend services, and deployed on GitHub Pages with comprehensive Playwright testing.",
+    technologies: ["React", "Supabase", "TailwindCSS", "Vite", "Playwright"],
+    features: [
+      "Anonymous browsing with blurred seller contact details",
+      "@illinois.edu email verification for exclusive access",
+      "Manual transaction verification for authentic reviews",
+      "Comprehensive product filtering and search functionality",
+      "Like/save items for later viewing",
+      "Content reporting and moderation system",
+      "Responsive mobile-first design",
+      "Comprehensive end-to-end testing with Playwright",
+    ],
+    github: undefined,
+    demo: "https://illinoismarketplace.xyz/",
+    image: "/illinoismarketplace.png",
+  },
+  {
     id: "spending-tracker",
     title: "Spending Tracker",
     description:

@@ -299,7 +299,7 @@ export const projects = [
       "Adding notes if food truck is still hard to locate",
     ],
     github: undefined,
-    demo: "https://jbw9.github.io/SpendingTracker/",
+    demo: "https://apps.apple.com/au/app/gobites/id6596764965",
     image: "/gobites.png",
   },
   {

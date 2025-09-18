@@ -53,7 +53,7 @@ export const experiences = [
     title: "Software Engineer Intern",
     company: "Massive, Inc.",
     companyIcon: "/massiveLogo.png",
-    period: "Jully 2025 - Present",
+    period: "Jul 2025 - Present",
     description:
       "Developing an algorithm to predict an artist's annual revenue from 130+ parameters",
     technologies: ["Python", "OpenAI API", "Flask"],
@@ -61,7 +61,7 @@ export const experiences = [
   {
     title: "Software Engineer Intern",
     company: "Kredivo Group",
-    companyIcon: "https://media.licdn.com/dms/image/v2/D560BAQEcTpBN5xjLQQ/company-logo_200_200/company-logo_200_200/0/1693461125877/kredivo_group_logo?e=1757548800&v=beta&t=2PiSp3Z7TPXoIl_mJSyshLxbbCS9pCEIOshtYek1h2Q",
+    companyIcon: "https://media.licdn.com/dms/image/v2/D560BAQEcTpBN5xjLQQ/company-logo_200_200/company-logo_200_200/0/1693461125877/kredivo_group_logo?e=1761177600&v=beta&t=SrZ2qctcx2F3OoI4PNDRGpGNSWu7UNHuTPKsf5J6G5A",
     period: "Summer 2025",
     description:
       "Developing an MCP server, and integrating it with the company's LLM and customer support system",
@@ -80,7 +80,7 @@ export const experiences = [
   {
     title: "Founder in Residence (iV10)",
     company: "Iventure Accelerator",
-    companyIcon: "https://media.licdn.com/dms/image/v2/C4D0BAQGxjXbhDRFjRw/company-logo_200_200/company-logo_200_200/0/1663165310322/iventureaccelerator_logo?e=1757548800&v=beta&t=Ap4uGSRh1YnuGtD20BYz-ODgWHvKn0o-atIgXo82u-s",
+    companyIcon: "https://media.licdn.com/dms/image/v2/C4D0BAQGxjXbhDRFjRw/company-logo_200_200/company-logo_200_200/0/1663165310322/iventureaccelerator_logo?e=1761177600&v=beta&t=gihDaCRWdUMPuvHQNfvdaTONlMAmQC1AK2_-uFj2Gxk",
     period: "Jan 2024 - May 2025",
     description: "Building Tulip",
     technologies: [],
@@ -88,7 +88,7 @@ export const experiences = [
   {
     title: "Software Engineer Intern",
     company: "We Hear You, Inc",
-    companyIcon: "https://media.licdn.com/dms/image/v2/D560BAQFvP6vMuT95LA/company-logo_200_200/company-logo_200_200/0/1726942046647?e=1757548800&v=beta&t=kJ9eyFCvh8F83I4Ylq8zNp_Psh6th7efeIefs-q7mB4",
+    companyIcon: "https://media.licdn.com/dms/image/v2/D560BAQFvP6vMuT95LA/company-logo_200_200/company-logo_200_200/0/1726942046647?e=1761177600&v=beta&t=83SgmClGJZDSjLL1NnhQw0wzWOtJLuA80XuNUHIncCQ",
     period: "Summer 2024",
     description:
       "Developed a real time American Sign Language to English Android application. Optimized translation system through machine learning.",
@@ -699,7 +699,7 @@ export const involvements = [
     period: "Aug 2023 - June 2024",
     description:
       "The university's premier consulting organization with a 5% acceptance rate. Led an engagement with a startup to develop and evaluate expansion strategies, resulting in a validated go-to-market plan.",
-    image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iNCIgZmlsbD0iIzEwN0M0MSIvPgo8dGV4dCB4PSIyNCIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIj5PVENSLHAVDGV4dD4KPC9zdmc+Cg==",
+    image: "https://media.licdn.com/dms/image/v2/C4E0BAQEjAlC8LwihOQ/company-logo_200_200/company-logo_200_200/0/1631348661882?e=1761177600&v=beta&t=xd11QE490u-rNP4Xtr5vWZjnIqkqTUFVjrCt1vyteQU",
   },
   {
     role: "Technology & Fundraising Officer",
@@ -707,14 +707,14 @@ export const involvements = [
     period: "Aug 2023 - May 2025",
     description:
       "Led development of the official https://permiasuiuc.org/ website. Built with React, Typescript, and Tailwind CSS.",
-    image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iNCIgZmlsbD0iI0RDMjYyNiIvPgo8dGV4dCB4PSIyNCIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIj5QPC90ZXh0Pgo8L3N2Zz4K",
+    image: "https://media.licdn.com/dms/image/v2/C510BAQGHwSXiJ6nXjA/company-logo_100_100/company-logo_100_100/0/1631353110459?e=1761177600&v=beta&t=SLt9VwG6WBYKjEQ_h6--DKEQSuV0iMniF4W_Zj5DAqo",
   },
   {
     role: "CS128 Course Assistant",
     organization: "Siebel School of Computing and Data Science",
-    period: "Jan 2025 - Present",
+    period: "Jan 2025 - May 2025",
     description:
       "Assisting students with course material through hosting office hours and answering forum questions.",
-    image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iNCIgZmlsbD0iI0ZGNUYwMCIvPgo8dGV4dCB4PSIyNCIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIj5DUzwvdGV4dD4KPC9zdmc+Cg==",
+    image: "https://brand.illinois.edu/wp-content/uploads/2024/02/Block-I-orange-blue-background.png",
   },
 ];

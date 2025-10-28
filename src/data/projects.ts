@@ -7,11 +7,34 @@ export interface Project {
   features: string[];
   github?: string;
   demo: string;
-  image: string;
+  image?: string;
   howItWorks?: string;
+  notebookUrl?: string;
 }
 
 export const projects = [
+  {
+    id: "movie-recommendation",
+    title: "Movie Recommendation System",
+    description:
+      "A collaborative filtering system using Matrix Factorization and Neural Networks to predict movie ratings and generate personalized recommendations.",
+    longDescription:
+      "This project explores different approaches to building movie recommendation systems, comparing traditional matrix factorization techniques with modern neural network architectures. Built using PyTorch and trained on the MovieLens dataset containing 100,000+ ratings.\n\nThe system implements three models: basic Matrix Factorization using embedding layers, Matrix Factorization with user/item bias terms, and a Neural Collaborative Filtering network that learns non-linear interactions. Each model progressively improves prediction accuracy while demonstrating different trade-offs between simplicity and performance.\n\nThe final section includes a personalized recommendation engine that finds similar users based on your ratings and generates tailored movie suggestions, showcasing the practical application of collaborative filtering in real-world recommendation systems.",
+    technologies: ["Python", "PyTorch", "Pandas", "NumPy", "Jupyter Notebook"],
+    features: [
+      "Matrix Factorization using embedding layers with 100-dimensional latent factors",
+      "User and item bias terms to normalize rating tendencies",
+      "Neural Collaborative Filtering with fully connected layers and dropout",
+      "Trained on MovieLens 100K dataset (100,836 ratings from 610 users)",
+      "Achieved test loss of 1.05 with neural network approach",
+      "Hyperparameter tuning with various learning rates and weight decay",
+      "Personalized recommendation engine based on user taste profiles",
+      "Interactive rating system for generating custom recommendations",
+    ],
+    github: undefined,
+    demo: undefined,
+    notebookUrl: "/notebooks/movie_recommendation.html",
+  },
   {
     id: "seam-carving",
     title: "Image Resizing Program",

@@ -3,7 +3,7 @@ import { Button } from "../components/button";
 import { Card, CardContent } from "../components/card";
 import { Badge } from "../components/badge";
 import { ArrowLeft, Github, ExternalLink } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { projects } from "../data/projects";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -13,6 +13,7 @@ import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 const ProjectDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [notebookLoading, setNotebookLoading] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -221,14 +222,16 @@ const ProjectDetail = () => {
           </div>
         </div>
 
-        {/* Project Image */}
-        <div className="mb-12">
-          <img
-            src={project.image}
-            alt={project.title}
-            className="object-cover w-full h-64 border rounded-lg md:h-96 border-portfolio-accent/20"
-          />
-        </div>
+        {/* Project Image - Only show if image exists */}
+        {project.image && (
+          <div className="mb-12">
+            <img
+              src={project.image}
+              alt={project.title}
+              className="object-cover w-full h-64 border rounded-lg md:h-96 border-portfolio-accent/20"
+            />
+          </div>
+        )}
 
         {/* Technologies */}
         <Card className="mb-8 bg-portfolio-slate border-portfolio-accent/20">
@@ -304,6 +307,54 @@ const ProjectDetail = () => {
             </ul>
           </CardContent>
         </Card>
+
+        {/* Jupyter Notebook Embedding - Only show if notebookUrl exists */}
+        {project.notebookUrl && (
+          <Card className="mt-8 bg-portfolio-slate border-portfolio-accent/20">
+            <CardContent className="p-6">
+              <h2 className="mb-4 text-2xl font-semibold text-white">
+                Interactive Notebook
+              </h2>
+              <p className="mb-4 text-portfolio-light">
+                Below is the full Jupyter notebook showcasing the implementation,
+                experiments, and results of this project.
+              </p>
+
+              {/* Loading indicator */}
+              {notebookLoading && (
+                <div className="flex items-center justify-center p-8 mb-4 bg-portfolio-dark rounded-lg">
+                  <div className="text-portfolio-light">
+                    <div className="inline-block w-8 h-8 border-4 border-portfolio-blue border-t-transparent rounded-full animate-spin mr-3"></div>
+                    Loading notebook...
+                  </div>
+                </div>
+              )}
+
+              {/* Notebook iframe */}
+              <div className="relative w-full overflow-hidden rounded-lg border border-portfolio-accent/20">
+                <iframe
+                  src={project.notebookUrl}
+                  title={`${project.title} - Jupyter Notebook`}
+                  className="w-full bg-white"
+                  style={{
+                    height: '800px',
+                    minHeight: '600px',
+                  }}
+                  onLoad={() => setNotebookLoading(false)}
+                  sandbox="allow-same-origin allow-scripts"
+                />
+              </div>
+
+              {/* Helpful tips */}
+              <div className="mt-4 p-4 bg-portfolio-dark rounded-lg">
+                <p className="text-sm text-portfolio-accent">
+                  💡 <strong>Tip:</strong> You can scroll through the notebook above to see the code,
+                  visualizations, and detailed explanations.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

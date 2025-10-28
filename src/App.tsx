@@ -115,20 +115,20 @@ function App() {
               <Button
                 className="p-3 text-white bg-portfolio-blue hover:bg-portfolio-blue/80"
                 onClick={() =>
-                  window.open("mailto:jonathanbernard265@gmail.com")
+                  window.open("mailto:jbw7@illinois.edu")
                 }
                 title="Email"
               >
                 <Mail className="w-5 h-5" />
               </Button>
-              <Button
+              {/* <Button
                 variant="outline"
                 className="p-3 border-portfolio-accent text-portfolio-light hover:bg-portfolio-slate"
                 onClick={() => window.open("#")}
                 title="Resume"
               >
                 <FileText className="w-5 h-5" />
-              </Button>
+              </Button> */}
               <Button
                 variant="outline"
                 className="p-3 border-portfolio-accent text-portfolio-light hover:bg-portfolio-slate"

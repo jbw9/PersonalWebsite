@@ -34,7 +34,7 @@ export const experiences = [
     period: "Jul 2025 - Present",
     description:
       "Developing an algorithm to predict an artist's annual revenue from 130+ parameters",
-    technologies: ["Python", "OpenAI API", "Flask"],
+    technologies: ["Python", "OpenAI API", "LangChain", "Langgraph", "PostgreSQL", "Pydantic"],
   },
   {
     title: "Software Engineer Intern",
@@ -43,7 +43,7 @@ export const experiences = [
     period: "Summer 2025",
     description:
       "Developing an MCP server, and integrating it with the company's LLM and customer support system",
-    technologies: ["Python", "Ollama", "Flask", "MCP"],
+    technologies: ["Python", "MCP", "LangChain", "Langgraph", "PostgreSQL", "Pydantic"],
   },
   {
     title: "Co-Founder & CTO",

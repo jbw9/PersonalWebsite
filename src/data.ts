@@ -61,7 +61,7 @@ export const experiences = [
   {
     title: "Software Engineer Intern",
     company: "Kredivo Group",
-    companyIcon: "https://media.licdn.com/dms/image/v2/D560BAQEcTpBN5xjLQQ/company-logo_200_200/company-logo_200_200/0/1693461125877/kredivo_group_logo?e=1761177600&v=beta&t=SrZ2qctcx2F3OoI4PNDRGpGNSWu7UNHuTPKsf5J6G5A",
+    companyIcon: "kredivoLogo.png",
     period: "Summer 2025",
     description:
       "Developing an MCP server, and integrating it with the company's LLM and customer support system",
@@ -80,7 +80,7 @@ export const experiences = [
   {
     title: "Founder in Residence (iV10)",
     company: "Iventure Accelerator",
-    companyIcon: "https://media.licdn.com/dms/image/v2/C4D0BAQGxjXbhDRFjRw/company-logo_200_200/company-logo_200_200/0/1663165310322/iventureaccelerator_logo?e=1761177600&v=beta&t=gihDaCRWdUMPuvHQNfvdaTONlMAmQC1AK2_-uFj2Gxk",
+    companyIcon: "/iventure_logo.png",
     period: "Jan 2024 - May 2025",
     description: "Building Tulip",
     technologies: [],
@@ -88,7 +88,7 @@ export const experiences = [
   {
     title: "Software Engineer Intern",
     company: "We Hear You, Inc",
-    companyIcon: "https://media.licdn.com/dms/image/v2/D560BAQFvP6vMuT95LA/company-logo_200_200/company-logo_200_200/0/1726942046647?e=1761177600&v=beta&t=83SgmClGJZDSjLL1NnhQw0wzWOtJLuA80XuNUHIncCQ",
+    companyIcon: "wehearyouLogo.png",
     period: "Summer 2024",
     description:
       "Developed a real time American Sign Language to English Android application. Optimized translation system through machine learning.",
@@ -699,7 +699,7 @@ export const involvements = [
     period: "Aug 2023 - June 2024",
     description:
       "The university's premier consulting organization with a 5% acceptance rate. Led an engagement with a startup to develop and evaluate expansion strategies, resulting in a validated go-to-market plan.",
-    image: "https://media.licdn.com/dms/image/v2/C4E0BAQEjAlC8LwihOQ/company-logo_200_200/company-logo_200_200/0/1631348661882?e=1761177600&v=beta&t=xd11QE490u-rNP4Xtr5vWZjnIqkqTUFVjrCt1vyteQU",
+    image: "/otcrLogo.png",
   },
   {
     role: "Technology & Fundraising Officer",
@@ -707,7 +707,7 @@ export const involvements = [
     period: "Aug 2023 - May 2025",
     description:
       "Led development of the official https://permiasuiuc.org/ website. Built with React, Typescript, and Tailwind CSS.",
-    image: "https://media.licdn.com/dms/image/v2/C510BAQGHwSXiJ6nXjA/company-logo_100_100/company-logo_100_100/0/1631353110459?e=1761177600&v=beta&t=SLt9VwG6WBYKjEQ_h6--DKEQSuV0iMniF4W_Zj5DAqo",
+    image: "/permiasLogo.png",
   },
   {
     role: "CS128 Course Assistant",

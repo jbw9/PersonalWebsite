@@ -4,7 +4,7 @@ import { Card, CardContent } from "../components/card";
 import { Badge } from "../components/badge";
 import { ArrowLeft } from "lucide-react";
 import { useEffect } from "react";
-import { guides } from "../data";
+import { guides } from "../data/guides";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";

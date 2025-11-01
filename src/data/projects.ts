@@ -31,7 +31,7 @@ export const projects = [
       "Personalized recommendation engine based on user taste profiles",
       "Interactive rating system for generating custom recommendations",
     ],
-    github: undefined,
+    github: "https://github.com/jbw9/MovieRecommendation",
     demo: undefined,
     notebookUrl: "/notebooks/movie_recommendation.html",
   },

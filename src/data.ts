@@ -31,7 +31,7 @@ export const experiences = [
     title: "Software Engineer Intern",
     company: "Massive, Inc.",
     companyIcon: "/massiveLogo.png",
-    period: "Jul 2025 - Present",
+    period: "Jul 2025 - Nov 2025",
     description:
       "Developing an algorithm to predict an artist's annual revenue from 130+ parameters",
     technologies: ["Python", "OpenAI API", "LangChain", "Langgraph", "PostgreSQL", "Pydantic"],

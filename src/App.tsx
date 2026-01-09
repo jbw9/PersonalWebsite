@@ -101,13 +101,10 @@ function App() {
               Hello, I'm <span className="text-portfolio-blue">Jonathan</span>
             </h1>
             <h2 className="mb-8 text-2xl md:text-3xl text-portfolio-accent">
-              SWE Intern @Massive, Inc. | CS @UIUC
+              CS & Econs @UIUC
             </h2>
             <p className="max-w-2xl mb-12 text-lg leading-relaxed text-portfolio-light">
-              Passionate about building innovative software solutions and
-              exploring the intersection of technology and user experience.
-              Currently pursuing my degree while gaining hands-on experience
-              through internships and personal projects.
+              I love to build useful software projects that solves everyday problems! I dream one day to create an open source software that helps millions of people :)
             </p>
 
             {/* Contact Buttons */}
@@ -412,7 +409,7 @@ function App() {
       <footer className="px-6 py-12 border-t border-portfolio-slate">
         <div className="max-w-6xl mx-auto text-center">
           <p className="text-portfolio-accent">
-            Built from scratch with React & Tailwind CSS. © 2025 Jonathan
+            Built from scratch © 2026 Jonathan
             Bernard Widjajakusuma
           </p>
         </div>

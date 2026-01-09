@@ -14,6 +14,131 @@ export interface Project {
 
 export const projects = [
   {
+    id: "idx-trading-optimizer",
+    title: "Automated IDX Trading",
+    description:
+      "Autonomous parameter optimization system for Indonesian stock market (IDX) focused on end-of-day broker flow and accumulation analysis.",
+    longDescription:
+      "An intelligent trading strategy optimizer that follows the big players in the Indonesian stock market. The system autonomously collects historical EOD (End-of-Day) accumulation and broker flow data, optimizes strategy parameters using grid search on historical data, and applies the best-performing parameters to maximize returns.\n\nThe core strategy detects when large brokers accumulate stocks, indicating institutional buying. It analyzes key metrics including Big Player Net Value (total net buying from top N brokers), Concentration (percentage of total value from top brokers indicating conviction level), and daily liquidity requirements.\n\nThe optimizer uses grid search to test thousands of parameter combinations, simulating trades for each combination and calculating metrics like win rate, Sharpe ratio, and P&L to identify the optimal parameters for the current market conditions.",
+    technologies: ["Python", "SQLite", "Click", "YAML"],
+    features: [
+      "Follow-the-big-players strategy detecting institutional accumulation",
+      "Grid search optimization testing ~1,000 parameter combinations",
+      "Sharpe ratio-based parameter selection for risk-adjusted returns",
+      "Automated data collection with 12,500+ historical signal data points",
+      "Smart position management with configurable stop-loss and take-profit",
+      "Out-of-sample validation to prevent overfitting",
+    ],
+    github: undefined,
+    demo: "https://indo-stonks-trading.s3.ap-southeast-1.amazonaws.com/signals.html",
+    image: "/stonks.png",
+    howItWorks: `
+
+### Strategy Core: Follow the Big Players
+
+The algorithm detects when large institutional brokers accumulate stocks, indicating smart money buying. It tracks three key metrics:
+
+**1. Big Player Net Value**
+- Total net buying from top N brokers (e.g., top 3 brokers)
+- Threshold filters for significant institutional interest
+- Example: ≥1B IDR indicates serious accumulation
+
+**2. Concentration Percentage**
+- % of total daily value from top brokers
+- Higher concentration = stronger conviction
+- Example: 50% concentration means top 3 brokers account for half of all buying
+
+**3. Daily Liquidity**
+- Minimum daily trading value requirement
+- Ensures sufficient market depth for position entry/exit
+- Prevents illiquid stocks with unreliable signals
+
+## Algorithm Architecture
+
+### Phase 1: Data Collection
+1. Fetch historical EOD broker flow data via Invezgo API
+2. Collect 12+ months of data (~12,500 signals)
+3. Store in SQLite database with indexed timestamps
+4. Track API budget (30,000 call allocation)
+
+### Phase 2: Grid Search Optimization
+For each parameter combination:
+1. **Define Parameter Space**:
+   - \`big_player_threshold\`: [500M, 750M, 1B, 1.5B IDR]
+   - \`min_concentration\`: [0.35, 0.40, 0.45, 0.50, 0.55]
+   - \`stop_loss_pct\`: [0.03, 0.05, 0.07]
+   - \`take_profit_pct\`: [0.08, 0.10, 0.12, 0.15]
+   - \`max_hold_days\`: [2, 3, 5, 7]
+
+2. **Simulate Trades**:
+   - For each historical signal matching parameters
+   - Enter position at next day's open
+   - Track P&L until stop-loss, take-profit, or max hold days
+   - Record win rate, avg return, Sharpe ratio
+
+3. **Calculate Metrics**:
+   - Win Rate: % of profitable trades
+   - Average P&L: Mean return per trade
+   - Sharpe Ratio: Risk-adjusted returns (return / volatility)
+
+### Phase 3: Parameter Selection
+1. Rank all combinations by Sharpe ratio (risk-adjusted performance)
+2. Validate best parameters on out-of-sample period
+3. Ensure sufficient signal count (avoid overfitting to rare events)
+4. Select final parameters maximizing Sharpe with >30 signals
+
+### Phase 4: Daily Execution
+1. **EOD Scan**: Run daily after market close
+2. **Filter Stocks**: Apply optimized parameters to today's broker data
+3. **Generate Signals**: Output stocks meeting all criteria
+4. **Position Management**:
+   - Enter at tomorrow's open
+   - Set stop-loss and take-profit levels
+   - Exit after max hold days or when targets hit
+
+## Optimization Example
+
+Before optimization:
+\`\`\`
+Params: threshold=1B, concentration=0.50, stop_loss=5%, take_profit=10%
+Signals: 45 | Win Rate: 62.2% | Avg P&L: +4.1% | Sharpe: 1.42
+\`\`\`
+
+After grid search (testing 945 combinations):
+\`\`\`
+Params: threshold=750M, concentration=0.45, stop_loss=5%, take_profit=12%
+Signals: 187 | Win Rate: 67.4% | Avg P&L: +5.8% | Sharpe: 2.34
+\`\`\`
+
+**Improvement**: +316% more signals, +5.2pp win rate, +41% avg P&L, +65% Sharpe ratio
+
+## Time & Space Complexity
+
+- **Data Collection**: O(n × m) where n = days, m = stocks per day
+- **Grid Search**: O(p × s) where p = parameter combinations (~1,000), s = signals (~12,500)
+- **Daily Scan**: O(m) where m = stocks scanned (~50)
+- **Space Complexity**: O(n × m) for historical database storage
+
+## Key Implementation Details
+
+### Risk Management
+- **Stop-Loss**: Auto-exit at 3-7% loss to limit downside
+- **Take-Profit**: Lock in gains at 8-15% profit
+- **Max Hold**: Force exit after 2-7 days to avoid dead capital
+
+### Validation Strategy
+- **Training Period**: 60% of historical data for optimization
+- **Validation Period**: 20% for parameter validation
+- **Test Period**: 20% held out for final performance check
+- **Walk-Forward**: Reoptimize monthly as market regime changes
+
+### Performance Metrics
+- **Sharpe Ratio**: Primary optimization target (balances return vs risk)
+- **Win Rate**: Secondary check (prefer >60%)
+- **Signal Count**: Ensure sufficient opportunities (>30 signals)
+- **Max Drawdown**: Monitor largest peak-to-trough decline`,
+  },
+  {
     id: "movie-recommendation",
     title: "Movie Recommendation System",
     description:

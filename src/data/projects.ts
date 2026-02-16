@@ -10,6 +10,8 @@ export interface Project {
   image?: string;
   howItWorks?: string;
   notebookUrl?: string;
+  videoUrl?: string;
+  dmgUrl?: string;
 }
 
 export const projects = [
@@ -137,6 +139,89 @@ Signals: 187 | Win Rate: 67.4% | Avg P&L: +5.8% | Sharpe: 2.34
 - **Win Rate**: Secondary check (prefer >60%)
 - **Signal Count**: Ensure sufficient opportunities (>30 signals)
 - **Max Drawdown**: Monitor largest peak-to-trough decline`,
+  },
+  {
+    id: "habit-reminder",
+    title: "HabitReminder",
+    description:
+      "A macOS menu bar app that detects mouth breathing in real-time using computer vision, alerting you to breathe through your nose after ~5 seconds.",
+    longDescription:
+      "HabitReminder is a passive health monitor that runs silently in the macOS menu bar. It uses your webcam and MediaPipe's 468-point face landmarker model to compute the Mouth Aspect Ratio (MAR) on every frame. When your mouth has been open for ~5 seconds, it fires a macOS system notification and an audio cue to remind you to breathe through your nose.\n\nThe app features a live 320×180 camera preview embedded directly in the menu bar dropdown, complete with face landmark overlays, an OPEN/CLOSED status label, a countdown bar, and a \"CLOSE YOUR MOUTH\" alert banner. The menu bar icon updates in real-time: HR (idle), a 5/4/3/2/1 countdown (warning), and !!! when an alert fires.\n\nBuilding this required solving several macOS-specific engineering challenges: a camera permission race condition with AVFoundation's TCC system, keeping NSTimers alive while the menu is open, and re-applying the hardened runtime code signature after PyInstaller strips it during the app bundle step.",
+    technologies: [
+      "Python",
+      "MediaPipe",
+      "OpenCV",
+      "NumPy",
+      "rumps",
+      "PyObjC",
+      "PyInstaller",
+    ],
+    features: [
+      "Mouth Aspect Ratio (MAR) detection via MediaPipe 468-point face landmarks",
+      "Live 320×180 camera preview embedded in the menu bar dropdown",
+      "Visual overlays: face landmarks, OPEN/CLOSED status, countdown bar, alert banner",
+      "Menu bar icon updates in real-time (idle → countdown → alert)",
+      "macOS system notifications via osascript + Sosumi/Glass audio cues",
+      "60-second cooldown between alerts to prevent notification fatigue",
+      "Toggle detection on/off from the menu without quitting",
+      "Distributed as a signed .dmg for end-user installation",
+    ],
+    github: "https://github.com/jbw9/HabitReminder",
+    demo: undefined,
+    videoUrl: "/ht_demo.mp4",
+    dmgUrl: "https://drive.google.com/uc?export=download&id=1sOWpxBZVLRALjHhmPOwoJvWf_edi7Mzz",
+    howItWorks: `
+### Mouth Aspect Ratio (MAR)
+
+The core detection algorithm computes the **Mouth Aspect Ratio** from MediaPipe's 468 facial landmarks. MAR measures the vertical opening of the mouth relative to its horizontal width:
+
+\`\`\`
+MAR = (‖p2 - p8‖ + ‖p3 - p7‖ + ‖p4 - p6‖) / (2 × ‖p1 - p5‖)
+\`\`\`
+
+Where p1–p8 are key mouth landmark coordinates. A MAR above the configured threshold for ~5 consecutive seconds triggers an alert.
+
+## Architecture
+
+\`\`\`
+main.py
+  └── HealthMonitorApp (menu_bar_app.py)
+        ├── CameraThread         — 30fps capture loop (background thread)
+        ├── DetectorManager      — MediaPipe init, routes frames to detectors
+        │     └── MouthBreathingDetector  — MAR algorithm
+        ├── AlertSystem          — notifications + audio, 60s cooldown
+        └── PreviewWindow        — draws OpenCV overlays, converts to NSImage
+\`\`\`
+
+### Threading Model
+
+Two threads work in parallel:
+- **Camera thread** — captures frames at 30fps, runs MAR detection, queues alerts
+- **Main thread** — two NSTimers: 15Hz preview refresh, 0.5Hz alert processing
+
+### Data Flow
+
+\`\`\`
+Camera → BGR frame → RGB convert → MediaPipe (468 landmarks)
+  → MAR calculation → alert queue → macOS notification + sound
+                    → overlay drawing → JPEG → NSImage → menu bar preview
+\`\`\`
+
+## Key Engineering Challenges
+
+### 1. Camera Permission Race Condition
+macOS TCC doesn't authorize OpenCV's AVFoundation session fast enough on first launch. Fixed by explicitly calling \`AVCaptureDevice.requestAccessForMediaType_completionHandler_\` via PyObjC before opening the capture session, then auto-restarting the camera thread after a 1.5s delay.
+
+### 2. NSTimer Pausing During Menu Open
+Standard rumps timers are scheduled in the default run loop mode and pause when the menu is open, freezing the live preview. Fixed by scheduling NSTimers in \`NSRunLoopCommonModes\` so they fire regardless of UI state.
+
+### 3. PyInstaller + Hardened Runtime
+PyInstaller's BUNDLE step strips the hardened runtime flag, which is required for camera access on macOS 12+. Fixed with a post-build \`codesign --options runtime\` pass using a custom \`entitlements.plist\` that grants the camera usage entitlement.
+
+### 4. Alert Spam Prevention
+Two mechanisms prevent alert fatigue:
+- An \`alert_triggered\` boolean suppresses re-alerting within the same continuous open-mouth event
+- A 60-second cooldown timer between separate events prevents notification overload`,
   },
   {
     id: "movie-recommendation",

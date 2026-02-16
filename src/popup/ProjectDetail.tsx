@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "../components/button";
 import { Card, CardContent } from "../components/card";
 import { Badge } from "../components/badge";
-import { ArrowLeft, Github, ExternalLink } from "lucide-react";
+import { ArrowLeft, Github, ExternalLink, Download } from "lucide-react";
 import { useEffect, useState } from "react";
 import { projects } from "../data/projects";
 import ReactMarkdown from "react-markdown";
@@ -219,6 +219,17 @@ const ProjectDetail = () => {
                 Try it Out!
               </Button>
             )}
+            {project.dmgUrl && (
+              <a href={project.dmgUrl} download>
+                <Button
+                  variant="outline"
+                  className="border-portfolio-accent text-portfolio-light hover:bg-portfolio-slate"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Try it Out — Download DMG
+                </Button>
+              </a>
+            )}
           </div>
         </div>
 
@@ -259,6 +270,32 @@ const ProjectDetail = () => {
             <h2 className="mb-4 text-2xl font-semibold text-white">
               About This Project
             </h2>
+            {project.videoUrl && (
+              <div className="mb-6">
+                <h3 className="mb-3 text-lg font-semibold text-white">Demo</h3>
+                <video
+                  src={project.videoUrl}
+                  controls
+                  className="w-full rounded-lg border border-portfolio-accent/20"
+                  style={{ maxHeight: "480px" }}
+                >
+                  Your browser does not support the video tag.
+                </video>
+                {project.dmgUrl && (
+                  <p className="mt-3 text-portfolio-light">
+                    Want to try it yourself?{" "}
+                    <a
+                      href={project.dmgUrl}
+                      download
+                      className="text-portfolio-blue underline hover:text-portfolio-blue/80"
+                    >
+                      Click here to download
+                    </a>
+                    .
+                  </p>
+                )}
+              </div>
+            )}
             <div className="leading-relaxed text-portfolio-light">
               {project.longDescription.split("\n\n").map((paragraph, index) => (
                 <p key={index} className={index > 0 ? "mt-4" : ""}>

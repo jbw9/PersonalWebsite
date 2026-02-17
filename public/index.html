@@ -1,6 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Single Page Apps for GitHub Pages -->
+    <!-- Decodes the path encoded by 404.html and restores it via history.replaceState -->
+    <!-- so React Router sees the correct URL before the app mounts -->
+    <script>
+      (function(l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search.slice(1).split('&').map(function(s) {
+            return s.replace(/~and~/g, '&');
+          });
+          window.history.replaceState(
+            null, null,
+            decoded[0] + (decoded[1] ? '?' + decoded[1] : '') + l.hash
+          );
+        }
+      }(window.location));
+    </script>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-VN6BJFZWJT"></script>
     <script>

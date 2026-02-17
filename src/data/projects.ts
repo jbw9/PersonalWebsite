@@ -169,7 +169,7 @@ Signals: 187 | Win Rate: 67.4% | Avg P&L: +5.8% | Sharpe: 2.34
     github: "https://github.com/jbw9/HabitReminder",
     demo: undefined,
     videoUrl: "/ht_demo.mp4",
-    dmgUrl: "https://drive.google.com/uc?export=download&id=1sOWpxBZVLRALjHhmPOwoJvWf_edi7Mzz",
+    dmgUrl: "https://drive.google.com/file/d/1sOWpxBZVLRALjHhmPOwoJvWf_edi7Mzz/view?usp=sharing",
     howItWorks: `
 ### Mouth Aspect Ratio (MAR)
 

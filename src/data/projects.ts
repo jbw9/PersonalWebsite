@@ -8,6 +8,7 @@ export interface Project {
   github?: string;
   demo: string;
   image?: string;
+  screenshots?: string[];
   howItWorks?: string;
   notebookUrl?: string;
   videoUrl?: string;
@@ -15,6 +16,59 @@ export interface Project {
 }
 
 export const projects = [
+  {
+    id: "visulearn",
+    title: "VisuLearn",
+    description:
+      "An AI-powered visual learning platform that answers questions with interactive step-through animations instead of walls of text.",
+    longDescription:
+      "VisuLearn is an interactive visual learning platform where you ask any question and receive a custom step-through animation instead of a text-based explanation. Whether it's Dijkstra's algorithm, photosynthesis, or the water cycle, the AI generates HTML/SVG/JavaScript visualizations that break down the concept step by step.\n\nThe platform supports three learning modes: Auto (visualizes your question automatically), Viz (explicit visualization), and Test (quiz mode with adjustable difficulty, hints, and graded answers). Users can also upload images, PDFs, and Word documents to ask questions about their own content.\n\nBuilt on Next.js and deployed on AWS ECS Fargate, the app uses Claude via AWS Bedrock to generate animations in real time with streaming output. Authentication supports Google OAuth and email OTP, with per-user message quotas tracked in DynamoDB.",
+    technologies: [
+      "Next.js",
+      "TypeScript",
+      "AWS Bedrock",
+      "DynamoDB",
+      "AWS ECS Fargate",
+      "Tailwind CSS",
+      "NextAuth.js",
+    ],
+    features: [
+      "AI-generated step-through animations for any concept (algorithms, science, math, etc.)",
+      "Three learning modes: Auto visualize, Viz, and Test (quiz with scoring and hints)",
+      "Streaming response with live generation indicator",
+      "File attachments: images, PDFs, and Word documents up to 10 MB",
+      "Clarifying questions when user intent is ambiguous",
+      "Persistent chat history with conversation sidebar",
+      "Google OAuth and email OTP authentication",
+      "Daily message quotas with anonymous and authenticated tiers",
+      "Admin dashboard with user analytics and feedback tracking",
+      "Shareable conversation links",
+    ],
+    github: undefined,
+    demo: "https://visulearn.xyz",
+    screenshots: ["/visulearn-landing.png", "/visulearn-chat.png"],
+    howItWorks: `
+### How Animations Are Generated
+
+When you ask a question, Claude receives a system prompt with detailed instructions on rendering techniques — DOM-based visualizations for arrays and sorting, Canvas-based graphics for complex shapes, and SVG for diagrams. The AI returns a structured response with a text explanation followed by a self-contained HTML/JS/SVG code block.
+
+The animation is sandboxed in an \`<iframe>\` and rendered directly in the browser with built-in playback controls (prev / next / play). Each animation is color-optimized for the warm cream background (#EEE9DF) with high-contrast colors to ensure visibility.
+
+### Learning Modes
+
+- **Auto** — Detects if your question is best answered with a visualization and generates one automatically.
+- **Viz** — Forces a visualization regardless of question type.
+- **Test** — Generates a quiz question on your topic with adjustable difficulty (Easy / Med / Hard), multiple-choice answers, optional hints, and graded responses.
+
+### Clarifying Questions
+
+If your question is ambiguous (e.g. "explain sorting" could mean bubble sort, merge sort, etc.), the AI asks up to 3 clarifying questions with clickable option chips before generating the animation.
+
+### Infrastructure
+
+Deployed on AWS ECS Fargate behind an Application Load Balancer, with DynamoDB for conversation, message, user, and feedback storage. Infrastructure is defined with AWS CDK.
+`,
+  },
   {
     id: "idx-trading-optimizer",
     title: "Automated IDX Trading",

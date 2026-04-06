@@ -110,39 +110,31 @@ function App() {
             {/* Contact Buttons */}
             <div className="flex flex-wrap gap-4">
               <Button
-                className="p-3 text-white bg-portfolio-blue hover:bg-portfolio-blue/80"
+                className="px-5 py-2.5 text-white bg-portfolio-blue hover:bg-portfolio-blue/80 rounded-xl flex items-center gap-2"
                 onClick={() =>
                   window.open("mailto:jbw7@illinois.edu")
                 }
-                title="Email"
               >
-                <Mail className="w-5 h-5" />
+                <Mail className="w-4 h-4" />
+                Email
               </Button>
-              {/* <Button
-                variant="outline"
-                className="p-3 border-portfolio-accent text-portfolio-light hover:bg-portfolio-slate"
-                onClick={() => window.open("#")}
-                title="Resume"
-              >
-                <FileText className="w-5 h-5" />
-              </Button> */}
               <Button
                 variant="outline"
-                className="p-3 border-portfolio-accent text-portfolio-light hover:bg-portfolio-slate"
+                className="px-5 py-2.5 border-portfolio-accent text-portfolio-light hover:bg-portfolio-slate rounded-xl flex items-center gap-2"
                 onClick={() => window.open("https://github.com/jbw9")}
-                title="GitHub"
               >
-                <Github className="w-5 h-5" />
+                <Github className="w-4 h-4" />
+                GitHub
               </Button>
               <Button
                 variant="outline"
-                className="p-3 border-portfolio-accent text-portfolio-light hover:bg-portfolio-slate"
+                className="px-5 py-2.5 border-portfolio-accent text-portfolio-light hover:bg-portfolio-slate rounded-xl flex items-center gap-2"
                 onClick={() =>
                   window.open("https://www.linkedin.com/in/jwidjajakusuma/")
                 }
-                title="LinkedIn"
               >
-                <Linkedin className="w-5 h-5" />
+                <Linkedin className="w-4 h-4" />
+                LinkedIn
               </Button>
             </div>
           </div>
@@ -175,7 +167,7 @@ function App() {
             {projects.map((project, index) => (
               <Card
                 key={index}
-                className="h-full transition-all duration-300 cursor-pointer bg-portfolio-slate border-portfolio-accent/20 hover:border-portfolio-blue/50 group"
+                className="h-full transition-all duration-300 cursor-pointer bg-portfolio-slate border-portfolio-accent/20 hover:border-portfolio-blue/50 group rounded-2xl"
                 onClick={() => handleProjectClick(project)}
               >
                 <CardContent className="flex flex-col h-full p-6">
@@ -253,7 +245,7 @@ function App() {
                 className="cursor-pointer group"
                 onClick={() => handleGuideClick(guide)}
               >
-                <div className="flex flex-col gap-6 p-6 transition-all duration-300 border rounded-lg md:flex-row bg-gradient-to-r from-portfolio-slate/50 to-portfolio-slate/30 border-portfolio-accent/10 hover:border-portfolio-blue/30">
+                <div className="flex flex-col gap-6 p-6 transition-all duration-300 border rounded-2xl md:flex-row bg-gradient-to-r from-portfolio-slate/50 to-portfolio-slate/30 border-portfolio-accent/10 hover:border-portfolio-blue/30">
                   <div className="flex-grow">
                     <div className="flex flex-wrap items-center gap-2 mb-2">
                       <Badge
@@ -296,16 +288,16 @@ function App() {
             {education.map((edu, index) => (
               <Card
                 key={index}
-                className="bg-portfolio-slate border-portfolio-accent/20"
+                className="bg-portfolio-slate border-portfolio-accent/20 rounded-2xl"
               >
                 <CardContent className="p-8">
                   <div className="flex flex-col mb-4 md:flex-row md:justify-between md:items-start">
                     <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 overflow-hidden rounded-lg">
+                      <div className="flex-shrink-0 overflow-hidden rounded-xl">
                         <img
                           src={edu.image}
                           alt={`${edu.school} logo`}
-                          className="object-cover w-16 h-16 rounded-lg"
+                          className="object-cover w-16 h-16 rounded-xl"
                         />
                       </div>
                       <div>
@@ -373,15 +365,15 @@ function App() {
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {involvements.map((involvement, index) => (
               <div key={index} className="relative group">
-                <div className="absolute inset-0 transition-opacity duration-300 rounded-lg opacity-0 bg-gradient-to-r from-portfolio-blue to-purple-600 group-hover:opacity-20"></div>
-                <Card className="relative z-10 h-full transition-all duration-300 bg-portfolio-slate border-portfolio-accent/20 hover:border-portfolio-blue/50">
+                <div className="absolute inset-0 transition-opacity duration-300 rounded-2xl opacity-0 bg-gradient-to-r from-portfolio-blue to-purple-600 group-hover:opacity-20"></div>
+                <Card className="relative z-10 h-full transition-all duration-300 bg-portfolio-slate border-portfolio-accent/20 hover:border-portfolio-blue/50 rounded-2xl">
                   <CardContent className="flex flex-col h-full p-6">
                     <div className="mb-4">
-                      <div className="mb-4 overflow-hidden rounded-lg">
+                      <div className="mb-4 overflow-hidden rounded-xl">
                         <img
                           src={involvement.image}
                           alt={`${involvement.organization} logo`}
-                          className="object-cover w-12 h-12 rounded-lg"
+                          className="object-cover w-12 h-12 rounded-xl"
                         />
                       </div>
                       <h3 className="mb-2 text-xl font-semibold text-white">

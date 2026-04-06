@@ -23,6 +23,26 @@ module.exports = {
           light: "#cbd5e1",
           blue: "#3b82f6",
         },
+        v3: {
+          bg: "#FAFAF8",
+          surface: "#F3F3F0",
+          border: "#E0DFDB",
+          muted: "#9A998F",
+          text: "#3A3933",
+          dark: "#1A1916",
+          accent: "#2563EB",
+          "accent-dim": "#EFF3FF",
+          green: "#059669",
+        },
+        warm: {
+          bg: "#EEE9DF",
+          surface: "#F4F0E8",
+          border: "#C9C1B1",
+          muted: "#9E9485",
+          navy: "#2C3B4D",
+          dark: "#1B2632",
+          amber: "#FFB162",
+        },
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -61,6 +81,11 @@ module.exports = {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+      },
+      boxShadow: {
+        soft: "0 2px 8px rgba(0, 0, 0, 0.04)",
+        "soft-md": "0 4px 12px rgba(0, 0, 0, 0.06)",
+        "soft-lg": "0 8px 24px rgba(0, 0, 0, 0.08)",
       },
       borderRadius: {
         lg: "var(--radius)",

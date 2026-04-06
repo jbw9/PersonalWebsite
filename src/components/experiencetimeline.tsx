@@ -46,7 +46,7 @@ const ExperienceTimeline = ({ experiences }: ExperienceTimelineProps) => {
                 </div>
 
                 {/* Content card */}
-                <div className="p-6 transition-all duration-300 border rounded-lg bg-portfolio-slate border-portfolio-accent/20 hover:border-portfolio-blue/50">
+                <div className="p-6 transition-all duration-300 border rounded-2xl bg-portfolio-slate border-portfolio-accent/20 hover:border-portfolio-blue/50">
                   <div
                     className={`flex items-start gap-4 ${
                       index % 2 === 0 ? "flex-row-reverse" : "flex-row"
@@ -58,7 +58,7 @@ const ExperienceTimeline = ({ experiences }: ExperienceTimelineProps) => {
                         <img
                           src={exp.companyIcon}
                           alt={`${exp.company} logo`}
-                          className="object-contain w-12 h-12 rounded"
+                          className="object-contain w-12 h-12 rounded-xl"
                         />
                       </div>
                     )}
@@ -123,14 +123,14 @@ const ExperienceTimeline = ({ experiences }: ExperienceTimelineProps) => {
               </div>
 
               {/* Content card */}
-              <div className="relative p-6 transition-all duration-300 border rounded-lg bg-portfolio-slate border-portfolio-accent/20 hover:border-portfolio-blue/50">
+              <div className="relative p-6 transition-all duration-300 border rounded-2xl bg-portfolio-slate border-portfolio-accent/20 hover:border-portfolio-blue/50">
                 {/* Company icon in top right corner for mobile */}
                 {exp.companyIcon && (
                   <div className="absolute top-4 right-4">
                     <img
                       src={exp.companyIcon}
                       alt={`${exp.company} logo`}
-                      className="object-contain w-12 h-12 rounded"
+                      className="object-contain w-12 h-12 rounded-xl"
                     />
                   </div>
                 )}

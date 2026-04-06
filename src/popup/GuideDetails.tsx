@@ -173,7 +173,7 @@ const GuideDetail = () => {
         <img
           src={props.src}
           alt={props.alt}
-          className="h-auto max-w-full my-4 rounded-lg"
+          className="h-auto max-w-full my-4 rounded-2xl"
           {...props}
         />
       );
@@ -225,7 +225,7 @@ const GuideDetail = () => {
         </div>
 
         {/* Article Content */}
-        <Card className="bg-portfolio-slate border-portfolio-accent/20">
+        <Card className="bg-portfolio-slate border-portfolio-accent/20 rounded-2xl">
           <CardContent className="p-8">
             <div className="prose prose-invert max-w-none">
               <ReactMarkdown

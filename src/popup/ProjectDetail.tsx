@@ -239,13 +239,30 @@ const ProjectDetail = () => {
             <img
               src={project.image}
               alt={project.title}
-              className="object-cover w-full h-64 border rounded-lg md:h-96 border-portfolio-accent/20"
+              className="object-cover w-full h-64 border rounded-2xl md:h-96 border-portfolio-accent/20"
             />
           </div>
         )}
 
+        {/* Screenshots Gallery */}
+        {project.screenshots && project.screenshots.length > 0 && (
+          <div className="mb-12">
+            <h2 className="mb-4 text-2xl font-semibold text-white">Screenshots</h2>
+            <div className={`grid grid-cols-1 gap-4 ${project.screenshots.length > 1 ? "md:grid-cols-2" : ""}`}>
+              {project.screenshots.map((src, i) => (
+                <img
+                  key={src}
+                  src={src}
+                  alt={`${project.title} screenshot ${i + 1}`}
+                  className="w-full border rounded-2xl border-portfolio-accent/20"
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Technologies */}
-        <Card className="mb-8 bg-portfolio-slate border-portfolio-accent/20">
+        <Card className="mb-8 bg-portfolio-slate border-portfolio-accent/20 rounded-2xl">
           <CardContent className="p-6">
             <h2 className="mb-4 text-2xl font-semibold text-white">
               Technologies Used
@@ -265,7 +282,7 @@ const ProjectDetail = () => {
         </Card>
 
         {/* Description */}
-        <Card className="mb-8 bg-portfolio-slate border-portfolio-accent/20">
+        <Card className="mb-8 bg-portfolio-slate border-portfolio-accent/20 rounded-2xl">
           <CardContent className="p-6">
             <h2 className="mb-4 text-2xl font-semibold text-white">
               About This Project
@@ -276,7 +293,7 @@ const ProjectDetail = () => {
                 <video
                   src={project.videoUrl}
                   controls
-                  className="w-full rounded-lg border border-portfolio-accent/20"
+                  className="w-full rounded-2xl border border-portfolio-accent/20"
                   style={{ maxHeight: "480px" }}
                 >
                   Your browser does not support the video tag.
@@ -308,7 +325,7 @@ const ProjectDetail = () => {
 
         {/* How It Works Section - Only show if project has howItWorks content */}
         {project.howItWorks && (
-          <Card className="mb-8 bg-portfolio-slate border-portfolio-accent/20">
+          <Card className="mb-8 bg-portfolio-slate border-portfolio-accent/20 rounded-2xl">
             <CardContent className="p-6">
               <h2 className="mb-4 text-2xl font-semibold text-white">
                 How It Works
@@ -326,7 +343,7 @@ const ProjectDetail = () => {
         )}
 
         {/* Features */}
-        <Card className="bg-portfolio-slate border-portfolio-accent/20">
+        <Card className="bg-portfolio-slate border-portfolio-accent/20 rounded-2xl">
           <CardContent className="p-6">
             <h2 className="mb-4 text-2xl font-semibold text-white">
               Key Features
@@ -347,7 +364,7 @@ const ProjectDetail = () => {
 
         {/* Jupyter Notebook Embedding - Only show if notebookUrl exists */}
         {project.notebookUrl && (
-          <Card className="mt-8 bg-portfolio-slate border-portfolio-accent/20">
+          <Card className="mt-8 bg-portfolio-slate border-portfolio-accent/20 rounded-2xl">
             <CardContent className="p-6">
               <h2 className="mb-4 text-2xl font-semibold text-white">
                 Interactive Notebook
@@ -359,7 +376,7 @@ const ProjectDetail = () => {
 
               {/* Loading indicator */}
               {notebookLoading && (
-                <div className="flex items-center justify-center p-8 mb-4 bg-portfolio-dark rounded-lg">
+                <div className="flex items-center justify-center p-8 mb-4 bg-portfolio-dark rounded-2xl">
                   <div className="text-portfolio-light">
                     <div className="inline-block w-8 h-8 border-4 border-portfolio-blue border-t-transparent rounded-full animate-spin mr-3"></div>
                     Loading notebook...
@@ -368,7 +385,7 @@ const ProjectDetail = () => {
               )}
 
               {/* Notebook iframe */}
-              <div className="relative w-full overflow-hidden rounded-lg border border-portfolio-accent/20">
+              <div className="relative w-full overflow-hidden rounded-2xl border border-portfolio-accent/20">
                 <iframe
                   src={project.notebookUrl}
                   title={`${project.title} - Jupyter Notebook`}
@@ -383,7 +400,7 @@ const ProjectDetail = () => {
               </div>
 
               {/* Helpful tips */}
-              <div className="mt-4 p-4 bg-portfolio-dark rounded-lg">
+              <div className="mt-4 p-4 bg-portfolio-dark rounded-2xl">
                 <p className="text-sm text-portfolio-accent">
                   💡 <strong>Tip:</strong> You can scroll through the notebook above to see the code,
                   visualizations, and detailed explanations.

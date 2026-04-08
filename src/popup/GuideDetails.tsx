@@ -66,14 +66,14 @@ const markdownComponents = {
   ),
   li: (props: any) => <li className="text-warm-muted">{props.children}</li>,
   blockquote: (props: any) => (
-    <blockquote className="pl-4 my-4 italic border-l-4 border-[#2563EB] text-warm-muted bg-warm-surface rounded-r-xl py-2">
+    <blockquote className="pl-4 my-4 italic border-l-4 border-[#6B93C4] text-warm-muted bg-warm-surface rounded-r-xl py-2">
       {props.children}
     </blockquote>
   ),
   a: (props: any) => (
     <a
       href={props.href}
-      className="underline underline-offset-2 text-[#2563EB] hover:text-[#1D4ED8] transition-colors"
+      className="underline underline-offset-2 text-[#6B93C4] hover:text-[#4D7AAF] transition-colors"
       target="_blank"
       rel="noopener noreferrer"
     >

@@ -6,8 +6,6 @@ import ExperienceTimeline from "./components/experiencetimeline";
 import { experiences, involvements, education } from "./data";
 import { projects } from "./data/projects";
 import { guides } from "./data/guides";
-import { getTechBadgeColor } from "./lib/utils";
-
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
@@ -18,11 +16,7 @@ const stagger = {
   visible: { transition: { staggerChildren: 0.1 } },
 };
 
-// Fallback palette for non-tech labels (guide categories, course names)
-const labelColors = [
-  "bg-[#EEF2FF] text-[#3730A3]",
-  "bg-[#F1F5F9] text-[#475569]",
-];
+const BADGE = "text-xs px-2.5 py-0.5 rounded-full font-medium bg-white border border-[#DDD8CF] text-[#3A3933]";
 
 function App() {
   const navigate = useNavigate();
@@ -98,10 +92,7 @@ function App() {
             : "bg-transparent"
         }`}
       >
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-          <span className="font-display text-lg font-bold text-warm-navy">
-            jonathan.
-          </span>
+        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-end">
           <div className="hidden md:flex items-center gap-7">
             {(
               [
@@ -334,7 +325,7 @@ function App() {
                           <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
                         </span>
                       )}
-                      <h3 className="font-semibold text-warm-navy group-hover:text-[#2563EB] transition-colors leading-snug">
+                      <h3 className="font-semibold text-warm-navy group-hover:text-[#6B93C4] transition-colors leading-snug">
                         {project.title}
                       </h3>
                     </div>
@@ -345,15 +336,12 @@ function App() {
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {project.technologies.slice(0, 4).map((tech) => (
-                      <span
-                        key={tech}
-                        className={`text-xs px-2 py-0.5 rounded-full font-medium ${getTechBadgeColor(tech)}`}
-                      >
+                      <span key={tech} className={BADGE}>
                         {tech}
                       </span>
                     ))}
                     {project.technologies.length > 4 && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-warm-surface text-warm-muted border border-warm-border">
+                      <span className={BADGE}>
                         +{project.technologies.length - 4}
                       </span>
                     )}
@@ -414,13 +402,8 @@ function App() {
                     </div>
                     {edu.relevantCourses && edu.relevantCourses.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mt-3">
-                        {edu.relevantCourses.map((course, i) => (
-                          <span
-                            key={course}
-                            className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                              labelColors[i % labelColors.length]
-                            }`}
-                          >
+                        {edu.relevantCourses.map((course) => (
+                          <span key={course} className={BADGE}>
                             {course}
                           </span>
                         ))}
@@ -470,13 +453,10 @@ function App() {
                   <h3 className="font-semibold text-warm-navy mb-0.5">
                     {involvement.role}
                   </h3>
-                  <p className="text-sm font-medium text-[#2563EB] mb-1">
+                  <p className="text-sm font-medium text-[#6B93C4] mb-1">
                     {involvement.organization}
                   </p>
-                  <p
-                    className="text-xs text-warm-muted mb-3"
-                    style={{ fontFamily: "Caveat, cursive", fontSize: "13px" }}
-                  >
+                  <p className="text-xs text-warm-muted mb-3">
                     {involvement.period}
                   </p>
                   <p className="text-sm text-warm-muted leading-relaxed">
@@ -517,16 +497,12 @@ function App() {
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1.5">
-                      <span
-                        className={`text-xs px-2 py-0.5 rounded-full font-medium ${getTechBadgeColor(guide.category)}`}
-                      >
-                        {guide.category}
-                      </span>
+                      <span className={BADGE}>{guide.category}</span>
                       <span className="text-xs text-warm-muted">
                         {guide.publishDate}
                       </span>
                     </div>
-                    <h3 className="font-semibold text-warm-navy group-hover:text-[#2563EB] transition-colors mb-1">
+                    <h3 className="font-semibold text-warm-navy group-hover:text-[#6B93C4] transition-colors mb-1">
                       {guide.title}
                     </h3>
                     <p className="text-sm text-warm-muted line-clamp-1">
@@ -544,11 +520,8 @@ function App() {
       {/* ── Footer ─────────────────────────────────────────────────── */}
       <footer className="px-6 py-10 border-t border-warm-border">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <p
-            className="text-warm-muted text-xl"
-            style={{ fontFamily: "Caveat, cursive" }}
-          >
-            Built by Jonathan ✦ 2026
+          <p className="text-warm-muted text-sm font-sans">
+            Built by Jonathan 2026
           </p>
           <div className="flex items-center gap-5">
             <button

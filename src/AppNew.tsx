@@ -1,16 +1,30 @@
-import { useEffect, useRef, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Badge } from "./components/badge";
-import { Mail, Github, Linkedin, ExternalLink } from "lucide-react";
+import { Mail, Github, Linkedin, ArrowUpRight } from "lucide-react";
 import { experiences, involvements, education } from "./data";
 import { projects } from "./data/projects";
 import { guides } from "./data/guides";
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" } },
+};
+
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08 } },
+};
+
+// Single neutral badge style — reduces visual noise across all sections
+const BADGE =
+  "text-xs px-2.5 py-0.5 rounded-full font-medium bg-white border border-[#DDD8CF] text-[#3A3933]";
+
 function AppNew() {
-  const sectionsRef = useRef<(HTMLElement | null)[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
   const [isScrollRestored, setIsScrollRestored] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useLayoutEffect(() => {
     if (location.pathname === "/new-design") {
@@ -33,105 +47,111 @@ function AppNew() {
   }, [location.pathname]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.remove("opacity-0");
-            entry.target.classList.add("opacity-100", "animate-fade-in");
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -100px 0px" }
-    );
-
-    sectionsRef.current.forEach((section) => {
-      if (section) observer.observe(section);
-    });
-
-    return () => observer.disconnect();
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const addToRefs = (el: HTMLElement | null) => {
-    if (el && !sectionsRef.current.includes(el)) {
-      sectionsRef.current.push(el);
-    }
+  const scrollToSection = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleProjectClick = (project: any) => {
-    const scrollData = {
-      position: window.scrollY,
-      pageHeight: document.documentElement.scrollHeight,
-      timestamp: Date.now(),
-    };
-    sessionStorage.setItem("portfolioScrollData", JSON.stringify(scrollData));
+    sessionStorage.setItem(
+      "portfolioScrollData",
+      JSON.stringify({
+        position: window.scrollY,
+        pageHeight: document.documentElement.scrollHeight,
+        timestamp: Date.now(),
+      })
+    );
     navigate(`/new-design/project/${project.id}`);
   };
 
   const handleGuideClick = (guide: any) => {
-    const scrollData = {
-      position: window.scrollY,
-      pageHeight: document.documentElement.scrollHeight,
-      timestamp: Date.now(),
-    };
-    sessionStorage.setItem("portfolioScrollData", JSON.stringify(scrollData));
+    sessionStorage.setItem(
+      "portfolioScrollData",
+      JSON.stringify({
+        position: window.scrollY,
+        pageHeight: document.documentElement.scrollHeight,
+        timestamp: Date.now(),
+      })
+    );
     navigate(`/new-design/guide/${guide.id}`);
   };
 
   return (
     <div
-      className="min-h-screen bg-warm-bg text-warm-dark"
-      style={{
-        opacity: isScrollRestored ? 1 : 0,
-        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-      }}
+      className="min-h-screen font-sans"
+      style={{ opacity: isScrollRestored ? 1 : 0, transition: "opacity 0.2s" }}
     >
-      {/* Hero Section */}
-      <section className="px-6 pt-32 pb-20">
-        <div className="max-w-6xl mx-auto">
-          <div className="animate-slide-in-left">
-            <h1 className="mb-6 text-5xl font-bold text-warm-dark md:text-7xl">
-              Hello, I'm{" "}
-              <span
-                className="relative inline-block"
-                style={{ color: "#2C3B4D" }}
+      {/* ── Sticky Nav ──────────────────────────────────────────────── */}
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled
+            ? "bg-warm-bg/90 backdrop-blur-md border-b border-warm-border shadow-soft"
+            : "bg-transparent"
+        }`}
+      >
+        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+          <span className="font-display text-lg font-bold text-warm-dark">
+            jonathan.
+          </span>
+          <div className="hidden md:flex items-center gap-7">
+            {(
+              [
+                ["Experience", "experience"],
+                ["Projects", "projects"],
+                ["Education", "education"],
+                ["Involvement", "involvement"],
+              ] as const
+            ).map(([label, id]) => (
+              <button
+                key={id}
+                onClick={() => scrollToSection(id)}
+                className="text-sm text-warm-muted hover:text-warm-dark transition-colors"
               >
-                Jonathan
-                <span
-                  className="absolute bottom-1 left-0 w-full h-3 -z-10 rounded"
-                  style={{ backgroundColor: "#FFB162", opacity: 0.4 }}
-                />
-              </span>
-            </h1>
-            <h2 className="mb-8 text-2xl md:text-3xl text-warm-muted">
-              CS & Econs @UIUC
-            </h2>
-            <p className="max-w-2xl mb-12 text-lg leading-relaxed text-warm-navy/80">
-              I love to build useful software projects that solves everyday
-              problems! I dream one day to create an open source software that
-              helps millions of people :)
-            </p>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </nav>
 
-            {/* Contact Buttons */}
-            <div className="flex flex-wrap gap-3">
+      {/* ── Hero (bg: warm-bg) ──────────────────────────────────────── */}
+      <section className="bg-warm-bg min-h-screen flex items-center px-6 pt-24 pb-20">
+        <div className="max-w-5xl mx-auto w-full">
+          <motion.div variants={stagger} initial="hidden" animate="visible">
+            <motion.p
+              variants={fadeUp}
+              className="text-warm-muted text-base mb-3 tracking-wide"
+            >
+              Hey there 👋
+            </motion.p>
+            <motion.h1
+              variants={fadeUp}
+              className="font-display text-6xl md:text-8xl font-bold text-warm-dark leading-tight mb-6"
+            >
+              I'm Jonathan.
+            </motion.h1>
+            <motion.p
+              variants={fadeUp}
+              className="text-xl md:text-2xl text-warm-muted max-w-lg leading-relaxed mb-10"
+            >
+              CS & Econs student @UIUC — building software that solves real
+              problems.
+            </motion.p>
+            <motion.div variants={fadeUp} className="flex flex-wrap gap-3">
               <button
                 onClick={() => window.open("mailto:jbw7@illinois.edu")}
-                title="Email"
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium text-white transition-all duration-200 shadow-soft hover:shadow-soft-md hover:opacity-90"
-                style={{ backgroundColor: "#2C3B4D" }}
+                className="flex items-center gap-2 px-5 py-2.5 bg-warm-dark text-warm-bg rounded-full text-sm font-medium hover:bg-warm-dark/80 transition-all"
               >
                 <Mail className="w-4 h-4" />
-                Email
+                Email me
               </button>
               <button
                 onClick={() => window.open("https://github.com/jbw9")}
-                title="GitHub"
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium transition-all duration-200 border shadow-soft hover:shadow-soft-md"
-                style={{
-                  backgroundColor: "#F4F0E8",
-                  borderColor: "#C9C1B1",
-                  color: "#1B2632",
-                }}
+                className="flex items-center gap-2 px-5 py-2.5 border border-warm-border text-warm-dark rounded-full text-sm font-medium hover:bg-warm-surface transition-all"
               >
                 <Github className="w-4 h-4" />
                 GitHub
@@ -140,496 +160,383 @@ function AppNew() {
                 onClick={() =>
                   window.open("https://www.linkedin.com/in/jwidjajakusuma/")
                 }
-                title="LinkedIn"
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium transition-all duration-200 border shadow-soft hover:shadow-soft-md"
-                style={{
-                  backgroundColor: "#F4F0E8",
-                  borderColor: "#C9C1B1",
-                  color: "#1B2632",
-                }}
+                className="flex items-center gap-2 px-5 py-2.5 border border-warm-border text-warm-dark rounded-full text-sm font-medium hover:bg-warm-surface transition-all"
               >
                 <Linkedin className="w-4 h-4" />
                 LinkedIn
               </button>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Experience Section */}
-      <section
-        id="experience"
-        ref={addToRefs}
-        className="px-6 py-20 transition-opacity duration-1000 opacity-0"
-      >
-        <div className="max-w-6xl mx-auto">
-          <h2 className="mb-12 text-3xl font-bold text-center text-warm-dark">
-            Experience
-          </h2>
+      {/* ── Experience (bg: warm-surface) ───────────────────────────── */}
+      <section id="experience" className="bg-warm-surface px-6 py-24">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={stagger}
+          >
+            <motion.h2
+              variants={fadeUp}
+              className="font-display text-3xl font-bold text-warm-dark mb-12"
+            >
+              Experience
+            </motion.h2>
 
-          {/* Timeline */}
-          <div className="relative">
-            <div
-              className="absolute left-1/2 transform -translate-x-1/2 w-0.5 h-full"
-              style={{
-                background:
-                  "linear-gradient(to bottom, #C9C1B1, #C9C1B1, transparent)",
-              }}
-            />
+            {/* Single-column left-aligned timeline */}
+            <div className="relative">
+              <div className="absolute left-5 top-0 bottom-0 w-px bg-gradient-to-b from-warm-border via-warm-border to-transparent" />
 
-            <div className="space-y-12">
-              {experiences.map((exp, index) => (
-                <div key={index} className="relative">
-                  <div
-                    className="absolute z-10 w-4 h-4 transform -translate-x-1/2 border-4 rounded-full left-1/2"
-                    style={{
-                      backgroundColor: "#2C3B4D",
-                      borderColor: "#EEE9DF",
-                    }}
-                  />
-
-                  {/* Desktop layout */}
-                  <div
-                    className={`hidden md:flex items-center ${
-                      index % 2 === 0 ? "flex-row" : "flex-row-reverse"
-                    }`}
+              <div className="space-y-8">
+                {experiences.map((exp, index) => (
+                  <motion.div
+                    key={index}
+                    variants={fadeUp}
+                    className="relative pl-14"
                   >
-                    <div
-                      className={`w-5/12 ${
-                        index % 2 === 0 ? "pr-8 text-right" : "pl-8 text-left"
-                      }`}
-                    >
-                      <div className="inline-block mb-4">
-                        <span
-                          className="px-4 py-2 text-sm font-medium text-white rounded-full"
-                          style={{ backgroundColor: "#2C3B4D" }}
-                        >
-                          {exp.period}
-                        </span>
-                      </div>
+                    {/* Timeline dot */}
+                    <div className="absolute left-5 top-6 w-3 h-3 rounded-full bg-warm-dark border-2 border-warm-surface -translate-x-1/2 z-10" />
 
-                      <div
-                        className="p-6 rounded-2xl border shadow-soft-md transition-all duration-300 hover:shadow-soft-lg"
-                        style={{
-                          backgroundColor: "#F4F0E8",
-                          borderColor: "#C9C1B1",
-                        }}
-                      >
-                        <div
-                          className={`flex items-start gap-4 ${
-                            index % 2 === 0 ? "flex-row-reverse" : "flex-row"
-                          }`}
-                        >
-                          {exp.companyIcon && (
-                            <div className="flex-shrink-0">
-                              <img
-                                src={exp.companyIcon}
-                                alt={`${exp.company} logo`}
-                                className="object-contain w-12 h-12 rounded-xl"
-                              />
-                            </div>
-                          )}
-                          <div className="flex-1">
-                            <h3 className="mb-1 text-lg font-semibold text-warm-dark">
-                              {exp.title}
-                            </h3>
-                            <p
-                              className="mb-3 font-medium text-sm"
-                              style={{ color: "#2C3B4D" }}
-                            >
-                              {exp.company}
-                            </p>
-                            <p className="mb-4 text-sm leading-relaxed text-warm-muted">
-                              {exp.description}
-                              {exp.website && (
-                                <>
-                                  {" "}
-                                  <a
-                                    href={exp.website}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="underline hover:opacity-70"
-                                    style={{ color: "#2C3B4D" }}
-                                  >
-                                    Check out our website
-                                  </a>
-                                </>
-                              )}
-                            </p>
-                            <div
-                              className={`flex flex-wrap gap-2 ${
-                                index % 2 === 0
-                                  ? "justify-end"
-                                  : "justify-start"
-                              }`}
-                            >
-                              {exp.technologies.map((tech) => (
-                                <span
-                                  key={tech}
-                                  className="px-2.5 py-1 text-xs rounded-lg border font-medium"
-                                  style={{
-                                    backgroundColor: "#EEE9DF",
-                                    borderColor: "#C9C1B1",
-                                    color: "#1B2632",
-                                  }}
+                    {/* Period */}
+                    <div className="mb-3">
+                      <span className="inline-block text-xs font-medium px-3 py-1 rounded-full bg-warm-dark text-warm-bg">
+                        {exp.period}
+                      </span>
+                    </div>
+
+                    {/* White card */}
+                    <div className="bg-white border border-[#DDD8CF] rounded-2xl p-5 shadow-soft hover:shadow-soft-md transition-shadow">
+                      <div className="flex items-start gap-4">
+                        {exp.companyIcon && (
+                          <img
+                            src={exp.companyIcon}
+                            alt={`${exp.company} logo`}
+                            className="w-10 h-10 rounded-xl object-contain flex-shrink-0"
+                          />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-warm-dark mb-0.5">
+                            {exp.title}
+                          </h3>
+                          <p className="text-sm font-medium text-warm-navy mb-3">
+                            {exp.company}
+                            {exp.website && (
+                              <>
+                                {" · "}
+                                <a
+                                  href={exp.website}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="underline underline-offset-2 hover:opacity-70 transition-opacity"
                                 >
+                                  Visit website
+                                </a>
+                              </>
+                            )}
+                          </p>
+                          <p className="text-sm text-warm-muted leading-relaxed mb-4">
+                            {exp.description}
+                          </p>
+                          {exp.technologies.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5">
+                              {exp.technologies.map((tech) => (
+                                <span key={tech} className={BADGE}>
                                   {tech}
                                 </span>
                               ))}
                             </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="w-5/12" />
-                  </div>
-
-                  {/* Mobile layout */}
-                  <div className="pl-8 md:hidden">
-                    <div className="mb-4">
-                      <span
-                        className="px-4 py-2 text-sm font-medium text-white rounded-full"
-                        style={{ backgroundColor: "#2C3B4D" }}
-                      >
-                        {exp.period}
-                      </span>
-                    </div>
-                    <div
-                      className="relative p-6 rounded-2xl border shadow-soft-md"
-                      style={{
-                        backgroundColor: "#F4F0E8",
-                        borderColor: "#C9C1B1",
-                      }}
-                    >
-                      {exp.companyIcon && (
-                        <div className="absolute top-4 right-4">
-                          <img
-                            src={exp.companyIcon}
-                            alt={`${exp.company} logo`}
-                            className="object-contain w-12 h-12 rounded-xl"
-                          />
-                        </div>
-                      )}
-                      <div className={`${exp.companyIcon ? "mr-16" : ""}`}>
-                        <h3 className="mb-1 text-lg font-semibold text-warm-dark">
-                          {exp.title}
-                        </h3>
-                        <p
-                          className="mb-3 font-medium text-sm"
-                          style={{ color: "#2C3B4D" }}
-                        >
-                          {exp.company}
-                        </p>
-                        <p className="mb-4 text-sm leading-relaxed text-warm-muted">
-                          {exp.description}
-                          {exp.website && (
-                            <>
-                              {" "}
-                              <a
-                                href={exp.website}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="underline hover:opacity-70"
-                                style={{ color: "#2C3B4D" }}
-                              >
-                                Check out our website
-                              </a>
-                            </>
                           )}
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {exp.technologies.map((tech) => (
-                            <span
-                              key={tech}
-                              className="px-2.5 py-1 text-xs rounded-lg border font-medium"
-                              style={{
-                                backgroundColor: "#EEE9DF",
-                                borderColor: "#C9C1B1",
-                                color: "#1B2632",
-                              }}
-                            >
-                              {tech}
-                            </span>
-                          ))}
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  </motion.div>
+                ))}
+              </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Projects Section */}
-      <section
-        id="projects"
-        ref={addToRefs}
-        className="px-6 py-20 transition-opacity duration-1000 opacity-0"
-      >
-        <div className="max-w-6xl mx-auto">
-          <h2 className="mb-12 text-3xl font-bold text-warm-dark">Projects</h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {projects.map((project, index) => (
-              <div
-                key={index}
-                className="flex flex-col h-full rounded-2xl border cursor-pointer transition-all duration-300 shadow-soft hover:shadow-soft-lg group"
-                style={{ backgroundColor: "#F4F0E8", borderColor: "#C9C1B1" }}
-                onClick={() => handleProjectClick(project)}
-              >
-                <div className="flex flex-col h-full p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <h3
-                      className="text-lg font-semibold text-warm-dark transition-colors group-hover:text-warm-navy"
-                      style={{ color: "#1B2632" }}
-                    >
-                      {project.title}
-                    </h3>
-                    <div className="flex space-x-1 ml-2 flex-shrink-0">
+      {/* ── Projects (bg: warm-bg) ───────────────────────────────────── */}
+      <section id="projects" className="bg-warm-bg px-6 py-24">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={stagger}
+          >
+            <motion.h2
+              variants={fadeUp}
+              className="font-display text-3xl font-bold text-warm-dark mb-10"
+            >
+              Projects
+            </motion.h2>
+
+            <motion.div
+              variants={stagger}
+              className="grid gap-5 md:grid-cols-2"
+            >
+              {projects.map((project, index) => (
+                <motion.div
+                  key={index}
+                  variants={fadeUp}
+                  whileHover={{ y: -4, scale: 1.01 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                  onClick={() => handleProjectClick(project)}
+                  className="bg-white border border-[#DDD8CF] rounded-2xl p-5 cursor-pointer group hover:shadow-soft-md transition-shadow flex flex-col"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      {project.id === "visulearn" && (
+                        <span className="relative flex h-2 w-2 flex-shrink-0 mt-1">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                        </span>
+                      )}
+                      <h3 className="font-semibold text-warm-dark group-hover:text-warm-navy transition-colors leading-snug">
+                        {project.title}
+                      </h3>
+                    </div>
+                    <div className="flex items-center gap-1 ml-2 flex-shrink-0">
                       {project.github && (
                         <button
-                          className="w-8 h-8 p-1.5 rounded-lg text-warm-muted hover:text-warm-navy transition-colors"
+                          className="w-7 h-7 p-1.5 rounded-lg text-warm-muted hover:text-warm-dark transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();
                             window.open(project.github);
                           }}
                         >
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                          <Github className="w-4 h-4" />
                         </button>
                       )}
-                      <button
-                        className="w-8 h-8 p-1.5 rounded-lg text-warm-muted hover:text-warm-navy transition-colors"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          window.open(project.demo);
-                        }}
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                      </button>
+                      <ArrowUpRight className="w-4 h-4 text-warm-muted group-hover:text-warm-dark transition-colors mt-0.5" />
                     </div>
                   </div>
-                  <p className="flex-grow mb-4 text-sm leading-relaxed text-warm-muted">
+                  <p className="text-sm text-warm-muted leading-relaxed mb-4 flex-grow line-clamp-3">
                     {project.description}
                   </p>
-                  <div className="mt-auto">
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {project.technologies.map((tech) => (
-                        <span
-                          key={tech}
-                          className="px-2.5 py-1 text-xs rounded-lg border font-medium"
-                          style={{
-                            backgroundColor: "#EEE9DF",
-                            borderColor: "#C9C1B1",
-                            color: "#1B2632",
-                          }}
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                    <p
-                      className="text-sm font-medium"
-                      style={{ color: "#2C3B4D" }}
-                    >
-                      View details →
-                    </p>
+                  <div className="flex flex-wrap gap-1.5 mt-auto">
+                    {project.technologies.slice(0, 5).map((tech) => (
+                      <span key={tech} className={BADGE}>
+                        {tech}
+                      </span>
+                    ))}
+                    {project.technologies.length > 5 && (
+                      <span className={BADGE}>
+                        +{project.technologies.length - 5}
+                      </span>
+                    )}
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Guides Section */}
-      <section
-        id="guides"
-        ref={addToRefs}
-        className="px-6 py-20 transition-opacity duration-1000 opacity-0"
-      >
-        <div className="max-w-6xl mx-auto">
-          <h2 className="mb-12 text-3xl font-bold text-warm-dark">
-            Development Guides
-          </h2>
-          <div className="space-y-4">
-            {guides.map((guide, index) => (
-              <div
-                key={index}
-                className="cursor-pointer group"
-                onClick={() => handleGuideClick(guide)}
-              >
-                <div
-                  className="p-6 rounded-2xl border shadow-soft transition-all duration-300 hover:shadow-soft-md"
-                  style={{
-                    backgroundColor: "#F4F0E8",
-                    borderColor: "#C9C1B1",
-                  }}
+      {/* ── Education (bg: warm-surface) ────────────────────────────── */}
+      <section id="education" className="bg-warm-surface px-6 py-24">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={stagger}
+          >
+            <motion.h2
+              variants={fadeUp}
+              className="font-display text-3xl font-bold text-warm-dark mb-10"
+            >
+              Education
+            </motion.h2>
+
+            <motion.div variants={stagger} className="space-y-4">
+              {education.map((edu, index) => (
+                <motion.div
+                  key={index}
+                  variants={fadeUp}
+                  className="bg-white border border-[#DDD8CF] rounded-2xl p-6 shadow-soft flex items-start gap-4"
                 >
-                  <div className="flex flex-wrap items-center gap-2 mb-3">
-                    <span
-                      className="px-3 py-1 text-xs font-semibold rounded-full text-white"
-                      style={{ backgroundColor: "#2C3B4D" }}
-                    >
-                      {guide.category}
-                    </span>
-                    <span className="text-sm text-warm-muted">
-                      {guide.publishDate}
-                    </span>
-                  </div>
-                  <h3 className="mb-2 text-lg font-semibold text-warm-dark transition-colors group-hover:text-warm-navy">
-                    {guide.title}
-                  </h3>
-                  <p className="mb-3 text-sm leading-relaxed text-warm-muted">
-                    {guide.description}
-                  </p>
-                  <p className="text-sm font-medium" style={{ color: "#2C3B4D" }}>
-                    Read article →
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Education Section */}
-      <section
-        id="education"
-        ref={addToRefs}
-        className="px-6 py-20 transition-opacity duration-1000 opacity-0"
-      >
-        <div className="max-w-6xl mx-auto">
-          <h2 className="mb-12 text-3xl font-bold text-warm-dark">Education</h2>
-          <div className="space-y-6">
-            {education.map((edu, index) => (
-              <div
-                key={index}
-                className="rounded-2xl border shadow-soft-md"
-                style={{ backgroundColor: "#F4F0E8", borderColor: "#C9C1B1" }}
-              >
-                <div className="p-8">
-                  <div className="flex flex-col mb-6 md:flex-row md:justify-between md:items-start">
-                    <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 overflow-hidden rounded-xl shadow-soft">
-                        <img
-                          src={edu.image}
-                          alt={`${edu.school} logo`}
-                          className="object-cover w-16 h-16 rounded-xl"
-                        />
-                      </div>
+                  <img
+                    src={edu.image}
+                    alt={edu.school}
+                    className="w-12 h-12 rounded-xl object-contain flex-shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-1 mb-2">
                       <div>
-                        <h3 className="mb-1 text-xl font-semibold text-warm-dark">
+                        <h3 className="font-semibold text-warm-dark">
                           {edu.degree}
                         </h3>
-                        <p className="font-medium" style={{ color: "#2C3B4D" }}>
+                        <p className="text-sm font-medium text-warm-navy">
                           {edu.school}
                         </p>
                       </div>
-                    </div>
-                    <div className="mt-3 text-right md:mt-0">
-                      <span className="block text-sm text-warm-muted">
-                        {edu.period}
-                      </span>
-                      {edu.gpa && (
-                        <span
-                          className="text-sm font-semibold"
-                          style={{ color: "#FFB162" }}
-                        >
-                          GPA: {edu.gpa}
+                      <div className="md:text-right flex-shrink-0">
+                        <span className="text-sm text-warm-muted">
+                          {edu.period}
                         </span>
-                      )}
+                        {edu.gpa && (
+                          <p className="text-sm font-semibold text-warm-dark">
+                            GPA: {edu.gpa}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  {edu.description && (
-                    <p className="mb-4 text-sm leading-relaxed text-warm-muted">
-                      {edu.description}
-                    </p>
-                  )}
-                  {edu.relevantCourses && edu.relevantCourses.length > 0 && (
-                    <div>
-                      <h4 className="mb-3 text-sm font-semibold text-warm-dark">
-                        Relevant Coursework
-                      </h4>
-                      <div className="flex flex-wrap gap-2">
+                    {edu.description && (
+                      <p className="text-sm text-warm-muted leading-relaxed mb-3">
+                        {edu.description}
+                      </p>
+                    )}
+                    {edu.relevantCourses && edu.relevantCourses.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mt-3">
                         {edu.relevantCourses.map((course) => (
-                          <span
-                            key={course}
-                            className="px-2.5 py-1 text-xs rounded-lg border font-medium"
-                            style={{
-                              backgroundColor: "#EEE9DF",
-                              borderColor: "#C9C1B1",
-                              color: "#1B2632",
-                            }}
-                          >
+                          <span key={course} className={BADGE}>
                             {course}
                           </span>
                         ))}
                       </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
-      {/* University Involvement Section */}
-      <section
-        id="involvement"
-        ref={addToRefs}
-        className="px-6 py-20 transition-opacity duration-1000 opacity-0"
-      >
-        <div className="max-w-6xl mx-auto">
-          <h2 className="mb-12 text-3xl font-bold text-center text-warm-dark">
-            University Involvements
-          </h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {involvements.map((involvement, index) => (
-              <div
-                key={index}
-                className="flex flex-col h-full rounded-2xl border shadow-soft transition-all duration-300 hover:shadow-soft-lg"
-                style={{ backgroundColor: "#F4F0E8", borderColor: "#C9C1B1" }}
-              >
-                <div className="flex flex-col h-full p-6">
-                  <div className="mb-4">
-                    <div className="mb-4">
-                      <img
-                        src={involvement.image}
-                        alt={`${involvement.organization} logo`}
-                        className="object-cover w-12 h-12 rounded-xl shadow-soft"
-                      />
-                    </div>
-                    <h3 className="mb-1 text-lg font-semibold text-warm-dark">
-                      {involvement.role}
-                    </h3>
-                    <p className="font-medium text-sm" style={{ color: "#2C3B4D" }}>
-                      {involvement.organization}
-                    </p>
-                    <span className="text-xs text-warm-muted">
-                      {involvement.period}
-                    </span>
-                  </div>
-                  <p className="flex-grow text-sm leading-relaxed text-warm-muted">
+      {/* ── Involvement (bg: warm-bg) ────────────────────────────────── */}
+      <section id="involvement" className="bg-warm-bg px-6 py-24">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={stagger}
+          >
+            <motion.h2
+              variants={fadeUp}
+              className="font-display text-3xl font-bold text-warm-dark mb-10"
+            >
+              Involvements
+            </motion.h2>
+
+            <motion.div
+              variants={stagger}
+              className="grid gap-5 md:grid-cols-2 lg:grid-cols-3"
+            >
+              {involvements.map((involvement, index) => (
+                <motion.div
+                  key={index}
+                  variants={fadeUp}
+                  whileHover={{ y: -4 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                  className="bg-white border border-[#DDD8CF] rounded-2xl p-5 shadow-soft hover:shadow-soft-md transition-shadow flex flex-col"
+                >
+                  <img
+                    src={involvement.image}
+                    alt={involvement.organization}
+                    className="w-10 h-10 rounded-xl object-contain mb-4"
+                  />
+                  <h3 className="font-semibold text-warm-dark mb-0.5">
+                    {involvement.role}
+                  </h3>
+                  <p className="text-sm font-medium text-warm-navy mb-1">
+                    {involvement.organization}
+                  </p>
+                  <p className="text-xs text-warm-muted mb-3">
+                    {involvement.period}
+                  </p>
+                  <p className="text-sm text-warm-muted leading-relaxed flex-grow">
                     {involvement.description}
                   </p>
-                </div>
-              </div>
-            ))}
-          </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer
-        className="px-6 py-12 border-t"
-        style={{ borderColor: "#C9C1B1" }}
-      >
-        <div className="max-w-6xl mx-auto text-center">
+      {/* ── Dev Guides (bg: warm-surface) ───────────────────────────── */}
+      <section id="guides" className="bg-warm-surface px-6 py-24">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={stagger}
+          >
+            <motion.h2
+              variants={fadeUp}
+              className="font-display text-3xl font-bold text-warm-dark mb-10"
+            >
+              Dev Guides
+            </motion.h2>
+
+            <motion.div variants={stagger} className="space-y-3">
+              {guides.map((guide, index) => (
+                <motion.div
+                  key={index}
+                  variants={fadeUp}
+                  whileHover={{ x: 4 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                  onClick={() => handleGuideClick(guide)}
+                  className="flex items-center justify-between p-5 bg-white border border-[#DDD8CF] rounded-2xl cursor-pointer group hover:shadow-soft transition-shadow"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className={BADGE}>{guide.category}</span>
+                      <span className="text-xs text-warm-muted">
+                        {guide.publishDate}
+                      </span>
+                    </div>
+                    <h3 className="font-semibold text-warm-dark group-hover:text-warm-navy transition-colors mb-1">
+                      {guide.title}
+                    </h3>
+                    <p className="text-sm text-warm-muted line-clamp-1">
+                      {guide.description}
+                    </p>
+                  </div>
+                  <ArrowUpRight className="w-5 h-5 text-warm-muted group-hover:text-warm-dark flex-shrink-0 ml-4 transition-colors" />
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── Footer ──────────────────────────────────────────────────── */}
+      <footer className="bg-warm-bg border-t border-warm-border px-6 py-10">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-warm-muted text-sm">
             Built from scratch © 2026 Jonathan Bernard Widjajakusuma
           </p>
+          <div className="flex items-center gap-5">
+            <button
+              onClick={() => window.open("https://github.com/jbw9")}
+              className="text-warm-muted hover:text-warm-dark transition-colors"
+            >
+              <Github className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() =>
+                window.open("https://www.linkedin.com/in/jwidjajakusuma/")
+              }
+              className="text-warm-muted hover:text-warm-dark transition-colors"
+            >
+              <Linkedin className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => window.open("mailto:jbw7@illinois.edu")}
+              className="text-warm-muted hover:text-warm-dark transition-colors"
+            >
+              <Mail className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </footer>
     </div>

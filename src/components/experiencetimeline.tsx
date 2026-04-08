@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { getTechBadgeColor } from "../lib/utils";
+
+const BADGE = "text-xs px-2.5 py-0.5 rounded-full font-medium bg-white border border-[#DDD8CF] text-[#3A3933]";
 
 interface Experience {
   title: string;
@@ -44,7 +45,7 @@ const ExperienceTimeline = ({ experiences }: ExperienceTimelineProps) => {
             >
               {/* Card */}
               <div className={`w-5/12 ${index % 2 === 0 ? "text-left" : "text-right"}`}>
-                <span className="inline-block mb-3 text-xs font-medium px-3 py-1 rounded-full bg-[#EEF2FF] border border-[#C7D2FE] text-[#3730A3] tracking-wide">
+                <span className={`inline-block mb-3 ${BADGE} px-3 py-1`}>
                   {exp.period}
                 </span>
                 <div className="bg-warm-surface border border-warm-border rounded-2xl p-5 hover:shadow-soft-md transition-shadow">
@@ -58,7 +59,7 @@ const ExperienceTimeline = ({ experiences }: ExperienceTimelineProps) => {
                     )}
                     <div className="flex-1">
                       <h3 className="font-semibold text-warm-navy mb-0.5">{exp.title}</h3>
-                      <p className="text-sm font-medium text-[#2563EB] mb-2">{exp.company}</p>
+                      <p className="text-sm font-medium text-[#6B93C4] mb-2">{exp.company}</p>
                       <p className="text-sm text-warm-muted leading-relaxed mb-3">
                         {exp.description}
                         {exp.website && (
@@ -68,7 +69,7 @@ const ExperienceTimeline = ({ experiences }: ExperienceTimelineProps) => {
                               href={exp.website}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-warm-navy underline underline-offset-2 hover:text-[#2563EB] transition-colors"
+                              className="text-warm-navy underline underline-offset-2 hover:text-[#6B93C4] transition-colors"
                             >
                               Visit website →
                             </a>
@@ -80,7 +81,7 @@ const ExperienceTimeline = ({ experiences }: ExperienceTimelineProps) => {
                           {exp.technologies.map((tech) => (
                             <span
                               key={tech}
-                              className={`text-xs px-2 py-0.5 rounded-full font-medium ${getTechBadgeColor(tech)}`}
+                              className={BADGE}
                             >
                               {tech}
                             </span>
@@ -98,10 +99,7 @@ const ExperienceTimeline = ({ experiences }: ExperienceTimelineProps) => {
 
             {/* Mobile layout */}
             <div className="pl-10 md:hidden">
-              <span
-                className="inline-block mb-3 text-xs font-medium px-3 py-1 rounded-full bg-warm-surface border border-warm-border text-warm-muted"
-                style={{ fontFamily: "Caveat, cursive", fontSize: "13px" }}
-              >
+              <span className={`inline-block mb-3 ${BADGE} px-3 py-1`}>
                 {exp.period}
               </span>
               <div className="bg-warm-surface border border-warm-border rounded-2xl p-5">
@@ -115,7 +113,7 @@ const ExperienceTimeline = ({ experiences }: ExperienceTimelineProps) => {
                   )}
                   <div className="flex-1">
                     <h3 className="font-semibold text-warm-navy mb-0.5">{exp.title}</h3>
-                    <p className="text-sm font-medium text-[#2563EB] mb-2">{exp.company}</p>
+                    <p className="text-sm font-medium text-[#6B93C4] mb-2">{exp.company}</p>
                     <p className="text-sm text-warm-muted leading-relaxed mb-3">
                       {exp.description}
                       {exp.website && (
@@ -125,7 +123,7 @@ const ExperienceTimeline = ({ experiences }: ExperienceTimelineProps) => {
                             href={exp.website}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-warm-navy underline underline-offset-2 hover:text-[#2563EB] transition-colors"
+                            className="text-warm-navy underline underline-offset-2 hover:text-[#6B93C4] transition-colors"
                           >
                             Visit website →
                           </a>
@@ -137,7 +135,7 @@ const ExperienceTimeline = ({ experiences }: ExperienceTimelineProps) => {
                         {exp.technologies.map((tech) => (
                           <span
                             key={tech}
-                            className={`text-xs px-2 py-0.5 rounded-full font-medium ${getTechBadgeColor(tech)}`}
+                            className={BADGE}
                           >
                             {tech}
                           </span>

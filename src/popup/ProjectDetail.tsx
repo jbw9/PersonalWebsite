@@ -66,14 +66,14 @@ const markdownComponents = {
   ),
   li: (props: any) => <li className="text-warm-muted">{props.children}</li>,
   blockquote: (props: any) => (
-    <blockquote className="pl-4 my-4 italic border-l-4 border-[#2563EB] text-warm-muted bg-warm-surface rounded-r-xl py-2">
+    <blockquote className="pl-4 my-4 italic border-l-4 border-[#6B93C4] text-warm-muted bg-warm-surface rounded-r-xl py-2">
       {props.children}
     </blockquote>
   ),
   a: (props: any) => (
     <a
       href={props.href}
-      className="underline underline-offset-2 text-[#2563EB] hover:text-[#1D4ED8] transition-colors"
+      className="underline underline-offset-2 text-[#6B93C4] hover:text-[#4D7AAF] transition-colors"
       target="_blank"
       rel="noopener noreferrer"
     >
@@ -263,7 +263,7 @@ const ProjectDetail = () => {
                   <a
                     href={project.dmgUrl}
                     download
-                    className="text-[#2563EB] underline underline-offset-2 hover:text-[#1D4ED8] transition-colors"
+                    className="text-[#6B93C4] underline underline-offset-2 hover:text-[#4D7AAF] transition-colors"
                   >
                     Click here to download
                   </a>
@@ -304,7 +304,7 @@ const ProjectDetail = () => {
           <ul className="space-y-3">
             {project.features.map((feature, index) => (
               <li key={index} className="flex items-start gap-3 text-warm-muted">
-                <div className="flex-shrink-0 w-1.5 h-1.5 mt-2.5 rounded-full bg-[#2563EB]" />
+                <div className="flex-shrink-0 w-1.5 h-1.5 mt-2.5 rounded-full bg-[#6B93C4]" />
                 {feature}
               </li>
             ))}
@@ -322,7 +322,7 @@ const ProjectDetail = () => {
             </p>
             {notebookLoading && (
               <div className="flex items-center gap-3 p-6 mb-4 bg-warm-bg rounded-xl border border-warm-border text-warm-muted text-sm">
-                <div className="w-5 h-5 border-2 border-[#2563EB] border-t-transparent rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-[#6B93C4] border-t-transparent rounded-full animate-spin" />
                 Loading notebook…
               </div>
             )}

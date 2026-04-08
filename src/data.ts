@@ -48,7 +48,7 @@ export const experiences = [
   {
     title: "Co-Founder & CTO",
     company: "Tulip",
-    companyIcon: "https://www.tulip.markets/favicon.ico",
+    companyIcon: "/tulip.png",
     period: "Jan 2024 - May 2025",
     description:
       "Led development of Tulip's mobile app, beta website and Automated Market Maker (AMM) algorithm.",

@@ -1,32 +1,45 @@
-import { useEffect, useRef, useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Button } from "./components/button";
-import { Card, CardContent } from "./components/card";
-import { Badge } from "./components/badge";
-import { Mail, Github, Linkedin, FileText, ExternalLink } from "lucide-react";
+import { motion } from "framer-motion";
+import { Mail, Github, Linkedin, ArrowUpRight } from "lucide-react";
 import ExperienceTimeline from "./components/experiencetimeline";
 import { experiences, involvements, education } from "./data";
 import { projects } from "./data/projects";
 import { guides } from "./data/guides";
+import { getTechBadgeColor } from "./lib/utils";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1 } },
+};
+
+// Fallback palette for non-tech labels (guide categories, course names)
+const labelColors = [
+  "bg-[#EEF2FF] text-[#3730A3]",
+  "bg-[#F1F5F9] text-[#475569]",
+];
 
 function App() {
-  const sectionsRef = useRef<(HTMLElement | null)[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
   const [isScrollRestored, setIsScrollRestored] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const heroRef = useRef<HTMLDivElement>(null);
 
-  // Restore scroll position BEFORE the component renders (useLayoutEffect)
   useLayoutEffect(() => {
     if (location.pathname === "/") {
       const savedScrollData = sessionStorage.getItem("portfolioScrollData");
       if (savedScrollData) {
         try {
           const { position } = JSON.parse(savedScrollData);
-          // Restore immediately, before paint
           window.scrollTo(0, position);
           sessionStorage.removeItem("portfolioScrollData");
-        } catch (e) {
-          // Fallback to old method if JSON parsing fails
+        } catch {
           const oldPosition = sessionStorage.getItem("portfolioScrollPosition");
           if (oldPosition) {
             window.scrollTo(0, parseInt(oldPosition));
@@ -39,371 +52,526 @@ function App() {
   }, [location.pathname]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.remove("opacity-0");
-            entry.target.classList.add("opacity-100", "animate-fade-in");
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -100px 0px" }
-    );
-
-    sectionsRef.current.forEach((section) => {
-      if (section) observer.observe(section);
-    });
-
-    return () => observer.disconnect();
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const addToRefs = (el: HTMLElement | null) => {
-    if (el && !sectionsRef.current.includes(el)) {
-      sectionsRef.current.push(el);
-    }
-  };
-
-  // Handle project click with scroll position saving
   const handleProjectClick = (project: any) => {
-    // Save current scroll position and page height for better restoration
-    const scrollData = {
-      position: window.scrollY,
-      pageHeight: document.documentElement.scrollHeight,
-      timestamp: Date.now(),
-    };
-    sessionStorage.setItem("portfolioScrollData", JSON.stringify(scrollData));
+    sessionStorage.setItem(
+      "portfolioScrollData",
+      JSON.stringify({
+        position: window.scrollY,
+        pageHeight: document.documentElement.scrollHeight,
+        timestamp: Date.now(),
+      })
+    );
     navigate(`/project/${project.id}`);
   };
 
-  // Handle guide click with scroll position saving
   const handleGuideClick = (guide: any) => {
-    // Save current scroll position and page height for better restoration
-    const scrollData = {
-      position: window.scrollY,
-      pageHeight: document.documentElement.scrollHeight,
-      timestamp: Date.now(),
-    };
-    sessionStorage.setItem("portfolioScrollData", JSON.stringify(scrollData));
+    sessionStorage.setItem(
+      "portfolioScrollData",
+      JSON.stringify({
+        position: window.scrollY,
+        pageHeight: document.documentElement.scrollHeight,
+        timestamp: Date.now(),
+      })
+    );
     navigate(`/guide/${guide.id}`);
+  };
+
+  const scrollToSection = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <div
-      className="min-h-screen bg-portfolio-dark text-portfolio-light"
-      style={{ opacity: isScrollRestored ? 1 : 0 }}
+      className="min-h-screen bg-warm-bg text-warm-navy font-sans"
+      style={{ opacity: isScrollRestored ? 1 : 0, transition: "opacity 0.2s" }}
     >
-      {/* Hero Section */}
-      <section className="px-6 pt-32 pb-20">
-        <div className="max-w-6xl mx-auto">
-          <div className="animate-slide-in-left">
-            <h1 className="mb-6 text-5xl font-bold text-white md:text-7xl">
-              Hello, I'm <span className="text-portfolio-blue">Jonathan</span>
-            </h1>
-            <h2 className="mb-8 text-2xl md:text-3xl text-portfolio-accent">
-              CS & Econs @UIUC
-            </h2>
-            <p className="max-w-2xl mb-12 text-lg leading-relaxed text-portfolio-light">
-              I love to build useful software projects that solves everyday problems! I dream one day to create an open source software that helps millions of people :)
-            </p>
+      {/* ── Sticky Nav ─────────────────────────────────────────────── */}
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled
+            ? "bg-warm-bg/90 backdrop-blur-md border-b border-warm-border shadow-soft"
+            : "bg-transparent"
+        }`}
+      >
+        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+          <span className="font-display text-lg font-bold text-warm-navy">
+            jonathan.
+          </span>
+          <div className="hidden md:flex items-center gap-7">
+            {(
+              [
+                ["Experience", "experience"],
+                ["Projects", "projects"],
+                ["Education", "education"],
+                ["Involvement", "involvement"],
+              ] as const
+            ).map(([label, id]) => (
+              <button
+                key={id}
+                onClick={() => scrollToSection(id)}
+                className="text-sm text-warm-muted hover:text-warm-navy transition-colors"
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </nav>
 
-            {/* Contact Buttons */}
-            <div className="flex flex-wrap gap-4">
-              <Button
-                className="px-5 py-2.5 text-white bg-portfolio-blue hover:bg-portfolio-blue/80 rounded-xl flex items-center gap-2"
-                onClick={() =>
-                  window.open("mailto:jbw7@illinois.edu")
-                }
+      {/* ── Hero ───────────────────────────────────────────────────── */}
+      <section
+        ref={heroRef}
+        className="relative min-h-screen flex items-center px-6 pt-24 pb-20"
+      >
+        {/* ── Draggable floating tags — positioned relative to section, desktop only ── */}
+
+        {/* Tag 1: UIUC — top-left */}
+        <motion.div
+          drag
+          dragConstraints={heroRef}
+          dragElastic={0.08}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.55, duration: 0.6, ease: "easeOut" }}
+          whileHover={{ scale: 1.03 }}
+          whileDrag={{ scale: 1.05, boxShadow: "0 14px 36px rgba(0,0,0,0.13)", zIndex: 20 }}
+          className="absolute hidden md:block cursor-grab active:cursor-grabbing select-none z-10
+                     bg-[#F0EDE8] border border-warm-border text-warm-navy
+                     text-base font-medium px-5 py-3 rounded-2xl shadow-soft rotate-1"
+          style={{ top: "185px", right: "360px" }}
+        >
+          CS + Econs @ UIUC
+        </motion.div>
+
+        {/* Tag 2: AWS — center, right of main text */}
+        <motion.div
+          drag
+          dragConstraints={heroRef}
+          dragElastic={0.08}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.6, ease: "easeOut" }}
+          whileHover={{ scale: 1.03 }}
+          whileDrag={{ scale: 1.05, boxShadow: "0 14px 36px rgba(0,0,0,0.22)", zIndex: 20 }}
+          className="absolute hidden md:block cursor-grab active:cursor-grabbing select-none z-10
+                     bg-[#1B2D4F] text-white
+                     text-base font-medium px-6 py-3.5 rounded-2xl shadow-soft-md -rotate-1"
+          style={{ top: "295px", right: "70px" }}
+        >
+          ☁ Incoming SDE Intern @ AWS
+        </motion.div>
+
+        {/* Tag 3: VisuLearn — bottom-left, arrow-only navigation */}
+        <motion.div
+          drag
+          dragConstraints={heroRef}
+          dragElastic={0.08}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.85, duration: 0.6, ease: "easeOut" }}
+          whileHover={{ scale: 1.03 }}
+          whileDrag={{ scale: 1.05, boxShadow: "0 14px 36px rgba(55,48,163,0.15)", zIndex: 20 }}
+          className="absolute hidden md:block cursor-grab active:cursor-grabbing select-none z-10
+                     bg-[#EEF2FF] border border-[#C7D2FE] text-[#3730A3]
+                     text-base px-5 py-3.5 rounded-2xl shadow-soft rotate-1"
+          style={{ top: "460px", right: "325px" }}
+        >
+          <span className="flex items-center gap-1.5 text-[11px] text-[#6366F1] mb-1.5 font-semibold tracking-widest uppercase">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+            </span>
+            active project
+          </span>
+          <span className="flex items-center gap-1 font-medium">
+            VisuLearn
+            <span
+              onClick={(e) => { e.stopPropagation(); navigate("/project/visulearn"); }}
+              className="cursor-pointer hover:text-[#4338CA] transition-colors ml-0.5"
+              title="View project"
+            >
+              ↗
+            </span>
+          </span>
+        </motion.div>
+
+        {/* Main content */}
+        <div className="max-w-5xl mx-auto w-full">
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            animate="visible"
+          >
+            <motion.p
+              variants={fadeUp}
+              className="text-warm-muted text-base mb-3 tracking-wide"
+            >
+              Hey there 👋
+            </motion.p>
+
+            <motion.h1
+              variants={fadeUp}
+              className="font-display text-6xl md:text-8xl font-bold text-warm-navy leading-tight mb-6"
+            >
+              I'm Jonathan.
+            </motion.h1>
+
+            <motion.p
+              variants={fadeUp}
+              className="text-xl md:text-2xl text-warm-muted max-w-lg leading-relaxed mb-10"
+            >
+              CS & Econs student @UIUC — building software that solves real
+              problems.
+            </motion.p>
+
+            {/* Contact buttons */}
+            <motion.div
+              variants={fadeUp}
+              className="flex flex-wrap gap-3"
+            >
+              <button
+                onClick={() => window.open("mailto:jbw7@illinois.edu")}
+                className="flex items-center gap-2 px-5 py-2.5 bg-warm-navy text-warm-bg rounded-full text-sm font-medium hover:bg-warm-navy/80 transition-all"
               >
                 <Mail className="w-4 h-4" />
-                Email
-              </Button>
-              <Button
-                variant="outline"
-                className="px-5 py-2.5 border-portfolio-accent text-portfolio-light hover:bg-portfolio-slate rounded-xl flex items-center gap-2"
+                Email me
+              </button>
+              <button
                 onClick={() => window.open("https://github.com/jbw9")}
+                className="flex items-center gap-2 px-5 py-2.5 border border-warm-border text-warm-navy rounded-full text-sm font-medium hover:bg-warm-surface transition-all"
               >
                 <Github className="w-4 h-4" />
                 GitHub
-              </Button>
-              <Button
-                variant="outline"
-                className="px-5 py-2.5 border-portfolio-accent text-portfolio-light hover:bg-portfolio-slate rounded-xl flex items-center gap-2"
+              </button>
+              <button
                 onClick={() =>
                   window.open("https://www.linkedin.com/in/jwidjajakusuma/")
                 }
+                className="flex items-center gap-2 px-5 py-2.5 border border-warm-border text-warm-navy rounded-full text-sm font-medium hover:bg-warm-surface transition-all"
               >
                 <Linkedin className="w-4 h-4" />
                 LinkedIn
-              </Button>
-            </div>
-          </div>
+              </button>
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* Scroll hint */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.4, duration: 0.6 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-warm-muted"
+        >
+          <span className="text-xs tracking-widest uppercase">scroll</span>
+          <motion.div
+            animate={{ y: [0, 5, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            className="w-px h-8 bg-warm-border"
+          />
+        </motion.div>
+      </section>
+
+      {/* ── Experience ─────────────────────────────────────────────── */}
+      <section id="experience" className="px-6 py-24">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={stagger}
+          >
+            <motion.h2
+              variants={fadeUp}
+              className="text-3xl font-display font-bold text-warm-navy mb-12"
+            >
+              Experience
+            </motion.h2>
+            <ExperienceTimeline experiences={experiences} />
+          </motion.div>
         </div>
       </section>
 
-      {/* Experience Section */}
-      <section
-        id="experience"
-        ref={addToRefs}
-        className="px-6 py-20 transition-opacity duration-1000 opacity-0"
-      >
-        <div className="max-w-6xl mx-auto">
-          <h2 className="mb-12 text-3xl font-bold text-center text-white">
-            Experience
-          </h2>
-          <ExperienceTimeline experiences={experiences} />
-        </div>
-      </section>
+      {/* ── Projects ───────────────────────────────────────────────── */}
+      <section id="projects" className="px-6 py-24 bg-warm-surface">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={stagger}
+          >
+            <motion.h2
+              variants={fadeUp}
+              className="text-3xl font-display font-bold text-warm-navy mb-10"
+            >
+              Projects
+            </motion.h2>
 
-      {/* Projects Section */}
-      <section
-        id="projects"
-        ref={addToRefs}
-        className="px-6 py-20 transition-opacity duration-1000 opacity-0"
-      >
-        <div className="max-w-6xl mx-auto">
-          <h2 className="mb-12 text-3xl font-bold text-white">Projects</h2>
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {projects.map((project, index) => (
-              <Card
-                key={index}
-                className="h-full transition-all duration-300 cursor-pointer bg-portfolio-slate border-portfolio-accent/20 hover:border-portfolio-blue/50 group rounded-2xl"
-                onClick={() => handleProjectClick(project)}
-              >
-                <CardContent className="flex flex-col h-full p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <h3 className="text-xl font-semibold text-white transition-colors group-hover:text-portfolio-blue">
-                      {project.title}
-                    </h3>
-                    <div className="flex space-x-2">
-                      {project.github && (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="w-8 h-8 p-1 text-portfolio-accent hover:text-portfolio-blue"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            window.open(project.github);
-                          }}
-                        >
-                          <Github className="w-4 h-4" />
-                        </Button>
+            <motion.div
+              variants={stagger}
+              className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+            >
+              {projects.map((project, index) => (
+                <motion.div
+                  key={index}
+                  variants={fadeUp}
+                  whileHover={{ y: -5, scale: 1.01 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                  onClick={() => handleProjectClick(project)}
+                  className="bg-warm-bg border border-warm-border rounded-2xl p-5 cursor-pointer group hover:shadow-soft-md transition-shadow"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      {project.id === "visulearn" && (
+                        <span className="relative flex h-2 w-2 flex-shrink-0 mt-1">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                        </span>
                       )}
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="w-8 h-8 p-1 text-portfolio-accent hover:text-portfolio-blue"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          window.open(project.demo);
-                        }}
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                      </Button>
+                      <h3 className="font-semibold text-warm-navy group-hover:text-[#2563EB] transition-colors leading-snug">
+                        {project.title}
+                      </h3>
                     </div>
+                    <ArrowUpRight className="w-4 h-4 text-warm-muted group-hover:text-warm-navy transition-colors flex-shrink-0 mt-0.5 ml-2" />
                   </div>
-                  <p className="flex-grow mb-4 leading-relaxed text-portfolio-light">
+                  <p className="text-sm text-warm-muted leading-relaxed mb-4 line-clamp-3">
                     {project.description}
                   </p>
-                  <div className="mt-auto">
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {project.technologies.map((tech) => (
-                        <Badge
-                          key={tech}
-                          variant="secondary"
-                          className="text-xs bg-portfolio-dark text-portfolio-light"
-                        >
-                          {tech}
-                        </Badge>
-                      ))}
-                    </div>
-                    <p className="text-sm font-medium text-portfolio-blue">
-                      Click to view details →
-                    </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {project.technologies.slice(0, 4).map((tech) => (
+                      <span
+                        key={tech}
+                        className={`text-xs px-2 py-0.5 rounded-full font-medium ${getTechBadgeColor(tech)}`}
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                    {project.technologies.length > 4 && (
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-warm-surface text-warm-muted border border-warm-border">
+                        +{project.technologies.length - 4}
+                      </span>
+                    )}
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Guides Section */}
-      <section
-        id="guides"
-        ref={addToRefs}
-        className="px-6 py-20 transition-opacity duration-1000 opacity-0"
-      >
-        <div className="max-w-6xl mx-auto">
-          <h2 className="mb-12 text-3xl font-bold text-white">
-            Development Guides
-          </h2>
-          <div className="space-y-6">
-            {guides.map((guide, index) => (
-              <div
-                key={index}
-                className="cursor-pointer group"
-                onClick={() => handleGuideClick(guide)}
-              >
-                <div className="flex flex-col gap-6 p-6 transition-all duration-300 border rounded-2xl md:flex-row bg-gradient-to-r from-portfolio-slate/50 to-portfolio-slate/30 border-portfolio-accent/10 hover:border-portfolio-blue/30">
-                  <div className="flex-grow">
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <Badge
-                        variant="outline"
-                        className="text-xs border-portfolio-blue/50 text-portfolio-blue"
+      {/* ── Education ──────────────────────────────────────────────── */}
+      <section id="education" className="px-6 py-24">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={stagger}
+          >
+            <motion.h2
+              variants={fadeUp}
+              className="text-3xl font-display font-bold text-warm-navy mb-10"
+            >
+              Education
+            </motion.h2>
+
+            <motion.div variants={stagger} className="space-y-4">
+              {education.map((edu, index) => (
+                <motion.div
+                  key={index}
+                  variants={fadeUp}
+                  className="bg-warm-surface border border-warm-border rounded-2xl p-6 flex items-start gap-4"
+                >
+                  <img
+                    src={edu.image}
+                    alt={edu.school}
+                    className="w-12 h-12 rounded-xl object-contain flex-shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-1 mb-2">
+                      <div>
+                        <h3 className="font-semibold text-warm-navy">
+                          {edu.degree}
+                        </h3>
+                        <p className="text-sm text-warm-muted">{edu.school}</p>
+                      </div>
+                      <div className="md:text-right flex-shrink-0">
+                        <span className="text-sm text-warm-muted">
+                          {edu.period}
+                        </span>
+                        {edu.gpa && (
+                          <p className="text-sm font-medium text-warm-navy">
+                            GPA: {edu.gpa}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    {edu.relevantCourses && edu.relevantCourses.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mt-3">
+                        {edu.relevantCourses.map((course, i) => (
+                          <span
+                            key={course}
+                            className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                              labelColors[i % labelColors.length]
+                            }`}
+                          >
+                            {course}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── Involvements ───────────────────────────────────────────── */}
+      <section id="involvement" className="px-6 py-24 bg-warm-surface">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={stagger}
+          >
+            <motion.h2
+              variants={fadeUp}
+              className="text-3xl font-display font-bold text-warm-navy mb-10"
+            >
+              Involvements
+            </motion.h2>
+
+            <motion.div
+              variants={stagger}
+              className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+            >
+              {involvements.map((involvement, index) => (
+                <motion.div
+                  key={index}
+                  variants={fadeUp}
+                  whileHover={{ y: -4 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                  className="bg-warm-bg border border-warm-border rounded-2xl p-5"
+                >
+                  <img
+                    src={involvement.image}
+                    alt={involvement.organization}
+                    className="w-10 h-10 rounded-xl object-contain mb-4"
+                  />
+                  <h3 className="font-semibold text-warm-navy mb-0.5">
+                    {involvement.role}
+                  </h3>
+                  <p className="text-sm font-medium text-[#2563EB] mb-1">
+                    {involvement.organization}
+                  </p>
+                  <p
+                    className="text-xs text-warm-muted mb-3"
+                    style={{ fontFamily: "Caveat, cursive", fontSize: "13px" }}
+                  >
+                    {involvement.period}
+                  </p>
+                  <p className="text-sm text-warm-muted leading-relaxed">
+                    {involvement.description}
+                  </p>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── Dev Guides ─────────────────────────────────────────────── */}
+      <section id="guides" className="px-6 py-24">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={stagger}
+          >
+            <motion.h2
+              variants={fadeUp}
+              className="text-3xl font-display font-bold text-warm-navy mb-10"
+            >
+              Dev Guides
+            </motion.h2>
+
+            <motion.div variants={stagger} className="space-y-4">
+              {guides.map((guide, index) => (
+                <motion.div
+                  key={index}
+                  variants={fadeUp}
+                  whileHover={{ x: 4 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                  onClick={() => handleGuideClick(guide)}
+                  className="flex items-center justify-between p-5 border border-warm-border rounded-2xl cursor-pointer group hover:bg-warm-surface transition-colors"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-full font-medium ${getTechBadgeColor(guide.category)}`}
                       >
                         {guide.category}
-                      </Badge>
-                      <span className="text-sm text-portfolio-accent">•</span>
-                      <span className="text-sm text-portfolio-accent">
+                      </span>
+                      <span className="text-xs text-warm-muted">
                         {guide.publishDate}
                       </span>
                     </div>
-                    <h3 className="mb-3 text-xl font-semibold text-white transition-colors group-hover:text-portfolio-blue">
+                    <h3 className="font-semibold text-warm-navy group-hover:text-[#2563EB] transition-colors mb-1">
                       {guide.title}
                     </h3>
-                    <p className="mb-4 leading-relaxed text-portfolio-light">
+                    <p className="text-sm text-warm-muted line-clamp-1">
                       {guide.description}
                     </p>
-                    <div className="flex items-center text-sm font-medium text-portfolio-blue">
-                      Click to read article →
-                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                  <ArrowUpRight className="w-5 h-5 text-warm-muted group-hover:text-warm-navy flex-shrink-0 ml-4 transition-colors" />
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Education Section */}
-      <section
-        id="education"
-        ref={addToRefs}
-        className="px-6 py-20 transition-opacity duration-1000 opacity-0"
-      >
-        <div className="max-w-6xl mx-auto">
-          <h2 className="mb-12 text-3xl font-bold text-white">Education</h2>
-          <div className="space-y-6">
-            {education.map((edu, index) => (
-              <Card
-                key={index}
-                className="bg-portfolio-slate border-portfolio-accent/20 rounded-2xl"
-              >
-                <CardContent className="p-8">
-                  <div className="flex flex-col mb-4 md:flex-row md:justify-between md:items-start">
-                    <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 overflow-hidden rounded-xl">
-                        <img
-                          src={edu.image}
-                          alt={`${edu.school} logo`}
-                          className="object-cover w-16 h-16 rounded-xl"
-                        />
-                      </div>
-                      <div>
-                        <h3 className="mb-2 text-xl font-semibold text-white">
-                          {edu.degree}
-                        </h3>
-                        <p className="font-medium text-portfolio-blue">
-                          {edu.school}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="mt-2 text-right md:mt-0">
-                      <span className="block text-portfolio-accent">
-                        {edu.period}
-                      </span>
-                      {edu.gpa && (
-                        <span className="text-portfolio-light">
-                          GPA: {edu.gpa}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  {edu.description && (
-                    <div className="mb-4">
-                      <p className="leading-relaxed text-portfolio-light">
-                        {edu.description}
-                      </p>
-                    </div>
-                  )}
-                  {edu.relevantCourses && edu.relevantCourses.length > 0 && (
-                    <div>
-                      <h4 className="mb-2 font-medium text-portfolio-light">
-                        Relevant Coursework:
-                      </h4>
-                      <div className="flex flex-wrap gap-2">
-                        {edu.relevantCourses.map((course) => (
-                          <Badge
-                            key={course}
-                            variant="secondary"
-                            className="bg-portfolio-dark text-portfolio-light"
-                          >
-                            {course}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* University Involvement Section */}
-      <section
-        id="involvement"
-        ref={addToRefs}
-        className="px-6 py-20 transition-opacity duration-1000 opacity-0"
-      >
-        <div className="max-w-6xl mx-auto">
-          <h2 className="mb-12 text-3xl font-bold text-center text-white">
-            University Involvements
-          </h2>
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {involvements.map((involvement, index) => (
-              <div key={index} className="relative group">
-                <div className="absolute inset-0 transition-opacity duration-300 rounded-2xl opacity-0 bg-gradient-to-r from-portfolio-blue to-purple-600 group-hover:opacity-20"></div>
-                <Card className="relative z-10 h-full transition-all duration-300 bg-portfolio-slate border-portfolio-accent/20 hover:border-portfolio-blue/50 rounded-2xl">
-                  <CardContent className="flex flex-col h-full p-6">
-                    <div className="mb-4">
-                      <div className="mb-4 overflow-hidden rounded-xl">
-                        <img
-                          src={involvement.image}
-                          alt={`${involvement.organization} logo`}
-                          className="object-cover w-12 h-12 rounded-xl"
-                        />
-                      </div>
-                      <h3 className="mb-2 text-xl font-semibold text-white">
-                        {involvement.role}
-                      </h3>
-                      <p className="font-medium text-portfolio-blue">
-                        {involvement.organization}
-                      </p>
-                      <span className="text-sm text-portfolio-accent">
-                        {involvement.period}
-                      </span>
-                    </div>
-                    <p className="flex-grow leading-relaxed text-portfolio-light">
-                      {involvement.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="px-6 py-12 border-t border-portfolio-slate">
-        <div className="max-w-6xl mx-auto text-center">
-          <p className="text-portfolio-accent">
-            Built from scratch © 2026 Jonathan
-            Bernard Widjajakusuma
+      {/* ── Footer ─────────────────────────────────────────────────── */}
+      <footer className="px-6 py-10 border-t border-warm-border">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <p
+            className="text-warm-muted text-xl"
+            style={{ fontFamily: "Caveat, cursive" }}
+          >
+            Built by Jonathan ✦ 2026
           </p>
+          <div className="flex items-center gap-5">
+            <button
+              onClick={() => window.open("https://github.com/jbw9")}
+              className="text-warm-muted hover:text-warm-navy transition-colors"
+            >
+              <Github className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() =>
+                window.open("https://www.linkedin.com/in/jwidjajakusuma/")
+              }
+              className="text-warm-muted hover:text-warm-navy transition-colors"
+            >
+              <Linkedin className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => window.open("mailto:jbw7@illinois.edu")}
+              className="text-warm-muted hover:text-warm-navy transition-colors"
+            >
+              <Mail className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </footer>
     </div>

@@ -1,9 +1,10 @@
-import { Badge } from "./badge";
+import { motion } from "framer-motion";
+import { getTechBadgeColor } from "../lib/utils";
 
 interface Experience {
   title: string;
   company: string;
-  companyIcon?: string; // Direct URL/address to company logo image (e.g., "https://example.com/logo.png")
+  companyIcon?: string;
   website?: string;
   period: string;
   description: string;
@@ -14,66 +15,51 @@ interface ExperienceTimelineProps {
   experiences: Experience[];
 }
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+};
+
 const ExperienceTimeline = ({ experiences }: ExperienceTimelineProps) => {
   return (
     <div className="relative">
-      {/* Timeline line with fade effect */}
-      <div className="absolute left-1/2 transform -translate-x-1/2 w-0.5 h-full bg-gradient-to-b from-portfolio-accent via-portfolio-accent to-transparent"></div>
+      {/* Timeline line */}
+      <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-warm-border via-warm-border to-transparent transform md:-translate-x-1/2" />
 
-      <div className="space-y-12">
+      <div className="space-y-8">
         {experiences.map((exp, index) => (
-          <div key={index} className="relative">
+          <motion.div
+            key={index}
+            variants={fadeUp}
+            className="relative"
+          >
             {/* Timeline dot */}
-            <div className="absolute z-10 w-4 h-4 transform -translate-x-1/2 border-4 rounded-full left-1/2 bg-portfolio-blue border-portfolio-dark"></div>
+            <div className="absolute left-4 md:left-1/2 w-3 h-3 rounded-full bg-warm-navy border-2 border-warm-bg transform -translate-x-1/2 mt-6 z-10" />
 
-            {/* Desktop layout */}
+            {/* Desktop: alternating layout */}
             <div
-              className={`hidden md:flex items-center ${
+              className={`hidden md:flex items-start gap-8 ${
                 index % 2 === 0 ? "flex-row" : "flex-row-reverse"
               }`}
             >
-              {/* Content */}
-              <div
-                className={`w-5/12 ${
-                  index % 2 === 0 ? "pr-8 text-right" : "pl-8 text-left"
-                }`}
-              >
-                {/* Date badge */}
-                <div className="inline-block mb-4">
-                  <span className="px-4 py-2 text-sm font-medium text-white rounded-full bg-portfolio-blue">
-                    {exp.period}
-                  </span>
-                </div>
-
-                {/* Content card */}
-                <div className="p-6 transition-all duration-300 border rounded-2xl bg-portfolio-slate border-portfolio-accent/20 hover:border-portfolio-blue/50">
-                  <div
-                    className={`flex items-start gap-4 ${
-                      index % 2 === 0 ? "flex-row-reverse" : "flex-row"
-                    }`}
-                  >
-                    {/* Company icon */}
+              {/* Card */}
+              <div className={`w-5/12 ${index % 2 === 0 ? "text-left" : "text-right"}`}>
+                <span className="inline-block mb-3 text-xs font-medium px-3 py-1 rounded-full bg-[#EEF2FF] border border-[#C7D2FE] text-[#3730A3] tracking-wide">
+                  {exp.period}
+                </span>
+                <div className="bg-warm-surface border border-warm-border rounded-2xl p-5 hover:shadow-soft-md transition-shadow">
+                  <div className={`flex items-start gap-3 ${index % 2 === 0 ? "flex-row" : "flex-row-reverse"}`}>
                     {exp.companyIcon && (
-                      <div className="flex-shrink-0">
-                        <img
-                          src={exp.companyIcon}
-                          alt={`${exp.company} logo`}
-                          className="object-contain w-12 h-12 rounded-xl"
-                        />
-                      </div>
+                      <img
+                        src={exp.companyIcon}
+                        alt={`${exp.company} logo`}
+                        className="w-10 h-10 rounded-xl object-contain flex-shrink-0"
+                      />
                     )}
-
-                    {/* Content */}
                     <div className="flex-1">
-                      <h3 className="mb-2 text-xl font-semibold text-white">
-                        {exp.title}
-                      </h3>
-
-                      <p className="mb-4 font-medium text-portfolio-blue">
-                        {exp.company}
-                      </p>
-
-                      <p className="mb-4 leading-relaxed text-portfolio-light">
+                      <h3 className="font-semibold text-warm-navy mb-0.5">{exp.title}</h3>
+                      <p className="text-sm font-medium text-[#2563EB] mb-2">{exp.company}</p>
+                      <p className="text-sm text-warm-muted leading-relaxed mb-3">
                         {exp.description}
                         {exp.website && (
                           <>
@@ -82,99 +68,87 @@ const ExperienceTimeline = ({ experiences }: ExperienceTimelineProps) => {
                               href={exp.website}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-blue-400 underline hover:text-blue-300"
+                              className="text-warm-navy underline underline-offset-2 hover:text-[#2563EB] transition-colors"
                             >
-                              Check out our website
+                              Visit website →
                             </a>
                           </>
                         )}
                       </p>
-                      <div
-                        className={`flex flex-wrap gap-2 ${
-                          index % 2 === 0 ? "justify-end" : "justify-start"
-                        }`}
-                      >
-                        {exp.technologies.map((tech) => (
-                          <Badge
-                            key={tech}
-                            variant="secondary"
-                            className="bg-portfolio-dark text-portfolio-light"
-                          >
-                            {tech}
-                          </Badge>
-                        ))}
-                      </div>
+                      {exp.technologies.length > 0 && (
+                        <div className={`flex flex-wrap gap-1.5 ${index % 2 === 0 ? "justify-start" : "justify-end"}`}>
+                          {exp.technologies.map((tech) => (
+                            <span
+                              key={tech}
+                              className={`text-xs px-2 py-0.5 rounded-full font-medium ${getTechBadgeColor(tech)}`}
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Empty space for the other side */}
-              <div className="w-5/12"></div>
+              {/* Spacer */}
+              <div className="w-5/12" />
             </div>
 
             {/* Mobile layout */}
-            <div className="pl-8 md:hidden">
-              {/* Date badge */}
-              <div className="mb-4">
-                <span className="px-4 py-2 text-sm font-medium text-white rounded-full bg-portfolio-blue">
-                  {exp.period}
-                </span>
-              </div>
-
-              {/* Content card */}
-              <div className="relative p-6 transition-all duration-300 border rounded-2xl bg-portfolio-slate border-portfolio-accent/20 hover:border-portfolio-blue/50">
-                {/* Company icon in top right corner for mobile */}
-                {exp.companyIcon && (
-                  <div className="absolute top-4 right-4">
+            <div className="pl-10 md:hidden">
+              <span
+                className="inline-block mb-3 text-xs font-medium px-3 py-1 rounded-full bg-warm-surface border border-warm-border text-warm-muted"
+                style={{ fontFamily: "Caveat, cursive", fontSize: "13px" }}
+              >
+                {exp.period}
+              </span>
+              <div className="bg-warm-surface border border-warm-border rounded-2xl p-5">
+                <div className="flex items-start gap-3">
+                  {exp.companyIcon && (
                     <img
                       src={exp.companyIcon}
                       alt={`${exp.company} logo`}
-                      className="object-contain w-12 h-12 rounded-xl"
+                      className="w-10 h-10 rounded-xl object-contain flex-shrink-0"
                     />
-                  </div>
-                )}
-
-                <div className={`${exp.companyIcon ? "mr-16" : ""}`}>
-                  <h3 className="mb-2 text-xl font-semibold text-white">
-                    {exp.title}
-                  </h3>
-
-                  <p className="mb-4 font-medium text-portfolio-blue">
-                    {exp.company}
-                  </p>
-
-                  <p className="mb-4 leading-relaxed text-portfolio-light">
-                    {exp.description}
-                    {exp.website && (
-                      <>
-                        {" "}
-                        <a
-                          href={exp.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-400 underline hover:text-blue-300"
-                        >
-                          Check out our website
-                        </a>
-                      </>
+                  )}
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-warm-navy mb-0.5">{exp.title}</h3>
+                    <p className="text-sm font-medium text-[#2563EB] mb-2">{exp.company}</p>
+                    <p className="text-sm text-warm-muted leading-relaxed mb-3">
+                      {exp.description}
+                      {exp.website && (
+                        <>
+                          {" "}
+                          <a
+                            href={exp.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-warm-navy underline underline-offset-2 hover:text-[#2563EB] transition-colors"
+                          >
+                            Visit website →
+                          </a>
+                        </>
+                      )}
+                    </p>
+                    {exp.technologies.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {exp.technologies.map((tech) => (
+                          <span
+                            key={tech}
+                            className={`text-xs px-2 py-0.5 rounded-full font-medium ${getTechBadgeColor(tech)}`}
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
                     )}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {exp.technologies.map((tech) => (
-                      <Badge
-                        key={tech}
-                        variant="secondary"
-                        className="bg-portfolio-dark text-portfolio-light"
-                      >
-                        {tech}
-                      </Badge>
-                    ))}
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>

@@ -29,6 +29,15 @@ export interface Involvement {
 export const experiences = [
   {
     title: "Software Engineer Intern",
+    company: "Amazon Web Services (AWS)",
+    companyIcon: "/awsLogo.png",
+    period: "Jun 2026 - Present",
+    description:
+      "AWS Managed Streaming for Apache Kafka (MSK)",
+    technologies: [],
+  },
+  {
+    title: "Software Engineer Intern",
     company: "Massive, Inc.",
     companyIcon: "/massiveLogo.png",
     period: "Jul 2025 - Nov 2025",

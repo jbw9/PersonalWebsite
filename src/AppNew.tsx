@@ -240,15 +240,6 @@ function AppNew() {
                           <p className="text-sm text-warm-muted leading-relaxed mb-4">
                             {exp.description}
                           </p>
-                          {exp.technologies.length > 0 && (
-                            <div className="flex flex-wrap gap-1.5">
-                              {exp.technologies.map((tech) => (
-                                <span key={tech} className={BADGE}>
-                                  {tech}
-                                </span>
-                              ))}
-                            </div>
-                          )}
                         </div>
                       </div>
                     </div>
@@ -291,7 +282,7 @@ function AppNew() {
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      {project.id === "visulearn" && (
+                      {project.id === "taxbuddy" && (
                         <span className="relative flex h-2 w-2 flex-shrink-0 mt-1">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
                           <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />

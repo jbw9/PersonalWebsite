@@ -17,6 +17,69 @@ export interface Project {
 
 export const projects = [
   {
+    id: "taxbuddy",
+    title: "TaxBuddy",
+    description:
+      "A tax filing platform for international students — upload your documents and get a filled-out 1040-NR in under 10 minutes, no manual data entry.",
+    longDescription:
+      "Filing U.S. taxes as an international student is broken. TurboTax and most consumer software are residents-only, a local tax consultant costs $300+, and the online services that do support nonresidents charge $50+ per filing. Most students are left to figure out a 1040-NR alone — and often leave unclaimed refunds on the table.\n\nTaxBuddy fixes that. You upload your W-2, 1099s, I-20 and I-94 (messy scans and phone photos are fine), the app parses and extracts every field automatically, asks a handful of questions to confirm your residency status, and generates a complete, filled-out return packet ready to print and mail — 1040-NR, Schedule 1/NEC/OI/A, Form 8833, and Form 8843.\n\nThe important design decision: AI reads, code does the math. The model's only job is turning documents into structured text. Every dollar — brackets, tax-treaty limits, withholding, your final refund — is computed by deterministic, test-covered code, so the same documents always produce the same number.\n\nBuilt with two other international students who got tired of the annual scramble. It's currently free to use.",
+    technologies: [
+      "Next.js",
+      "TypeScript",
+      "React",
+      "Supabase",
+      "PostgreSQL",
+      "OpenAI",
+      "AWS Bedrock",
+      "Tailwind CSS",
+      "pdf-lib",
+      "Zod",
+    ],
+    features: [
+      "Document upload with automatic field extraction — no manual data entry",
+      "Handles messy scans and phone photos of W-2, 1099-INT/DIV/NEC, 1042-S, I-20 and I-94",
+      "Substantial presence test and tax-treaty eligibility determined automatically",
+      "Generates 1040-NR, Schedule 1/NEC/OI/A, Form 8833 and Form 8843",
+      "Print-ready packet with a cover sheet and your source documents assembled in IRS order",
+      "Deterministic tax engine — no AI-generated numbers, every calculation is test-covered",
+      "Row-level security in Postgres so only your account can reach your files",
+      "IRC §7216 written consent flow before any return information moves",
+      "Encrypted in transit and at rest, U.S.-only processing under signed DPAs",
+    ],
+    github: undefined,
+    demo: "https://www.filetaxbuddy.com",
+    image: "/taxbuddy.png",
+    videoUrl: "/taxbuddy_demo.mp4",
+    howItWorks: `
+### The Pipeline
+
+**1. Onboarding** — The filer answers eligibility questions (visa status, country of residence, travel history) and uploads their source documents.
+
+**2. Extraction** — PDFs are parsed to markdown with LlamaParse, then an LLM pulls structured data out against per-document Zod schemas. Nothing extracted is written to the return until the filer has seen it and confirmed it.
+
+**3. Rules engine** — Substantial presence and eligibility checks, tax-treaty benefits, and income rules determine which forms apply and what values land on each line. This layer is plain deterministic TypeScript with a test suite behind it — no model output reaches it.
+
+**4. Payout** — The filer sees their refund or amount owed, then either picks how to receive the refund (check or direct deposit) or gets instructions for paying the IRS.
+
+**5. Generation** — Form templates are filled with \`pdf-lib\` and returned as completed PDFs. The combined packet is assembled ready to mail: a one-page "what to do after you print this" cover sheet, then the filer's own W-2/1042-S/1099 copies (the IRS wants these attached to the front), then the forms.
+
+### AI Reads. Code Does the Math.
+
+No model ever decides what you owe. The model turns documents into text; every bracket, treaty limit, withholding credit and refund figure is computed in code. Same documents in, same number out, every time.
+
+### Security & Compliance
+
+- **Encryption** — TLS in transit, encrypted at rest, in a private bucket that isn't reachable from the open internet.
+- **Isolation** — Every row and stored file is tagged with the user id, and row-level security enforces access *inside Postgres*, so a bug in a page can't hand one filer's return to another.
+- **No training on your data** — Only AWS and Supabase ever touch documents, both under signed DPAs forbidding retention, resale, or model training, and both process inside the U.S.
+- **IRC §7216** — A federal criminal statute limits what a preparer may do with return information. Written consent is collected up front, naming every provider and exactly what each receives.
+- **FTC Safeguards Rule** — Under GLBA a tax preparer counts as a financial institution, so the practice runs on a WISP (Written Information Security Plan) built from IRS Publication 5708 and reviewed annually.
+
+### Current Status
+
+Free to use. The IRS restricts e-filing of 1040-NR for many filers, so TaxBuddy produces complete print-and-mail packets today, with direct e-file support planned.`,
+  },
+  {
     id: "visulearn",
     title: "VisuLearn",
     description:

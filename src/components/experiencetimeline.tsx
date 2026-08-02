@@ -9,7 +9,6 @@ interface Experience {
   website?: string;
   period: string;
   description: string;
-  technologies: string[];
 }
 
 interface ExperienceTimelineProps {
@@ -60,7 +59,7 @@ const ExperienceTimeline = ({ experiences }: ExperienceTimelineProps) => {
                     <div className="flex-1">
                       <h3 className="font-semibold text-warm-navy mb-0.5">{exp.title}</h3>
                       <p className="text-sm font-medium text-[#6B93C4] mb-2">{exp.company}</p>
-                      <p className="text-sm text-warm-muted leading-relaxed mb-3">
+                      <p className="text-sm text-warm-muted leading-relaxed">
                         {exp.description}
                         {exp.website && (
                           <>
@@ -76,18 +75,6 @@ const ExperienceTimeline = ({ experiences }: ExperienceTimelineProps) => {
                           </>
                         )}
                       </p>
-                      {exp.technologies.length > 0 && (
-                        <div className={`flex flex-wrap gap-1.5 ${index % 2 === 0 ? "justify-start" : "justify-end"}`}>
-                          {exp.technologies.map((tech) => (
-                            <span
-                              key={tech}
-                              className={BADGE}
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -114,7 +101,7 @@ const ExperienceTimeline = ({ experiences }: ExperienceTimelineProps) => {
                   <div className="flex-1">
                     <h3 className="font-semibold text-warm-navy mb-0.5">{exp.title}</h3>
                     <p className="text-sm font-medium text-[#6B93C4] mb-2">{exp.company}</p>
-                    <p className="text-sm text-warm-muted leading-relaxed mb-3">
+                    <p className="text-sm text-warm-muted leading-relaxed">
                       {exp.description}
                       {exp.website && (
                         <>
@@ -130,18 +117,6 @@ const ExperienceTimeline = ({ experiences }: ExperienceTimelineProps) => {
                         </>
                       )}
                     </p>
-                    {exp.technologies.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {exp.technologies.map((tech) => (
-                          <span
-                            key={tech}
-                            className={BADGE}
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>

@@ -5,7 +5,6 @@ export interface Experience {
   period: string;
   description: string;
   website?: string;
-  technologies: string[];
 }
 
 export interface Education {
@@ -28,13 +27,12 @@ export interface Involvement {
 
 export const experiences = [
   {
-    title: "Software Engineer Intern",
+    title: "SDE Intern",
     company: "Amazon Web Services (AWS)",
     companyIcon: "/awsLogo.png",
     period: "Jun 2026 - Present",
     description:
       "AWS Managed Streaming for Apache Kafka (MSK)",
-    technologies: [],
   },
   {
     title: "Software Engineer Intern",
@@ -43,7 +41,6 @@ export const experiences = [
     period: "Jul 2025 - Nov 2025",
     description:
       "Developing an algorithm to predict an artist's annual revenue from 130+ parameters",
-    technologies: ["Python", "OpenAI API", "LangChain", "Langgraph", "PostgreSQL", "Pydantic"],
   },
   {
     title: "Software Engineer Intern",
@@ -52,7 +49,6 @@ export const experiences = [
     period: "Summer 2025",
     description:
       "Developing an MCP server, and integrating it with the company's LLM and customer support system",
-    technologies: ["Python", "MCP", "LangChain", "Langgraph", "PostgreSQL", "Pydantic"],
   },
   {
     title: "Co-Founder & CTO",
@@ -62,7 +58,6 @@ export const experiences = [
     description:
       "Led development of Tulip's mobile app, beta website and Automated Market Maker (AMM) algorithm.",
     website: "https://www.tulip.markets/",
-    technologies: ["Python", "AWS", "React Native", "React", "Flask"],
   },
   {
     title: "Founder in Residence (iV10)",
@@ -70,7 +65,6 @@ export const experiences = [
     companyIcon: "/iventure_logo.png",
     period: "Jan 2024 - May 2025",
     description: "Building Tulip",
-    technologies: [],
   },
   {
     title: "Software Engineer Intern",
@@ -79,7 +73,6 @@ export const experiences = [
     period: "Summer 2024",
     description:
       "Developed a real time American Sign Language to English Android application. Optimized translation system through machine learning.",
-    technologies: ["Python", "TensorFlow", "Android Studio"],
   },
 ];
 

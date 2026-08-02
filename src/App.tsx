@@ -154,10 +154,10 @@ function App() {
                      text-base font-medium px-6 py-3.5 rounded-2xl shadow-soft-md -rotate-1"
           style={{ top: "295px", right: "70px" }}
         >
-          ☁ Incoming SDE Intern @ AWS
+          ☁ SDE Intern @ AWS
         </motion.div>
 
-        {/* Tag 3: VisuLearn — bottom-left, arrow-only navigation */}
+        {/* Tag 3: TaxBuddy — bottom-left, arrow-only navigation */}
         <motion.div
           drag
           dragConstraints={heroRef}
@@ -180,9 +180,9 @@ function App() {
             active project
           </span>
           <span className="flex items-center gap-1 font-medium">
-            VisuLearn
+            TaxBuddy
             <span
-              onClick={(e) => { e.stopPropagation(); navigate("/project/visulearn"); }}
+              onClick={(e) => { e.stopPropagation(); navigate("/project/taxbuddy"); }}
               className="cursor-pointer hover:text-[#4338CA] transition-colors ml-0.5"
               title="View project"
             >
@@ -319,7 +319,7 @@ function App() {
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      {project.id === "visulearn" && (
+                      {project.id === "taxbuddy" && (
                         <span className="relative flex h-2 w-2 flex-shrink-0 mt-1">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
                           <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />

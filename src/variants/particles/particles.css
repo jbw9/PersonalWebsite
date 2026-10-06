@@ -1,0 +1,69 @@
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap");
+
+.v-particles {
+  background: #05060a;
+  color: #e9ecf5;
+  font-family: "Sora", system-ui, sans-serif;
+  overflow-x: clip;
+}
+
+.v-particles .pt-mono {
+  font-family: "DM Mono", ui-monospace, monospace;
+  letter-spacing: 0.08em;
+}
+
+.v-particles .pt-glass {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.015));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-radius: 18px;
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.v-particles .pt-glass.pt-hover:hover {
+  border-color: rgba(150, 205, 255, 0.35);
+  background: linear-gradient(160deg, rgba(150, 205, 255, 0.09), rgba(255, 255, 255, 0.02));
+}
+
+.v-particles .pt-grad {
+  background: linear-gradient(90deg, #e9ecf5, #96cdff 55%, #bea0ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.v-particles.pt-fine,
+.v-particles.pt-fine * {
+  cursor: none !important;
+}
+
+.v-particles .pt-live::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: #5eead4;
+  animation: vpt-ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes vpt-ping {
+  75%, 100% { transform: scale(2.4); opacity: 0; }
+}
+
+.v-particles .pt-scrollline {
+  animation: vpt-drop 1.8s ease-in-out infinite;
+  transform-origin: top;
+}
+
+@keyframes vpt-drop {
+  0% { transform: scaleY(0); opacity: 1; }
+  60% { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(1); opacity: 0; }
+}
+
+@media (max-width: 767px) {
+  .v-particles .pt-glass {
+    background: rgba(10, 12, 18, 0.82);
+  }
+}

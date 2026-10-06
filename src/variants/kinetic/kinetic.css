@@ -1,0 +1,68 @@
+@import url("https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap");
+
+.v-kinetic {
+  --k-cream: #efe9dc;
+  --k-red: #ff3b1f;
+  --k-ink: #111111;
+  background: var(--k-cream);
+  color: var(--k-ink);
+  font-family: "Archivo", system-ui, sans-serif;
+  overflow-x: clip;
+}
+
+.v-kinetic .k-display {
+  font-family: "Anton", "Impact", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+}
+
+.v-kinetic .k-mono {
+  font-family: "Space Mono", ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.v-kinetic ::selection {
+  background: var(--k-red);
+  color: var(--k-cream);
+}
+
+.v-kinetic .k-noise {
+  background-image: radial-gradient(rgba(17, 17, 17, 0.09) 1px, transparent 1.2px);
+  background-size: 5px 5px;
+}
+
+.v-kinetic .k-row:hover .k-row-arrow {
+  transform: translateX(0) rotate(-45deg);
+  opacity: 1;
+}
+
+.v-kinetic .k-row-arrow {
+  transform: translateX(-24px) rotate(-45deg);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.35s;
+}
+
+.v-kinetic .k-outline {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--k-ink);
+}
+
+.v-kinetic .k-btn {
+  border: 2px solid var(--k-ink);
+  box-shadow: 5px 5px 0 var(--k-ink);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s, color 0.15s;
+}
+
+.v-kinetic .k-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 var(--k-ink);
+  background: var(--k-red);
+  color: var(--k-cream);
+}
+
+.v-kinetic .k-btn:active {
+  transform: translate(5px, 5px);
+  box-shadow: 0 0 0 var(--k-ink);
+}

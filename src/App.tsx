@@ -1,9 +1,10 @@
-import { useLayoutEffect, useState, useEffect, useRef } from "react";
+import React, { useLayoutEffect, useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mail, Github, Linkedin, ArrowUpRight } from "lucide-react";
-import ExperienceTimeline from "./components/experiencetimeline";
-import { experiences, involvements, education } from "./data";
+import JourneyGraph from "./components/journeygraph";
+import CommitLog from "./components/commitlog";
+import { involvements, education } from "./data";
 import { projects } from "./data/projects";
 import { guides } from "./data/guides";
 const fadeUp = {
@@ -17,6 +18,28 @@ const stagger = {
 };
 
 const BADGE = "text-xs px-2.5 py-0.5 rounded-full font-medium bg-white border border-[#DDD8CF] text-[#3A3933]";
+
+// Faint dot grid (bullet-journal paper) behind the whole page, so every block sits on one sheet
+const PAPER = {
+  backgroundImage: "radial-gradient(rgba(158,148,133,0.32) 1px, transparent 1.4px)",
+  backgroundSize: "22px 22px",
+};
+
+const CARD = "bg-[#FFFDF8] border border-warm-border rounded-2xl";
+
+// Pinned-to-the-page tilt; cards straighten on hover
+const TILTS = [-1.2, 0.8, -0.6, 1.2, -1, 0.6];
+const pinned = {
+  hidden: { opacity: 0, y: 30, rotate: 0 },
+  visible: (tilt: number) => ({
+    opacity: 1,
+    y: 0,
+    rotate: tilt,
+    transition: { duration: 0.6, ease: "easeOut" },
+  }),
+};
+
+const STICKY = ["bg-[#FFF1C2]", "bg-[#E2EBF5]", "bg-[#F7E2D6]"];
 
 function App() {
   const navigate = useNavigate();
@@ -82,7 +105,7 @@ function App() {
   return (
     <div
       className="min-h-screen bg-warm-bg text-warm-navy font-sans"
-      style={{ opacity: isScrollRestored ? 1 : 0, transition: "opacity 0.2s" }}
+      style={{ ...PAPER, opacity: isScrollRestored ? 1 : 0, transition: "opacity 0.2s" }}
     >
       {/* ── Sticky Nav ─────────────────────────────────────────────── */}
       <nav
@@ -96,6 +119,7 @@ function App() {
           <div className="hidden md:flex items-center gap-7">
             {(
               [
+                ["Journey", "journey"],
                 ["Experience", "experience"],
                 ["Projects", "projects"],
                 ["Education", "education"],
@@ -117,9 +141,19 @@ function App() {
       {/* ── Hero ───────────────────────────────────────────────────── */}
       <section
         ref={heroRef}
-        className="relative min-h-screen flex items-center px-6 pt-24 pb-20"
+        className="relative px-6 pt-32 md:pt-36 pb-6 md:min-h-[600px]"
       >
         {/* ── Draggable floating tags — positioned relative to section, desktop only ── */}
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2, duration: 0.6 }}
+          className="absolute hidden md:block font-handwritten text-xl text-warm-muted rotate-3 select-none"
+          style={{ top: "120px", right: "130px" }}
+        >
+          psst, these are draggable ↙
+        </motion.p>
 
         {/* Tag 1: UIUC — top-left */}
         <motion.div
@@ -154,7 +188,7 @@ function App() {
                      text-base font-medium px-6 py-3.5 rounded-2xl shadow-soft-md -rotate-1"
           style={{ top: "295px", right: "70px" }}
         >
-          ☁ SDE Intern @ AWS
+          ☁ Incoming SDE @ AWS
         </motion.div>
 
         {/* Tag 3: TaxBuddy — bottom-left, arrow-only navigation */}
@@ -234,7 +268,7 @@ function App() {
               </button>
               <button
                 onClick={() => window.open("https://github.com/jbw9")}
-                className="flex items-center gap-2 px-5 py-2.5 border border-warm-border text-warm-navy rounded-full text-sm font-medium hover:bg-warm-surface transition-all"
+                className="flex items-center gap-2 px-5 py-2.5 border border-warm-border bg-warm-bg text-warm-navy rounded-full text-sm font-medium hover:bg-warm-surface transition-all"
               >
                 <Github className="w-4 h-4" />
                 GitHub
@@ -243,7 +277,7 @@ function App() {
                 onClick={() =>
                   window.open("https://www.linkedin.com/in/jwidjajakusuma/")
                 }
-                className="flex items-center gap-2 px-5 py-2.5 border border-warm-border text-warm-navy rounded-full text-sm font-medium hover:bg-warm-surface transition-all"
+                className="flex items-center gap-2 px-5 py-2.5 border border-warm-border bg-warm-bg text-warm-navy rounded-full text-sm font-medium hover:bg-warm-surface transition-all"
               >
                 <Linkedin className="w-4 h-4" />
                 LinkedIn
@@ -251,157 +285,91 @@ function App() {
             </motion.div>
           </motion.div>
         </div>
+      </section>
 
-        {/* Scroll hint */}
+      {/* ── Journey: flows straight out of the hero, no section break ── */}
+      <section id="journey" className="px-6 pb-4 scroll-mt-20">
+        <div className="max-w-5xl mx-auto">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1, duration: 0.6 }}
+            className="mb-6"
+          >
+            <span className="block font-display text-2xl md:text-3xl font-semibold text-warm-navy">
+              From finance major to SDE intern at AWS
+            </span>
+            <span className="block mt-1 text-sm md:text-base text-warm-muted">
+              A week-by-week timeline. Hover or tap a point for details.
+            </span>
+          </motion.p>
+          <JourneyGraph />
+        </div>
+      </section>
+
+
+      {/* ── Experience + Education ─────────────────────────────────── */}
+      <section className="px-6 pt-2 pb-8">
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.4, duration: 0.6 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-warm-muted"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+          variants={stagger}
+          className="max-w-5xl mx-auto grid gap-10 md:grid-cols-5 items-start"
         >
-          <span className="text-xs tracking-widest uppercase">scroll</span>
-          <motion.div
-            animate={{ y: [0, 5, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            className="w-px h-8 bg-warm-border"
-          />
-        </motion.div>
-      </section>
-
-      {/* ── Experience ─────────────────────────────────────────────── */}
-      <section id="experience" className="px-6 py-24">
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            variants={stagger}
-          >
-            <motion.h2
-              variants={fadeUp}
-              className="text-3xl font-display font-bold text-warm-navy mb-12"
-            >
-              Experience
-            </motion.h2>
-            <ExperienceTimeline experiences={experiences} />
+          <motion.div id="experience" variants={fadeUp} className="md:col-span-3 min-w-0 scroll-mt-24">
+            <div className="flex flex-wrap items-baseline gap-x-3 mb-5">
+              <h2 className="text-3xl font-display font-bold text-warm-navy">Where I've worked</h2>
+            </div>
+            <CommitLog />
           </motion.div>
-        </div>
-      </section>
 
-      {/* ── Projects ───────────────────────────────────────────────── */}
-      <section id="projects" className="px-6 py-24 bg-warm-surface">
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            variants={stagger}
-          >
-            <motion.h2
-              variants={fadeUp}
-              className="text-3xl font-display font-bold text-warm-navy mb-10"
-            >
-              Projects
-            </motion.h2>
-
-            <motion.div
-              variants={stagger}
-              className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
-            >
-              {projects.map((project, index) => (
-                <motion.div
-                  key={index}
-                  variants={fadeUp}
-                  whileHover={{ y: -5, scale: 1.01 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 22 }}
-                  onClick={() => handleProjectClick(project)}
-                  className="bg-warm-bg border border-warm-border rounded-2xl p-5 cursor-pointer group hover:shadow-soft-md transition-shadow"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      {project.id === "taxbuddy" && (
-                        <span className="relative flex h-2 w-2 flex-shrink-0 mt-1">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
-                        </span>
-                      )}
-                      <h3 className="font-semibold text-warm-navy group-hover:text-[#6B93C4] transition-colors leading-snug">
-                        {project.title}
-                      </h3>
-                    </div>
-                    <ArrowUpRight className="w-4 h-4 text-warm-muted group-hover:text-warm-navy transition-colors flex-shrink-0 mt-0.5 ml-2" />
-                  </div>
-                  <p className="text-sm text-warm-muted leading-relaxed mb-4 line-clamp-3">
-                    {project.description}
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {project.technologies.slice(0, 4).map((tech) => (
-                      <span key={tech} className={BADGE}>
-                        {tech}
-                      </span>
-                    ))}
-                    {project.technologies.length > 4 && (
-                      <span className={BADGE}>
-                        +{project.technologies.length - 4}
-                      </span>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── Education ──────────────────────────────────────────────── */}
-      <section id="education" className="px-6 py-24">
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            variants={stagger}
-          >
-            <motion.h2
-              variants={fadeUp}
-              className="text-3xl font-display font-bold text-warm-navy mb-10"
-            >
-              Education
-            </motion.h2>
-
-            <motion.div variants={stagger} className="space-y-4">
-              {education.map((edu, index) => (
-                <motion.div
-                  key={index}
-                  variants={fadeUp}
-                  className="bg-warm-surface border border-warm-border rounded-2xl p-6 flex items-start gap-4"
-                >
-                  <img
-                    src={edu.image}
-                    alt={edu.school}
-                    className="w-12 h-12 rounded-xl object-contain flex-shrink-0"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-1 mb-2">
-                      <div>
-                        <h3 className="font-semibold text-warm-navy">
-                          {edu.degree}
-                        </h3>
+          {/* Offset down so the two columns don't line up like a table */}
+          <motion.div id="education" variants={fadeUp} className="md:col-span-2 md:mt-24 scroll-mt-24">
+            <div className="flex flex-wrap items-baseline gap-x-3 mb-5">
+              <h2 className="text-3xl font-display font-bold text-warm-navy">School</h2>
+            </div>
+            <div className="space-y-6">
+              {education.map((edu, index) =>
+                edu.gpa ? (
+                  <div key={edu.school} className={`${CARD} p-5 shadow-soft`}>
+                    <div className="flex items-start gap-3 mb-4">
+                      <img
+                        src={edu.image}
+                        alt={edu.school}
+                        className="w-11 h-11 rounded-xl object-contain flex-shrink-0"
+                      />
+                      <div className="min-w-0">
+                        <h3 className="font-semibold text-warm-navy leading-snug">{edu.degree}</h3>
                         <p className="text-sm text-warm-muted">{edu.school}</p>
-                      </div>
-                      <div className="md:text-right flex-shrink-0">
-                        <span className="text-sm text-warm-muted">
-                          {edu.period}
-                        </span>
-                        {edu.gpa && (
-                          <p className="text-sm font-medium text-warm-navy">
-                            GPA: {edu.gpa}
-                          </p>
-                        )}
+                        <p className="font-mono text-xs text-warm-muted mt-1">{edu.period}</p>
                       </div>
                     </div>
-                    {edu.relevantCourses && edu.relevantCourses.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 mt-3">
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="text-xs uppercase tracking-widest text-warm-muted">GPA</span>
+                      {/* Red-pen circle, like a graded paper */}
+                      <span className="relative inline-block px-3">
+                        <span className="font-handwritten text-4xl font-semibold text-[#C8553D]">
+                          {edu.gpa.split("/")[0]}
+                        </span>
+                        <svg viewBox="0 0 100 50" preserveAspectRatio="none" className="absolute inset-0 w-full h-full overflow-visible">
+                          <motion.path
+                            d="M8,28 C6,8 90,4 94,24 C98,44 14,50 6,30 C4,22 20,12 34,10"
+                            stroke="#C8553D"
+                            strokeWidth="2"
+                            fill="none"
+                            strokeLinecap="round"
+                            vectorEffect="non-scaling-stroke"
+                            initial={{ pathLength: 0 }}
+                            whileInView={{ pathLength: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.5, duration: 0.8 }}
+                          />
+                        </svg>
+                      </span>
+                    </div>
+                    {edu.relevantCourses && (
+                      <div className="flex flex-wrap gap-1.5">
                         {edu.relevantCourses.map((course) => (
                           <span key={course} className={BADGE}>
                             {course}
@@ -410,15 +378,39 @@ function App() {
                       </div>
                     )}
                   </div>
-                </motion.div>
-              ))}
-            </motion.div>
+                ) : (
+                  <div
+                    key={edu.school}
+                    className={`${STICKY[(index + 1) % STICKY.length]} rounded-md p-4 shadow-soft-md rotate-2 flex items-center gap-3`}
+                  >
+                    <img src={edu.image} alt={edu.school} className="w-9 h-9 rounded-lg object-contain flex-shrink-0" />
+                    <div>
+                      <h3 className="font-semibold text-warm-navy leading-snug">{edu.degree}</h3>
+                      <p className="text-xs text-warm-muted">
+                        {edu.school} · {edu.period}
+                        {edu.description?.includes("http") && (
+                          <a
+                            href={edu.description.slice(edu.description.indexOf("http"))}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="ml-1.5 underline underline-offset-2 hover:text-warm-navy"
+                          >
+                            details ↗
+                          </a>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                )
+              )}
+            </div>
           </motion.div>
-        </div>
+        </motion.div>
       </section>
 
-      {/* ── Involvements ───────────────────────────────────────────── */}
-      <section id="involvement" className="px-6 py-24 bg-warm-surface">
+
+      {/* ── Projects ───────────────────────────────────────────────── */}
+      <section id="projects" className="px-6 pt-2 pb-8 scroll-mt-20">
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial="hidden"
@@ -426,99 +418,155 @@ function App() {
             viewport={{ once: true, margin: "-80px" }}
             variants={stagger}
           >
-            <motion.h2
-              variants={fadeUp}
-              className="text-3xl font-display font-bold text-warm-navy mb-10"
-            >
-              Involvements
-            </motion.h2>
+            <motion.div variants={fadeUp} className="flex flex-wrap items-baseline gap-x-3 mb-8">
+              <h2 className="text-3xl font-display font-bold text-warm-navy">Projects</h2>
+            </motion.div>
 
-            <motion.div
-              variants={stagger}
-              className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
-            >
+            <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
+              {projects.map((project, index) => {
+                const featured = project.id === "taxbuddy";
+                return (
+                  <motion.div
+                    key={project.id}
+                    custom={TILTS[index % TILTS.length]}
+                    variants={pinned}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-40px" }}
+                    whileHover={{ y: -6, rotate: 0, scale: 1.02 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                    onClick={() => handleProjectClick(project)}
+                    className={`relative ${CARD} p-5 pt-6 cursor-pointer group shadow-soft hover:shadow-soft-lg transition-shadow ${
+                      featured ? "md:col-span-2" : ""
+                    }`}
+                  >
+                    {/* Tape */}
+                    <span
+                      className={`absolute -top-2.5 left-1/2 -translate-x-1/2 w-16 h-5 rounded-sm ${
+                        index % 2 ? "bg-[#6B93C4]/30 rotate-2" : "bg-warm-amber/45 -rotate-3"
+                      }`}
+                    />
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        {featured && (
+                          <span className="relative flex h-2 w-2 flex-shrink-0 mt-1">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                          </span>
+                        )}
+                        <h3
+                          className={`font-semibold text-warm-navy group-hover:text-[#6B93C4] transition-colors leading-snug ${
+                            featured ? "text-xl font-display font-bold" : ""
+                          }`}
+                        >
+                          {project.title}
+                        </h3>
+                      </div>
+                      <ArrowUpRight className="w-4 h-4 text-warm-muted group-hover:text-warm-navy transition-colors flex-shrink-0 mt-0.5 ml-2" />
+                    </div>
+                    <p
+                      className={`text-sm text-warm-muted leading-relaxed mb-4 ${
+                        featured ? "md:text-base" : "line-clamp-3"
+                      }`}
+                    >
+                      {project.description}
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {project.technologies.slice(0, 4).map((tech) => (
+                        <span key={tech} className={BADGE}>
+                          {tech}
+                        </span>
+                      ))}
+                      {project.technologies.length > 4 && (
+                        <span className={BADGE}>
+                          +{project.technologies.length - 4}
+                        </span>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+
+      {/* ── Guides + Involvements ──────────────────────────────────── */}
+      <section className="px-6 pt-2 pb-24">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+          variants={stagger}
+          className="max-w-5xl mx-auto grid gap-12 md:grid-cols-5 items-start"
+        >
+          <motion.div id="involvement" variants={fadeUp} className="md:col-span-2 md:order-2 scroll-mt-24">
+            <div className="flex flex-wrap items-baseline gap-x-3 mb-6">
+              <h2 className="text-3xl font-display font-bold text-warm-navy">Involvement</h2>
+            </div>
+            <div className="flex flex-col">
               {involvements.map((involvement, index) => (
                 <motion.div
-                  key={index}
-                  variants={fadeUp}
-                  whileHover={{ y: -4 }}
+                  key={involvement.organization}
+                  whileHover={{ rotate: 0, scale: 1.03, zIndex: 10 }}
                   transition={{ type: "spring", stiffness: 300, damping: 22 }}
-                  className="bg-warm-bg border border-warm-border rounded-2xl p-5"
+                  className={`relative ${STICKY[index % STICKY.length]} rounded-md p-5 shadow-soft-md ${
+                    index % 2 ? "rotate-2 md:ml-6" : "-rotate-1 md:mr-6"
+                  } ${index ? "-mt-2" : ""}`}
                 >
-                  <img
-                    src={involvement.image}
-                    alt={involvement.organization}
-                    className="w-10 h-10 rounded-xl object-contain mb-4"
-                  />
-                  <h3 className="font-semibold text-warm-navy mb-0.5">
-                    {involvement.role}
-                  </h3>
-                  <p className="text-sm font-medium text-[#6B93C4] mb-1">
-                    {involvement.organization}
-                  </p>
-                  <p className="text-xs text-warm-muted mb-3">
-                    {involvement.period}
-                  </p>
-                  <p className="text-sm text-warm-muted leading-relaxed">
-                    {involvement.description}
-                  </p>
+                  <div className="flex items-center gap-3 mb-2">
+                    <img
+                      src={involvement.image}
+                      alt={involvement.organization}
+                      className="w-8 h-8 rounded-lg object-contain flex-shrink-0"
+                    />
+                    <div className="min-w-0">
+                      <h3 className="font-semibold text-warm-navy leading-snug">{involvement.role}</h3>
+                      <p className="text-xs text-warm-muted">
+                        {involvement.organization} · {involvement.period}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-warm-navy/70 leading-relaxed">{involvement.description}</p>
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
           </motion.div>
-        </div>
-      </section>
 
-      {/* ── Dev Guides ─────────────────────────────────────────────── */}
-      <section id="guides" className="px-6 py-24">
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            variants={stagger}
-          >
-            <motion.h2
-              variants={fadeUp}
-              className="text-3xl font-display font-bold text-warm-navy mb-10"
-            >
-              Dev Guides
-            </motion.h2>
-
-            <motion.div variants={stagger} className="space-y-4">
-              {guides.map((guide, index) => (
+          <motion.div id="guides" variants={fadeUp} className="md:col-span-3 md:order-1 md:mt-16 scroll-mt-24">
+            <div className="flex flex-wrap items-baseline gap-x-3 mb-5">
+              <h2 className="text-3xl font-display font-bold text-warm-navy">Development Guides</h2>
+            </div>
+            <div className={`${CARD} px-5 shadow-soft`}>
+              {guides.map((guide) => (
                 <motion.div
-                  key={index}
-                  variants={fadeUp}
+                  key={guide.id}
                   whileHover={{ x: 4 }}
                   transition={{ type: "spring", stiffness: 300, damping: 25 }}
                   onClick={() => handleGuideClick(guide)}
-                  className="flex items-center justify-between p-5 border border-warm-border rounded-2xl cursor-pointer group hover:bg-warm-surface transition-colors"
+                  className="flex items-center justify-between py-5 border-b border-dashed border-warm-border last:border-0 cursor-pointer group"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1.5">
                       <span className={BADGE}>{guide.category}</span>
-                      <span className="text-xs text-warm-muted">
-                        {guide.publishDate}
-                      </span>
+                      <span className="font-mono text-xs text-warm-muted">{guide.publishDate}</span>
                     </div>
                     <h3 className="font-semibold text-warm-navy group-hover:text-[#6B93C4] transition-colors mb-1">
                       {guide.title}
                     </h3>
-                    <p className="text-sm text-warm-muted line-clamp-1">
-                      {guide.description}
-                    </p>
+                    <p className="text-sm text-warm-muted line-clamp-1">{guide.description}</p>
                   </div>
                   <ArrowUpRight className="w-5 h-5 text-warm-muted group-hover:text-warm-navy flex-shrink-0 ml-4 transition-colors" />
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
           </motion.div>
-        </div>
+        </motion.div>
       </section>
 
       {/* ── Footer ─────────────────────────────────────────────────── */}
-      <footer className="px-6 py-10 border-t border-warm-border">
+      <footer className="px-6 py-10 border-t border-warm-border bg-warm-bg">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-warm-muted text-sm font-sans">
             Built by Jonathan 2026

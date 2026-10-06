@@ -5,6 +5,8 @@ import ReactGA from "react-ga4";
 import App from "./App";
 import ProjectDetail from "./popup/ProjectDetail";
 import GuideDetail from "./popup/GuideDetails";
+import VariantPage from "./variants/VariantPage";
+import VariantSwitcher from "./variants/VariantSwitcher";
 import "./index.css";
 
 ReactGA.initialize("G-VN6BJFZWJT");
@@ -30,7 +32,9 @@ ReactDOM.createRoot(rootElement).render(
         <Route path="/" element={<App />} />
         <Route path="/project/:id" element={<ProjectDetail />} />
         <Route path="/guide/:id" element={<GuideDetail />} />
+        <Route path="/v/:slug" element={<VariantPage />} />
       </Routes>
+      <VariantSwitcher />
     </BrowserRouter>
   </React.StrictMode>
 );

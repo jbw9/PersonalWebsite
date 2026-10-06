@@ -27,10 +27,18 @@ export interface Involvement {
 
 export const experiences = [
   {
+    title: "Incoming Software Engineer",
+    company: "Amazon Web Services (AWS)",
+    companyIcon: "/awsLogo.png",
+    period: "Feb 2027",
+    description:
+      "AWS Managed Streaming for Apache Kafka (MSK)",
+  },
+  {
     title: "SDE Intern",
     company: "Amazon Web Services (AWS)",
     companyIcon: "/awsLogo.png",
-    period: "Jun 2026 - Present",
+    period: "Jun 2026 - Aug 2026",
     description:
       "AWS Managed Streaming for Apache Kafka (MSK)",
   },
@@ -46,7 +54,7 @@ export const experiences = [
     title: "Software Engineer Intern",
     company: "Kredivo Group",
     companyIcon: "kredivoLogo.png",
-    period: "Summer 2025",
+    period: "May 2025 - Jul 2025",
     description:
       "Developing an MCP server, and integrating it with the company's LLM and customer support system",
   },
@@ -70,7 +78,7 @@ export const experiences = [
     title: "Software Engineer Intern",
     company: "We Hear You, Inc",
     companyIcon: "wehearyouLogo.png",
-    period: "Summer 2024",
+    period: "May 2024 - Aug 2024",
     description:
       "Developed a real time American Sign Language to English Android application. Optimized translation system through machine learning.",
   },

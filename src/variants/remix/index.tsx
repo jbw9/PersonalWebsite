@@ -223,8 +223,12 @@ const Remix = () => {
   }, [mode, navH]);
 
   const goSection = (id: string) => switchMode("sections", { section: id });
+  // the drawer stays mounted; it is only hidden once it has slid out, and is visible in the same
+  // render that opens it so the terminal can take focus
+  const [drawerShown, setDrawerShown] = useState(false);
   const openAsk = useCallback(() => {
     setPanelOpen(false);
+    setDrawerShown(true);
     setAskOpen(true);
   }, []);
   const closeAsk = useCallback(() => setAskOpen(false), []);
@@ -250,13 +254,14 @@ const Remix = () => {
   // ── Story HUD: scene label + timecode in the top bar ──
   const [sceneIdx, setSceneIdx] = useState(-1);
   const tcRef = useRef<HTMLSpanElement>(null);
+  const timecode = (f: number) => {
+    const fr = Math.max(0, Math.round((f + 1) * 24 * 9));
+    return `00:${pad(Math.floor(fr / 1440) % 60)}:${pad(Math.floor(fr / 24) % 60)}:${pad(fr % 24)}`;
+  };
   useMotionValueEvent(progress, "change", (f) => {
     const i = f < -0.5 ? -1 : Math.min(scenes.length - 1, Math.round(f));
     setSceneIdx((p) => (p === i ? p : i));
-    if (tcRef.current) {
-      const fr = Math.max(0, Math.round((f + 1) * 24 * 9));
-      tcRef.current.textContent = `00:${pad(Math.floor(fr / 1440) % 60)}:${pad(Math.floor(fr / 24) % 60)}:${pad(fr % 24)}`;
-    }
+    if (tcRef.current) tcRef.current.textContent = timecode(f);
   });
 
   const openProject = (id: string) => navigate(`/project/${id}`);
@@ -293,7 +298,7 @@ const Remix = () => {
           onAsk={openAsk}
         />
       ) : (
-        <Sections navH={navH} stripH={stripH} nameBox={nameBox} done={done} fine={fine} onOpen={openProject} onGuide={openGuide} onAsk={openAsk} onBand={setBand} />
+        <Sections navH={navH} stripH={stripH} nameBox={nameBox} done={done} fine={fine} reduce={reduce} onOpen={openProject} onGuide={openGuide} onAsk={openAsk} onBand={setBand} />
       )}
 
       {/* intro: an anamorphic flare rides across the title as it forms */}
@@ -335,20 +340,23 @@ const Remix = () => {
 
           <div className="flex-1 min-w-0 rx-mono text-[10px] text-[#8f8676]">
             {story ? (
-              <div className="flex items-center gap-4">
+              <div className="hidden sm:flex items-center gap-4">
                 <span className="truncate">
                   <span className="text-[#c4372b] mr-2">●</span>
                   {cur ? (
                     <>
-                      scene {pad(cur.n)}/{scenes.length}
+                      <span className="hidden md:inline">scene </span>
+                      {pad(cur.n)}/{scenes.length}
                       <span className="hidden md:inline text-[#cfc5b0]"> · {cur.short}</span>
                     </>
                   ) : (
-                    "title card"
+                    <>
+                      <span className="hidden md:inline">title </span>card
+                    </>
                   )}
                 </span>
                 <span ref={tcRef} className="hidden lg:inline tabular-nums text-[#6f675a]">
-                  00:00:00:00
+                  {timecode(progress.get())}
                 </span>
               </div>
             ) : (
@@ -442,26 +450,19 @@ const Remix = () => {
         aria-label="Ask Claude about Jonathan"
         aria-hidden={!askOpen}
         initial={false}
-        animate={askOpen ? { x: 0, y: 0, visibility: "visible" } : { ...(wide ? { x: "100%" } : { y: "100%" }), transitionEnd: { visibility: "hidden" } }}
+        animate={askOpen ? { x: 0, y: 0 } : wide ? { x: "100%", y: 0 } : { x: 0, y: "100%" }}
         transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
+        onAnimationComplete={() => !askOpen && setDrawerShown(false)}
         className="fixed right-0 z-[62] flex flex-col bg-[#0d0b09] border-l border-[#efe6d2]/10 shadow-[-30px_0_80px_rgba(0,0,0,0.55)]"
-        style={wide ? { top: navH, bottom: stripH, width: 540 } : { top: 0, bottom: 76, left: 0 }}
+        style={{ ...(wide ? { top: navH, bottom: stripH, width: 540 } : { top: 0, bottom: 76, left: 0 }), visibility: drawerShown ? "visible" : "hidden" }}
       >
-        <div className="h-10 shrink-0 flex items-center justify-between px-4 border-b border-[#efe6d2]/10 rx-mono text-[9px] md:text-[10px] text-[#8f8676]">
-          <span>
-            <span className="text-[#f2b35b] mr-2">✻</span>ask claude about jonathan
-          </span>
-          <button onClick={closeAsk} className="flex items-center gap-2 hover:text-[#efe6d2] transition-colors">
-            <span className="hidden md:inline rx-plain normal-case tracking-normal px-1.5 border border-[#efe6d2]/15">esc</span>
-            <span className="text-sm leading-none">✕</span>
-          </button>
-        </div>
         <div className="flex-1 min-h-0">
           <AskTerminal active={askOpen} onClose={closeAsk} onUnlock={unlock} />
         </div>
       </motion.aside>
 
-      <Toasts queue={toasts} top={navH} />
+      {/* toasts step aside from an open drawer so they never cover its close button */}
+      <Toasts queue={toasts} top={askOpen && !wide ? navH + 40 : navH} right={askOpen && wide ? 556 : undefined} />
       <Panel open={panelOpen} unlocked={unlocked} onClose={() => setPanelOpen(false)} top={navH} />
 
       <div className="rx-grain z-[60]" style={{ backgroundImage: `url(${grain})` }} />

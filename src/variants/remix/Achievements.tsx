@@ -13,8 +13,8 @@ export const ACHIEVEMENTS: { id: AchievementId; icon: string; name: string; done
 ];
 export const byId = (id: AchievementId) => ACHIEVEMENTS.find((a) => a.id === id) as (typeof ACHIEVEMENTS)[number];
 
-export const Toasts = ({ queue, top }: { queue: AchievementId[]; top: number }) => (
-  <div className="fixed right-3 md:right-5 z-[70] flex flex-col items-end gap-2 pointer-events-none" style={{ top: top + 12 }}>
+export const Toasts = ({ queue, top, right }: { queue: AchievementId[]; top: number; right?: number }) => (
+  <div className="fixed right-3 md:right-5 z-[70] flex flex-col items-end gap-2 pointer-events-none transition-[right] duration-500" style={{ top: top + 12, right }}>
     <AnimatePresence>
       {queue.map((id) => {
         const a = byId(id);

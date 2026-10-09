@@ -58,13 +58,14 @@ type Props = {
   nameBox: NameBox | null;
   done: boolean;
   fine: boolean;
+  reduce: boolean;
   onOpen: (id: string) => void;
   onGuide: (id: string) => void;
   onAsk: () => void;
   onBand: (b: Band | null) => void;
 };
 
-const Sections = ({ navH, stripH, nameBox, done, fine, onOpen, onGuide, onAsk, onBand }: Props) => {
+const Sections = ({ navH, stripH, nameBox, done, fine, reduce, onOpen, onGuide, onAsk, onBand }: Props) => {
   const show = { opacity: done ? 1 : 0, y: done ? 0 : 14 };
   const col = "w-full md:w-[52%] max-w-[620px]";
   const pad = "px-5 md:pl-[7vw] md:pr-0";
@@ -76,10 +77,10 @@ const Sections = ({ navH, stripH, nameBox, done, fine, onOpen, onGuide, onAsk, o
         <h1 className="sr-only">Jonathan</h1>
         {nameBox && (
           <div className="absolute inset-x-0 flex flex-col items-center text-center px-5" style={{ top: nameBox.cy + nameBox.h / 2 + (fine ? 34 : 26) }}>
-            <motion.p initial={{ opacity: 0, y: 14 }} animate={show} transition={{ duration: 0.9, delay: 0.35 }} className="text-[1.25rem] md:text-[1.6rem] italic text-[#cfc5b0] leading-snug max-w-2xl">
+            <motion.p initial={reduce ? false : { opacity: 0, y: 14 }} animate={show} transition={{ duration: 0.9, delay: 0.35 }} className="text-[1.25rem] md:text-[1.6rem] italic text-[#cfc5b0] leading-snug max-w-2xl">
               CS &amp; Econs @ UIUC — building software that solves real problems.
             </motion.p>
-            <motion.div initial={{ opacity: 0, y: 14 }} animate={show} transition={{ duration: 0.9, delay: 0.5 }} className="mt-5 md:mt-6 flex flex-wrap justify-center gap-2.5 rx-plain text-[11px] md:text-[12px]">
+            <motion.div initial={reduce ? false : { opacity: 0, y: 14 }} animate={show} transition={{ duration: 0.9, delay: 0.5 }} className="mt-5 md:mt-6 flex flex-wrap justify-center gap-2.5 rx-plain text-[11px] md:text-[12px]">
               <span className="px-3.5 py-1.5 border border-[#efe6d2]/15 bg-black/30">
                 <span className="text-[#f2b35b]">☁</span> Incoming SDE @ AWS <span className="text-[#8f8676]">· Feb 2027</span>
               </span>
@@ -90,7 +91,7 @@ const Sections = ({ navH, stripH, nameBox, done, fine, onOpen, onGuide, onAsk, o
                 Building TaxBuddy <span className="text-[#8f8676]">↗</span>
               </button>
             </motion.div>
-            <motion.div initial={{ opacity: 0, y: 14 }} animate={show} transition={{ duration: 0.9, delay: 0.65 }} className="mt-7 md:mt-8 flex flex-col items-center gap-5">
+            <motion.div initial={reduce ? false : { opacity: 0, y: 14 }} animate={show} transition={{ duration: 0.9, delay: 0.65 }} className="mt-7 md:mt-8 flex flex-col items-center gap-5">
               <button
                 onClick={onAsk}
                 className="group rx-mono text-[11px] pl-5 pr-4 py-3 bg-[#f2b35b] text-[#0a0907] hover:bg-[#ffc978] transition-colors flex items-center gap-3 shadow-[0_0_40px_rgba(242,179,91,0.18)]"

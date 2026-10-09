@@ -106,10 +106,8 @@
   transition: border-color 0.3s ease, background 0.3s ease;
 }
 
-.v-remix .rx-scroll-hide {
-  scrollbar-width: none;
-}
-
-.v-remix .rx-scroll-hide::-webkit-scrollbar {
-  display: none;
+@media (max-width: 767px) {
+  .v-remix .rx-card {
+    background: rgba(14, 12, 9, 0.9);
+  }
 }

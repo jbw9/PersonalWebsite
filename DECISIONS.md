@@ -75,3 +75,18 @@
 - Terminal ships its own `esc ✕` title bar (phones have no Esc), so the shell must not add a close.
 - **Env trap:** `localhost:3000` can resolve to the TaxBuddy Next.js server on IPv6; this site's dev
   server is `127.0.0.1:3000`.
+
+## 2026-10-09 — WS4 readback (remix shell)
+- **The letterbox bars are the chrome**: the top bar becomes the nav, the bottom bar the vibe strip;
+  mode switches are both bars closing to a slate and reopening. Rejected a separate overlay.
+- **The vibe strip owns the curve** (cinema's in-run vibe line removed so it isn't drawn twice).
+  Milestones evenly spaced with piecewise time interpolation (true-date axis crowds late 2023).
+- **Story mode unmounts Sections** and pauses the particle loop; Sections scroll position is saved
+  and restored. Story progress is one MotionValue (-1 title … n end) driving playhead + HUD.
+- **Particle name waits for the Cormorant font** (polls up to 1.5s; `document.fonts.load()` resolves
+  empty while the Google stylesheet is in flight) and re-samples if it arrives late.
+- Files renamed (`story.ts`→`timeline.ts`, `Story.tsx`→`StoryMode.tsx`) after a case-insensitive
+  filename clash confused webpack's cache.
+- WS4 reported "Off Script" not unlocking for an unknown question; fan-in re-ran it against the final
+  `answer.ts` in the real drawer: refusal shown, unknown + ask + story unlocked (3/7). Stale code
+  mid-build, not a bug.

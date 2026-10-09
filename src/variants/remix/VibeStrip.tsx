@@ -43,14 +43,16 @@ const VibeStrip = ({
 
   const g = useRef(geo);
   g.current = geo;
-  const headX = useTransform(progress, (f) => g.current.pts[0].x + Math.max(0, f) * step);
+  // f runs 0…n-1 across the scenes, then to n (the end card) across the dashed future
+  const fKeys = useMemo(() => Array.from({ length: n + 1 }, (_, i) => i), []);
+  const headX = useTransform(progress, (f) => lerpAt(fKeys, g.current.knotX, f));
   const headY = useTransform(headX, (x) => curveY(g.current.pts, x));
   const headO = useTransform(progress, (f) => Math.min(1, Math.max(0, f + 1)));
   const clipW = useTransform(headX, (x) => x);
 
   const [hover, setHover] = useState<number | null>(null);
   const dragging = useRef(false);
-  const fAt = (x: number) => Math.min(n - 1, Math.max(-1, (x - geo.pts[0].x) / step));
+  const fAt = (x: number) => (x < geo.pts[0].x ? Math.max(-1, (x - geo.pts[0].x) / step) : lerpAt(geo.knotX, fKeys, x));
   const nearestAt = (x: number) => Math.min(n - 1, Math.max(0, Math.round((x - geo.pts[0].x) / step)));
   const localX = (e: React.PointerEvent) => e.clientX - e.currentTarget.getBoundingClientRect().left;
 
@@ -176,7 +178,7 @@ const VibeStrip = ({
 
       {hs && (
         <div
-          className="fixed z-[65] pointer-events-none -translate-x-1/2 rx-card !bg-[#0e0c09]/95 px-4 py-3 w-[260px] shadow-[0_16px_50px_rgba(0,0,0,0.6)]"
+          className="fixed z-[65] pointer-events-none -translate-x-1/2 rx-card !bg-[#0e0c09]/95 px-4 py-3 w-[290px] shadow-[0_16px_50px_rgba(0,0,0,0.6)]"
           style={{ left: tipX(geo.pts[hover as number].x), bottom: H + 10 }}
         >
           <div className="flex items-center gap-3">

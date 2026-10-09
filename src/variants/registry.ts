@@ -18,6 +18,4 @@ export const variants: Variant[] = [
   { slug: "particles", name: "Particles", pitch: "Thousands of particles swarm into your name and follow the cursor", Component: lazy(() => import("./particles")) },
   { slug: "kinetic", name: "Kinetic Type", pitch: "Loud, brutalist, giant type that slams in and scrambles", Component: lazy(() => import("./kinetic")) },
   { slug: "remix", name: "Director's Cut", pitch: "Cinematic + particles, sections first, a Story toggle and an Ask-Claude terminal", Component: lazy(() => import("./remix")) },
-  // Temporary: WS5's build harness for the terminal; removed at fan-in
-  { slug: "ask-preview", name: "Ask preview (temp)", pitch: "The Ask terminal on its own", Component: lazy(() => import("./remix/ask/Preview")) },
 ];

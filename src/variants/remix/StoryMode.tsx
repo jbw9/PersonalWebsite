@@ -6,7 +6,8 @@ export type StoryApi = { seek: (f: number) => void };
 
 const instant = "instant" as ScrollBehavior;
 const range = (a: number, b: number) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
-const FS = range(-1, scenes.length - 1);
+// -1 is the title card, 0…n-1 the scenes, n the end card
+const FS = range(-1, scenes.length);
 
 // ── Scene pieces (from cinema) ──
 
@@ -144,8 +145,9 @@ const HorizontalRun = ({ vw, vh, navH, stripH, progress, api, startAt, onOpen, o
       return p;
     });
     // scroll offset that frames each scene (index -1 is the title card)
-    const anchors = [0, ...panels.map((p) => p.x + 40 - vw * 0.25)];
-    return { panels, W: x + vw * 0.7, anchors };
+    const W = x + vw * 0.7;
+    const anchors = [0, ...panels.map((p) => p.x + 40 - vw * 0.25), W - vw];
+    return { panels, W, anchors };
   }, [vw]);
 
   const maxS = layout.W - vw;
@@ -251,7 +253,11 @@ const HorizontalRun = ({ vw, vh, navH, stripH, progress, api, startAt, onOpen, o
 
 const MobileRun = ({ vh, navH, stripH, progress, api, startAt, onOpen, onBack, onAsk }: Props) => {
   const refs = useRef<(HTMLDivElement | null)[]>([]);
-  const anchors = () => [0, ...refs.current.map((el) => (el ? el.offsetTop - navH - 16 : 0))];
+  const anchors = () => [
+    0,
+    ...refs.current.map((el) => (el ? el.offsetTop - navH - 16 : 0)),
+    document.documentElement.scrollHeight - window.innerHeight,
+  ];
   useEffect(() => {
     const onScroll = () => progress.set(lerpAt(anchors(), FS, window.scrollY));
     window.addEventListener("scroll", onScroll, { passive: true });

@@ -119,7 +119,7 @@ export const createField = (
 
   const region = () =>
     wide ? { x: vw * 0.6, y: vh * 0.2, w: vw * 0.34, h: vh * 0.56 } : { x: vw * 0.08, y: vh * 0.22, w: vw * 0.84, h: vh * 0.42 };
-  const nameCy = () => vh * (wide ? 0.36 : 0.33);
+  const nameCy = () => vh * (wide ? 0.38 : 0.33);
 
   const build = (k: ShapeKey): Float32Array => {
     const R = region();
@@ -194,11 +194,6 @@ export const createField = (
           c.arcTo(bx, by, bx + bw, by, bh / 2);
           c.fill();
         });
-        c.globalAlpha = 0.12;
-        for (let yr = Math.ceil(lo / 12); yr * 12 <= hi; yr++) {
-          const gx = R.x + ((yr * 12 - lo) / (hi - lo)) * R.w;
-          c.fillRect(gx, R.y - 10, 1.5, R.h + 20);
-        }
       });
     if (k === "grid")
       return sample(vw, vh, N, (c) => {

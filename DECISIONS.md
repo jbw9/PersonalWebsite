@@ -40,3 +40,24 @@
 - Intros lock `html.style.overflow` only while playing; wheel/touch also skip.
 - `data.ts` has two `companyIcon`s without a leading slash (`kredivoLogo.png`, `wehearyouLogo.png`):
   fine at `/`, broken under `/v/...`. WS3 normalises locally; other variants must too (fan-in check).
+
+## 2026-10-06 — WS2 readback (os, canvas)
+- **os dock is vertical on the left, icons right** — keeps bottom-centre clear for the switcher.
+  Windows clamp ~90px above the bottom. "Genie" is faked with split X/Y springs from the icon origin
+  (true mesh warp rejected). Terminal doesn't steal focus on auto-open so `[`/`]` still switch.
+- **canvas camera is a single rAF loop writing transforms to the DOM**, not React state or
+  framer-motion (which can't do zoom-around-cursor + momentum cleanly); `will-change` rejected
+  (blurry text after zoom). Fit/tour exclude the layers panel and minimap, so default zoom is ~19%.
+- WS2 verified with the Playwright bundled inside gstack (shared browse tab was unreliable with 3
+  builders) — nothing added to the project.
+
+## 2026-10-09 — Version 9 split into shell (WS4) + Ask terminal (WS5) behind `contracts.ts`
+- **Chose:** two builders on one variant, with a frozen `AskTerminalProps`/`AchievementId` contract
+  and a temporary `ask-preview` route so WS5 can see its terminal before WS4 embeds it.
+- **Beat:** one builder doing everything (serial, slower), and importing from cinema/particles
+  (those folders get deleted when a winner is promoted, so remix copies what it needs).
+- **Cost:** duplicated cinema/particles code inside `remix/`; a throwaway registry entry.
+- **Ask = local retrieval for now, behind one `answer()` seam.** It answers only from KB text and
+  says "I don't know" below a threshold. Rejected calling the Claude API from the browser: the site
+  is static GitHub Pages, so a key in the bundle would be public. The real version needs a small
+  backend (e.g. a Lambda) — out of scope until Jonathan asks.

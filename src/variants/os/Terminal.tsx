@@ -63,7 +63,7 @@ const neofetch = () => {
     ["Uptime", `${weeksSince()} weeks (since finance major)`],
     ["Packages", `${projects.length} projects, ${guides.length} guides`],
     ["Shell", "zsh (caffeinated)"],
-    ["Next", `SDE @ AWS · ${experiences[0].description.replace("AWS ", "")}`],
+    ["Next", `SDE @ AWS (Amazon MSK) · ${experiences[0].period}`],
     ["Active", "taxbuddy.service ● running"],
     ["GPA", uiuc?.gpa ?? ""],
   ];

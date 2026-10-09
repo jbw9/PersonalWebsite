@@ -265,6 +265,7 @@ const MenuBar = ({
       initial={{ y: -MENU_H }}
       animate={{ y: 0 }}
       transition={{ delay: 0.15, type: "spring", stiffness: 260, damping: 28 }}
+      onPointerDown={(e) => e.stopPropagation()}
       className="absolute top-0 left-0 right-0 z-[9500] flex items-center px-2 text-[13px] text-white/90 border-b border-white/[0.06]"
       style={{ height: MENU_H, background: "rgba(10,10,20,0.35)", backdropFilter: "blur(24px) saturate(180%)", WebkitBackdropFilter: "blur(24px) saturate(180%)" }}
     >
@@ -365,12 +366,13 @@ const Desktop = ({ onRestart }: { onRestart: () => void }) => {
   useEffect(() => {
     const W = window.innerWidth;
     const H = window.innerHeight;
-    const roomy = W >= 1180;
+    // Terminal tucks under the second icon column's two icons, just right of the README
+    const roomy = W >= 1260;
     const ts = [
       window.setTimeout(() => {
-        if (roomy) open("terminal", null, { x: W - 640 - 220, y: H - 420 - 90, autorun: "neofetch" });
+        if (roomy) open("terminal", null, { x: W - 664, y: H - 420 - 90, autorun: "neofetch" });
       }, 450),
-      window.setTimeout(() => open("about", null, { x: roomy ? DOCK_W + 34 : undefined, y: roomy ? MENU_H + 34 : undefined }), 750),
+      window.setTimeout(() => open("about", null, { x: roomy ? DOCK_W + 16 : undefined, y: roomy ? MENU_H + 34 : undefined }), 750),
       window.setTimeout(
         () =>
           setNotes((n) => [

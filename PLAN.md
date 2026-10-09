@@ -145,3 +145,106 @@ done-when: as WS1.
 ## Fan-in
 Main thread: `./demo.sh` (typecheck + production build), screenshot every route intro +
 settled + mobile, read back each builder's diff, log surprises to `DECISIONS.md`.
+
+---
+
+# Round 2 — Version 9: "Director's Cut" (`/v/remix`)
+
+## Jonathan's feedback on round 1 (2026-10-09)
+- **Cinematic** is the favourite: the look, and above all the **vibe graph strip along the bottom**.
+  But a timeline-first layout is wrong for a portfolio: "most people who go to personal websites
+  want to go directly to the relevant section". Wants a **toggle between story time and normal**.
+- **Particles**: loves how it flows from one place to another, changing shape as you go.
+- **Card Deck**: loves the gamified fun, but not poker. → light, clean gamification instead.
+- **JonathanOS**: too nerdy, and hard to use on mobile.
+- New: a **Claude Code emulator** where visitors ask about him. It answers from a knowledge base
+  and says it doesn't know when the answer isn't there. **UI only for now** (no API calls yet).
+- "Keep it clean and nice." Desktop is the priority; mobile-friendly if possible.
+
+## Round-2 contracts (frozen — main thread)
+- `src/variants/remix/contracts.ts` — `AchievementId`, `AskTerminalProps`.
+- `src/variants/remix/ask/AskTerminal.tsx` default export implements `AskTerminalProps` and
+  **fills its parent** (`h-full w-full`). The shell owns the drawer around it.
+- Registry has `remix` and a temporary `ask-preview` (→ `remix/ask/Preview.tsx`), removed at fan-in.
+- All round-1 "Every variant must" rules still apply.
+- **Self-contained:** `remix` will likely be promoted to the live site and the other variants deleted,
+  so **copy** what you need from `src/variants/cinema/**` and `src/variants/particles/**` into
+  your folder. Never import from another variant's folder. Read those folders; never edit them.
+
+### WS4 — remix shell  (builder)
+owns: `src/variants/remix/**` except `src/variants/remix/ask/**` and `src/variants/remix/contracts.ts`
+done-when: tsc clean for `src/variants/remix`; /v/remix plays intro → Sections mode; the Story
+toggle works both ways; the Ask drawer opens with the (stub or real) terminal; no console errors and
+no horizontal overflow at 1280×800 and 390×844.
+
+- **Look:** cinema's palette and type (warm black, Cormorant Garamond + IBM Plex Mono, amber
+  accent, subtle grain). Restraint: clean and premium, not busy.
+- **Intro (≤3s, skippable):** letterbox bars plus cinema's title feel, but the name **forms from
+  warm amber/cream particles** (from particles' engine). Then the bars open into the page.
+- **Nav (sticky, minimal):** a J mark; section links (Experience, Projects, School, Involvement,
+  Guides); a segmented **Sections | 🎬 Story** toggle; the achievements counter (🏆 n/7); an
+  **Ask Claude** button.
+- **Sections mode (default)** — direct and scannable, and the order puts what recruiters want first:
+  - Hero: particle name, tagline, the AWS + TaxBuddy chips, contact, and a CTA "Ask Claude about me".
+  - **Experience** (cards with logo, role, dates; upcoming/current highlighted).
+  - **Projects** (cinema's "Now playing" grid style; TaxBuddy featured).
+  - School (GPA), Involvement, Guides, contact footer.
+  - A fixed particle canvas behind the page **morphs per active section** (name → AWS cloud →
+    project grid → "3.90" → globe …), as the particles variant does. It sits on the right on
+    desktop and is dimmed behind content on mobile. Keep it subtle enough that text stays readable.
+- **Vibe graph strip pinned at the bottom in both modes** (his favourite part):
+  - In Sections mode, hovering a dot shows emoji, title and date.
+  - Hovering an experience card highlights that period on the strip.
+  - Clicking a dot switches to Story mode at that scene.
+  - In Story mode the strip is the scrubber with a playhead, as in cinema.
+  - The temporary switcher pill may overlap the strip's centre; just don't put buttons at
+    bottom-centre.
+- **Story mode:** cinema's scroll-driven horizontal run of scenes, essentially as-is (vertical on
+  mobile). Switching modes is cinematic (bars close, then reopen). Leaving Story returns you to
+  your Sections scroll position.
+- **Achievements** (the gamification, replacing poker):
+  - A small toast top-right: "🏆 Unlocked · Director — watched Story mode".
+  - The nav counter opens a panel listing all 7; locked ones show a hint.
+  - The shell awards `story`, `explorer`, `vibe` and `shockwave`; the terminal fires `ask`,
+    `unknown` and `hire` through `onUnlock`.
+  - Kept in memory only (resets on replay). Subtle; never blocks content.
+- **Ask drawer:** mount `<AskTerminal>` **once** and keep it mounted, so history persists between
+  openings. It's a right-side drawer on desktop (~540px wide) and a full-screen sheet on mobile.
+  Open it from the nav button, the hero CTA, or `/` (when not typing). Esc closes it via `onClose`.
+
+### WS5 — Ask terminal  (builder)
+owns: `src/variants/remix/ask/**`
+done-when: tsc clean for `src/variants/remix/ask`; /v/ask-preview shows the terminal. In it:
+answering a known question, an unknown question, `/help`, `/clear` and `sudo hire jonathan` all
+work with no console errors at 1280×800 and 390×844.
+
+- **Emulate the Claude Code CLI's feel** (no Anthropic logo; its own name, e.g. "Ask Jonathan"):
+  - A welcome box with "✻ Welcome to …", cwd `~/jonathan` and a couple of tips.
+  - A bordered `>` prompt box; the user's message echoed back.
+  - A spinner line with cycling glyphs (· ✢ ✳ ✶ ✻ ✽), whimsical verbs ("Pondering…") and elapsed
+    seconds.
+  - Tool-call lines: `⏺ Read(kb/experience/aws.md)` followed by `⎿  Read 6 lines`.
+  - The answer streams in after a `⏺` bullet.
+  - Slash commands `/help`, `/clear`, `/contact`, `/exit`; ↑/↓ history; Esc → `onClose`.
+  - Clickable suggested-question chips (essential on mobile).
+  - Palette: warm black, cream text, a Claude-Code-like terracotta accent; monospace (IBM Plex Mono
+    via `@import` in a CSS file scoped under `.v-remix-ask`).
+  - A status line stating honestly that it's an offline demo answering only from Jonathan's
+    knowledge base.
+- **Knowledge base** `ask/knowledge.ts`:
+  - `KBEntry { path; title; text; tags }`, generated from `data.ts`, `projects`, `milestones` and
+    `guides`, with fake file paths like `kb/projects/taxbuddy.md`.
+  - Plus an exported `EXTRA_FACTS: KBEntry[]` that Jonathan fills by hand. Leave it empty with one
+    commented example.
+  - **Never invent facts.**
+- **The seam** `ask/answer.ts`:
+  - `export async function answer(question: string): Promise<Answer>`, with
+    `Answer = { reads: string[]; text: string; known: boolean }`.
+  - This is the only function to swap for a real Claude API call later; say so in one comment.
+  - For now: keyword/token-overlap retrieval with a threshold. Compose the answer only from
+    retrieved text.
+  - Below the threshold, return `known: false` with "I don't know — that's not in Jonathan's
+    knowledge base", plus a suggestion to email him.
+- Fire `onUnlock("ask")` on the first known answer, `"unknown"` on the first unknown, and `"hire"` on
+  `sudo hire jonathan` (a small playful sequence ending in a mailto).
+- Don't steal focus when `active` is false. Focus the prompt when `active` flips to true.

@@ -15,7 +15,7 @@ const LOG: Log[] = [
   ["ok", "Mounted /uiuc/cs"],
   ["ok", "Mounted /uiuc/econ"],
   ["raw", "Unmounting /finance-major … done"],
-  ...milestones.slice(1, 6).map((m): Log => ["ok", `Reached target ${m.short}`]),
+  ...milestones.filter((m) => !m.dip).slice(1, 6).map((m): Log => ["ok", `Reached target ${m.short}`]),
   ["warn", "NullPointerException in cs124/mp3 — recovered"],
   ...experiences
     .slice()

@@ -645,14 +645,14 @@ const Contact = () => {
 };
 
 export const APPS: Record<AppId, AppDef> = {
-  about: { name: "README", title: "README.md — About Jonathan", icon: FileText, bg: "linear-gradient(160deg,#ffffff,#d7d9e0)", fg: "#1c1c28", w: 560, h: 520, Body: About },
+  about: { name: "README", title: "README.md — About Jonathan", icon: FileText, bg: "linear-gradient(160deg,#ffffff,#d7d9e0)", fg: "#1c1c28", w: 520, h: 548, Body: About },
   projects: { name: "Projects", title: "Projects", icon: Folder, bg: "linear-gradient(160deg,#6CC4FF,#0A6CFF)", fg: "#fff", w: 860, h: 540, Body: Projects },
   experience: { name: "Experience", title: "Activity Monitor — Experience", icon: Activity, bg: "linear-gradient(160deg,#3a3a40,#121216)", fg: "#30D158", w: 780, h: 470, Body: Experience },
   journey: { name: "Journey", title: "Stocks — $JNTN", icon: TrendingUp, bg: "linear-gradient(160deg,#1f2a22,#050806)", fg: "#30D158", w: 780, h: 560, Body: Journey },
   school: { name: "School", title: "transcript.pdf", icon: GraduationCap, bg: "linear-gradient(160deg,#FF7A2E,#C2410C)", fg: "#fff", w: 560, h: 600, Body: School },
   guides: { name: "Guides", title: "Notes — Development Guides", icon: BookOpen, bg: "linear-gradient(160deg,#FFE45C,#FFAA00)", fg: "#fff", w: 720, h: 440, Body: Guides },
   involvement: { name: "Involvement", title: "Stickies — Involvement", icon: StickyNote, bg: "linear-gradient(160deg,#FF8CC0,#D6336C)", fg: "#fff", w: 640, h: 500, Body: Involvement },
-  terminal: { name: "Terminal", title: "guest — zsh — 80×24", icon: TerminalIcon, bg: "linear-gradient(160deg,#2b2b30,#0b0b0d)", fg: "#30D158", w: 640, h: 420, Body: Terminal },
+  terminal: { name: "Terminal", title: "guest — zsh — 80×24", icon: TerminalIcon, bg: "linear-gradient(160deg,#2b2b30,#0b0b0d)", fg: "#30D158", w: 554, h: 420, Body: Terminal },
   contact: { name: "Contact", title: "New Message", icon: Mail, bg: "linear-gradient(160deg,#5EC3FF,#1A6CF0)", fg: "#fff", w: 520, h: 460, Body: Contact },
 };
 

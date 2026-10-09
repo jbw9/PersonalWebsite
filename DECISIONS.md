@@ -61,3 +61,17 @@
   says "I don't know" below a threshold. Rejected calling the Claude API from the browser: the site
   is static GitHub Pages, so a key in the bundle would be public. The real version needs a small
   backend (e.g. a Lambda) — out of scope until Jonathan asks.
+
+## 2026-10-09 — WS5 readback (Ask terminal)
+- **Retrieval: IDF-weighted token overlap** (title/tags ×2, coverage multiplier, journey ×0.55 so
+  the experience file ranks first). Rejected TF-IDF vectors as overkill at ~50 entries.
+- **"Unknown" = any meaningful question word absent from the whole KB**, not a score threshold —
+  otherwise GoBites' "favorite food trucks" answered "what's his favourite food?". Cost: typos get
+  an honest refusal. Personal-life words (favorite, hobby, live, salary…) only match hand-written
+  `EXTRA_FACTS`, never generated data.
+- KB excludes projects' `howItWorks` and full guide content (noisy, widens the vocabulary and so
+  weakens the unknown rule). `about.md`/`contact.md` reuse the live hero copy — the one
+  non-generated source.
+- Terminal ships its own `esc ✕` title bar (phones have no Esc), so the shell must not add a close.
+- **Env trap:** `localhost:3000` can resolve to the TaxBuddy Next.js server on IPv6; this site's dev
+  server is `127.0.0.1:3000`.

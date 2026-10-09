@@ -1,0 +1,50 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap");
+
+.v-remix-ask {
+  --ask-bg: #100e0c;
+  --ask-raise: #1a1714;
+  --ask-line: #312a24;
+  --ask-ink: #e8dfd1;
+  --ask-bright: #fbf6ec;
+  --ask-dim: #948877;
+  --ask-faint: #5f574d;
+  --ask-accent: #d97757;
+  --ask-ok: #8fb573;
+  background: var(--ask-bg);
+  color: var(--ask-ink);
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.v-remix-ask .ask-dim { color: var(--ask-dim); }
+.v-remix-ask .ask-faint { color: var(--ask-faint); }
+.v-remix-ask .ask-bright { color: var(--ask-bright); }
+.v-remix-ask .ask-accent { color: var(--ask-accent); }
+.v-remix-ask .ask-ok { color: var(--ask-ok); }
+.v-remix-ask .ask-line { border-color: var(--ask-line); }
+
+.v-remix-ask a { color: var(--ask-bright); text-decoration: underline; text-decoration-color: var(--ask-faint); text-underline-offset: 3px; }
+.v-remix-ask a:hover { text-decoration-color: var(--ask-accent); }
+
+.v-remix-ask .ask-welcome { border-color: var(--ask-accent); }
+.v-remix-ask .ask-user { background: var(--ask-raise); }
+
+.v-remix-ask .ask-prompt { border-color: var(--ask-line); transition: border-color 0.15s; }
+.v-remix-ask .ask-prompt:focus-within { border-color: var(--ask-dim); }
+.v-remix-ask .ask-prompt input { caret-color: var(--ask-accent); }
+.v-remix-ask .ask-prompt input::placeholder { color: var(--ask-faint); }
+
+.v-remix-ask .ask-chip { border-color: var(--ask-line); color: var(--ask-dim); transition: color 0.15s, border-color 0.15s; }
+.v-remix-ask .ask-chip:hover { color: var(--ask-bright); border-color: var(--ask-accent); }
+
+.v-remix-ask .ask-scroll { scrollbar-width: thin; scrollbar-color: var(--ask-line) transparent; }
+.v-remix-ask .ask-chips { scrollbar-width: none; }
+.v-remix-ask .ask-chips::-webkit-scrollbar { display: none; }
+
+/* Phones: 16px input stops iOS zooming on focus; the extra bottom room keeps the prompt clear of
+   the variant switcher pill pinned at bottom-centre */
+@media (max-width: 639px) {
+  .v-remix-ask .ask-prompt input { font-size: 16px; }
+  .v-remix-ask .ask-foot { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+}

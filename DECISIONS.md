@@ -103,3 +103,13 @@
   #6aa8ff. Green only on TaxBuddy's live dot.
 - Fixed a round-2 bug: mobile Story jumps landed ~1 screen early (scene offsets were measured
   relative to the list, now page-relative).
+
+## 2026-10-12 — Achievements removed; Ask renamed "Alfred"; film-jargon kickers dropped
+- Jonathan asked to remove achievements. `AchievementId` and `onUnlock` are gone from
+  `contracts.ts` (main thread changed the contract — no builders in flight); `Achievements.tsx`
+  deleted; the shell's trophy button, toasts, panel and every `unlock()` call site removed.
+- The assistant is now "Alfred" (button, drawer label, terminal title `alfred`, welcome line).
+  The Claude-Code-style UI stays. `answer()` seam comment now says "LLM API", not Claude.
+- Sections headers keep their 01–05 numbers but lose the film kickers ("the cast", "now playing",
+  "on location", "supporting roles", "director's commentary"); TaxBuddy's label is just
+  "active project". Story mode keeps its film framing — that's the concept.

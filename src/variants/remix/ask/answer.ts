@@ -127,7 +127,7 @@ const unknown = (missing: string[]): Answer => ({
     `\nYou could ask him directly: ${CONTACT.email}`,
 });
 
-// The seam: swap this one function for a real Claude API call (with KB as context) later.
+// The seam: swap this one function for a real LLM API call (with KB as context) later.
 export async function answer(question: string): Promise<Answer> {
   const asked = words(question).filter((w) => !STOP.has(w) && !STOP.has(stem(w)));
   const q = Array.from(new Set(asked.map(stem)));

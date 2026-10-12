@@ -112,7 +112,7 @@ const EndCard = ({ onBack, onAsk }: { onBack: () => void; onAsk: () => void }) =
         ← back to sections
       </button>
       <button onClick={onAsk} className="rx-mono text-[11px] px-5 py-3 border border-[#5b9cff]/50 text-[#5b9cff] hover:bg-[#5b9cff] hover:text-[#070b14] transition-colors">
-        ✻ ask claude about it
+        ✻ ask alfred about it
       </button>
     </div>
   </div>

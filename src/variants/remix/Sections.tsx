@@ -37,12 +37,11 @@ const Reveal = ({ children, className, delay = 0 }: { children: ReactNode; class
   </motion.div>
 );
 
-const Head = ({ n, kicker, title }: { n: string; kicker: string; title: string }) => (
+const Head = ({ n, title }: { n: string; title: string }) => (
   <Reveal className="mb-10 md:mb-12">
     <div className="rx-mono text-[10px] md:text-[11px] text-[#5b9cff] mb-3 flex items-center gap-3">
       <span>{n}</span>
       <span className="w-8 h-px bg-[#5b9cff]/40" />
-      <span className="text-[#8692a8]">{kicker}</span>
     </div>
     <h2 className="text-[clamp(2.6rem,5.5vw,4.6rem)] font-light italic leading-[0.95]">{title}</h2>
   </Reveal>
@@ -63,10 +62,9 @@ type Props = {
   onGuide: (id: string) => void;
   onAsk: () => void;
   onPick: (i: number) => void; // a moment on the vibe line → Story at that scene
-  onVibe: () => void;
 };
 
-const Sections = ({ vw, navH, nameBox, done, fine, reduce, onOpen, onGuide, onAsk, onPick, onVibe }: Props) => {
+const Sections = ({ vw, navH, nameBox, done, fine, reduce, onOpen, onGuide, onAsk, onPick }: Props) => {
   const show = { opacity: done ? 1 : 0, y: done ? 0 : 14 };
   const col = "w-full md:w-[52%] max-w-[620px]";
   const pad = "px-5 md:pl-[7vw] md:pr-0";
@@ -97,7 +95,7 @@ const Sections = ({ vw, navH, nameBox, done, fine, reduce, onOpen, onGuide, onAs
                 onClick={onAsk}
                 className="group rx-mono text-[11px] pl-5 pr-4 py-3 bg-[#5b9cff] text-[#070b14] hover:bg-[#8ab8ff] transition-colors flex items-center gap-3 shadow-[0_0_40px_rgba(91,156,255,0.18)]"
               >
-                <span className="text-sm leading-none">✻</span> Ask Claude about me
+                <span className="text-sm leading-none">✻</span> Ask Alfred about me
                 {fine && <span className="rx-plain text-[10px] px-1.5 py-0.5 border border-[#070b14]/30 normal-case tracking-normal">/</span>}
               </button>
               <div className="flex gap-6 rx-mono text-[10px] md:text-[11px] text-[#a3adbf]">
@@ -112,7 +110,7 @@ const Sections = ({ vw, navH, nameBox, done, fine, reduce, onOpen, onGuide, onAs
         )}
         {/* the vibe line runs along the foot of the hero, part of the same frame */}
         <div className="absolute inset-x-0" style={{ bottom: vw >= 768 ? 4 : 44 }}>
-          <HeroCurve vw={vw} done={done} reduce={reduce} onPick={onPick} onVibe={onVibe} />
+          <HeroCurve vw={vw} done={done} reduce={reduce} onPick={onPick} />
         </div>
       </section>
 
@@ -120,7 +118,7 @@ const Sections = ({ vw, navH, nameBox, done, fine, reduce, onOpen, onGuide, onAs
         {/* ── Experience ── */}
         <section id="rx-experience" data-shape="cloud" data-sec="experience" style={sec} className={`${pad} py-20 md:py-28`}>
           <div className={col}>
-            <Head n="01" kicker="the cast" title="Experience" />
+            <Head n="01" title="Experience" />
             <div className="space-y-2.5">
               {experiences.map((e, i) => {
                 const st = status(e.period);
@@ -155,9 +153,9 @@ const Sections = ({ vw, navH, nameBox, done, fine, reduce, onOpen, onGuide, onAs
           </div>
         </section>
 
-        {/* ── Projects: now playing ── */}
+        {/* ── Projects ── */}
         <section id="rx-projects" data-shape="grid" data-sec="projects" style={sec} className="px-5 md:px-[7vw] py-20 md:py-28">
-          <Head n="02" kicker="now playing" title="Projects" />
+          <Head n="02" title="Projects" />
           {featured && (
             <Reveal>
               <div className="rx-card rx-poster grid md:grid-cols-[1.25fr_1fr] gap-0 !border-[#5b9cff]/30">
@@ -169,7 +167,7 @@ const Sections = ({ vw, navH, nameBox, done, fine, reduce, onOpen, onGuide, onAs
                     <span className="relative w-1.5 h-1.5 rx-live">
                       <span className="absolute inset-0 rounded-full bg-[#7bd88f]" />
                     </span>
-                    feature presentation · active project
+                    active project
                   </div>
                   <h3 className="mt-3 text-[2.6rem] md:text-[3.2rem] italic font-light leading-none">{featured.title}</h3>
                   <p className="mt-4 text-[1.1rem] text-[#c2cbdb] leading-snug">{featured.description}</p>
@@ -222,7 +220,7 @@ const Sections = ({ vw, navH, nameBox, done, fine, reduce, onOpen, onGuide, onAs
         {/* ── School ── */}
         <section id="rx-school" data-shape="gpa" data-sec="school" style={sec} className={`${pad} py-20 md:py-28 md:min-h-[90vh]`}>
           <div className={col}>
-            <Head n="03" kicker="on location" title="School" />
+            <Head n="03" title="School" />
             <div className="space-y-3">
               {education.map((e) => (
                 <Reveal key={e.school}>
@@ -274,7 +272,7 @@ const Sections = ({ vw, navH, nameBox, done, fine, reduce, onOpen, onGuide, onAs
         {/* ── Involvement ── */}
         <section id="rx-involvement" data-shape="gantt" data-sec="involvement" style={sec} className={`${pad} py-20 md:py-28 md:min-h-[90vh]`}>
           <div className={col}>
-            <Head n="04" kicker="supporting roles" title="Involvement" />
+            <Head n="04" title="Involvement" />
             <div className="space-y-2.5">
               {involvements.map((v, i) => {
                 return (
@@ -304,7 +302,7 @@ const Sections = ({ vw, navH, nameBox, done, fine, reduce, onOpen, onGuide, onAs
         {/* ── Guides + contact ── */}
         <section id="rx-guides" data-shape="sphere" data-sec="guides" style={sec} className={`${pad} pt-20 md:pt-28 pb-16`}>
           <div className={col}>
-            <Head n="05" kicker="director's commentary" title="Guides" />
+            <Head n="05" title="Guides" />
             <div className="border-t border-[#e6ecf5]/10">
               {guides.map((g) => (
                 <Reveal key={g.id}>
@@ -342,7 +340,7 @@ const Sections = ({ vw, navH, nameBox, done, fine, reduce, onOpen, onGuide, onAs
                   </a>
                 ))}
                 <button onClick={onAsk} className="rx-mono text-[10px] md:text-[11px] px-5 py-3 border border-[#5b9cff]/50 text-[#5b9cff] hover:bg-[#5b9cff] hover:text-[#070b14] transition-colors">
-                  ✻ Ask Claude
+                  ✻ Ask Alfred
                 </button>
               </div>
               <div className="mt-24 md:mt-28 italic text-2xl text-[#5d687c]">fin.</div>

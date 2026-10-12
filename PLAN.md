@@ -291,3 +291,7 @@ blue palette throughout; no console errors and no horizontal overflow at 1280×8
     toasts, the CTA, the nav dot and the playhead.
   - Keep the film grain and vignette, but cool. Keep the cinematic serif typography.
   - Green stays only for the live "TaxBuddy" dot.
+
+## Round 4 changes (2026-10-12, main thread)
+Achievements removed (contract no longer has `AchievementId`/`onUnlock`). Ask assistant renamed
+**Alfred**. Sections headers lose film kickers. Story mode unchanged.

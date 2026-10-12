@@ -83,7 +83,7 @@ const rich = (text: string) =>
 
 const HIRE_MAIL = `mailto:${CONTACT.email}?subject=${encodeURIComponent("Let's talk about a role")}`;
 
-const AskTerminal = ({ active, onClose, onUnlock }: AskTerminalProps) => {
+const AskTerminal = ({ active, onClose }: AskTerminalProps) => {
   const navigate = useNavigate();
   const [items, setItems] = useState<Item[]>([]);
   const [input, setInput] = useState("");
@@ -98,8 +98,6 @@ const AskTerminal = ({ active, onClose, onUnlock }: AskTerminalProps) => {
   const gen = useRef(0); // bumped by /clear and unmount so in-flight turns stop writing
   const working = useRef(false);
   const nextId = useRef(0);
-  const unlock = useRef(onUnlock);
-  unlock.current = onUnlock;
 
   useEffect(
     () => () => {
@@ -165,7 +163,6 @@ const AskTerminal = ({ active, onClose, onUnlock }: AskTerminalProps) => {
         const s = shown;
         setItems((xs) => xs.map((x) => (x.id === id && x.kind === "answer" ? { ...x, shown: s } : x)));
       }
-      unlock.current(res.known ? "ask" : "unknown");
     });
 
   const hire = () =>
@@ -201,7 +198,6 @@ const AskTerminal = ({ active, onClose, onUnlock }: AskTerminalProps) => {
           </div>
         ),
       });
-      unlock.current("hire");
     });
 
   const clear = () => {
@@ -215,7 +211,7 @@ const AskTerminal = ({ active, onClose, onUnlock }: AskTerminalProps) => {
 
   const help = (
     <div className="mt-1">
-      <div className="ask-dim">Ask Jonathan answers questions about Jonathan from a small knowledge base built from his site.</div>
+      <div className="ask-dim">Alfred answers questions about Jonathan from a small knowledge base built from his site.</div>
       <div className="mt-3 ask-bright">Commands</div>
       {COMMANDS.map((c) => (
         <div key={c.name} className="flex gap-3">
@@ -318,7 +314,7 @@ const AskTerminal = ({ active, onClose, onUnlock }: AskTerminalProps) => {
       <div className="flex items-center justify-between gap-3 px-4 h-10 shrink-0 border-b ask-line">
         <div className="flex items-center gap-2 text-xs min-w-0 truncate">
           <span className="ask-accent">✻</span>
-          <span className="ask-bright">ask-jonathan</span>
+          <span className="ask-bright">alfred</span>
           <span className="ask-faint">~/jonathan</span>
         </div>
         <button type="button" onClick={onClose} className="flex items-center gap-2 text-xs ask-dim hover:text-[color:var(--ask-bright)]" aria-label="Close">
@@ -337,7 +333,7 @@ const AskTerminal = ({ active, onClose, onUnlock }: AskTerminalProps) => {
       >
         <div className="ask-welcome border rounded-md px-4 py-3 max-w-[30rem]">
           <div>
-            <span className="ask-accent">✻</span> Welcome to <span className="ask-bright font-semibold">Ask Jonathan</span>!
+            <span className="ask-accent">✻</span> Good evening. I'm <span className="ask-bright font-semibold">Alfred</span>, Jonathan's assistant.
           </div>
           <div className="mt-3 ask-dim italic">/help for help, /contact to reach him</div>
           <div className="mt-3 ask-dim">cwd: ~/jonathan</div>

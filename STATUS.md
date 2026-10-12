@@ -1,13 +1,14 @@
 # STATUS
 
 ## Now
-Round 3 (Director's Cut revision) green: graph embedded in hero + Story, blue palette, demo.sh passes,
-no console errors at 1280x800 / 390x844. Dev server is now 127.0.0.1:3001. Waiting on Jonathan.
+Director's Cut: achievements removed, Ask renamed "Alfred", film-jargon section labels dropped.
+demo.sh green; verified at 127.0.0.1:3001, no console errors. Alfred is still local retrieval —
+no LLM calls. Waiting on Jonathan.
 
 ## Left
 - Jonathan tries it by hand (drag-scrub on the strip, touch, real fonts on his machine).
 - Fill `EXTRA_FACTS` in `src/variants/remix/ask/knowledge.ts` with facts about himself.
-- Real Claude answers: swap `answer()` in `remix/ask/answer.ts` for a backend call (needs a small
+- Real LLM answers for Alfred: swap `answer()` in `remix/ask/answer.ts` for a backend call (needs a small
   server/Lambda to hold the API key — GitHub Pages is static).
 - Promote the winner into `App.tsx`; delete `src/variants/` + the 2 lines in `index.tsx`; fix the two
   slash-less companyIcons in `data.ts`.

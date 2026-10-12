@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, useMotionValue, useMotionValueEvent, useReducedMotion } from "framer-motion";
-import { AchievementId } from "./contracts";
 import AskTerminal from "./ask/AskTerminal";
 import { createField, Field, NameBox, ShapeKey } from "./engine";
 import Sections, { SECTIONS } from "./Sections";
 import Story, { StoryApi } from "./StoryMode";
-import { ACHIEVEMENTS, Panel, Toasts } from "./Achievements";
 import { scenes, pad } from "./timeline";
 import "./remix.css";
 
@@ -85,21 +83,9 @@ const Remix = () => {
 
   const [active, setActive] = useState("");
   const [askOpen, setAskOpen] = useState(false);
-  const [panelOpen, setPanelOpen] = useState(false);
-  const [unlocked, setUnlocked] = useState<AchievementId[]>([]);
-  const [toasts, setToasts] = useState<AchievementId[]>([]);
-  const got = useRef(new Set<AchievementId>());
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const later = (fn: () => void, ms: number) => timers.current.push(setTimeout(fn, ms));
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
-
-  const unlock = useCallback((id: AchievementId) => {
-    if (got.current.has(id)) return;
-    got.current.add(id);
-    setUnlocked(ACHIEVEMENTS.filter((a) => got.current.has(a.id)).map((a) => a.id));
-    setToasts((q) => [...q, id]);
-    timers.current.push(setTimeout(() => setToasts((q) => q.filter((x) => x !== id)), 3800));
-  }, []);
 
   // ── Particles ──
   useEffect(() => {
@@ -143,7 +129,6 @@ const Remix = () => {
   }, [done]);
 
   // ── Sections: the section crossing the middle of the screen picks the particle shape ──
-  const visited = useRef(new Set<string>());
   useEffect(() => {
     if (mode !== "sections") return;
     const onScroll = () => {
@@ -156,13 +141,11 @@ const Remix = () => {
       if (done) field.current?.setShape(((hit && hit.dataset.shape) || "name") as ShapeKey);
       const id = (hit && hit.dataset.sec) || "";
       setActive(id);
-      if (id) visited.current.add(id);
-      if (SECTIONS.every((s) => visited.current.has(s.id))) unlock("explorer");
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
-  }, [mode, done, unlock]);
+  }, [mode, done]);
 
   // ── Shockwave: clicks on empty space in Sections mode ──
   useEffect(() => {
@@ -171,11 +154,10 @@ const Remix = () => {
       const t = e.target as HTMLElement;
       if (!rootRef.current?.contains(t) || t.closest("a,button,input,textarea,[data-card],[data-chrome]")) return;
       field.current?.shock(e.clientX, e.clientY);
-      unlock("shockwave");
     };
     window.addEventListener("pointerdown", shock);
     return () => window.removeEventListener("pointerdown", shock);
-  }, [done, mode, unlock]);
+  }, [done, mode]);
 
   // ── Mode switching: the bars close, the reel changes, the bars reopen ──
   const switchMode = (to: Mode, opts: { at?: number; section?: string } = {}) => {
@@ -190,7 +172,6 @@ const Remix = () => {
         savedY.current = window.scrollY;
         setStoryStart(opts.at ?? -1);
         field.current?.setRunning(false);
-        unlock("story");
       } else {
         restore.current = opts.section ?? savedY.current;
         field.current?.setRunning(true);
@@ -199,7 +180,6 @@ const Remix = () => {
     };
     if (reduce) return swap();
     busy.current = true;
-    setPanelOpen(false);
     setSlate(to === "story" ? "🎬  story mode" : "sections");
     setCurtain(true);
     later(swap, 520);
@@ -223,19 +203,17 @@ const Remix = () => {
   // render that opens it so the terminal can take focus
   const [drawerShown, setDrawerShown] = useState(false);
   const openAsk = useCallback(() => {
-    setPanelOpen(false);
     setDrawerShown(true);
     setAskOpen(true);
   }, []);
   const closeAsk = useCallback(() => setAskOpen(false), []);
 
-  // ── Keys: "/" opens Claude, Esc closes whatever is on top ──
+  // ── Keys: "/" opens Alfred, Esc closes it ──
   useEffect(() => {
     if (!done) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        if (panelOpen) setPanelOpen(false);
-        else if (askOpen) setAskOpen(false);
+        if (askOpen) setAskOpen(false);
         return;
       }
       if (e.key === "/" && !askOpen && !typing(e.target) && !e.metaKey && !e.ctrlKey) {
@@ -245,7 +223,7 @@ const Remix = () => {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [done, askOpen, panelOpen, openAsk]);
+  }, [done, askOpen, openAsk]);
 
   // ── Story HUD: scene label + timecode in the top bar ──
   const [sceneIdx, setSceneIdx] = useState(-1);
@@ -307,7 +285,6 @@ const Remix = () => {
           onGuide={openGuide}
           onAsk={openAsk}
           onPick={(i) => switchMode("story", { at: i })}
-          onVibe={() => unlock("vibe")}
         />
       )}
 
@@ -382,14 +359,6 @@ const Remix = () => {
           </div>
 
           <Toggle mode={mode} onChange={(m) => switchMode(m)} />
-          <button data-trophy onClick={() => setPanelOpen((o) => !o)} className={`rx-mono text-[10px] flex items-center gap-1.5 px-1 shrink-0 transition-colors ${panelOpen ? "text-[#5b9cff]" : "text-[#a3adbf] hover:text-[#e6ecf5]"}`} aria-label="Achievements">
-            <motion.span key={unlocked.length} initial={{ scale: unlocked.length ? 1.6 : 1 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 400, damping: 12 }} className="text-[13px] leading-none">
-              🏆
-            </motion.span>
-            <span className="tabular-nums">
-              {unlocked.length}/{ACHIEVEMENTS.length}
-            </span>
-          </button>
           <button
             onClick={() => (askOpen ? closeAsk() : openAsk())}
             className={`rx-mono text-[10px] flex items-center gap-2 px-2.5 md:px-3.5 py-1.5 md:py-2 border shrink-0 transition-colors ${
@@ -398,7 +367,7 @@ const Remix = () => {
           >
             <span className="text-[12px] leading-none">✻</span>
             <span>
-              Ask<span className="hidden md:inline"> Claude</span>
+              Ask<span className="hidden md:inline"> Alfred</span>
             </span>
           </button>
         </motion.nav>
@@ -437,7 +406,7 @@ const Remix = () => {
       />
       <motion.aside
         data-chrome
-        aria-label="Ask Claude about Jonathan"
+        aria-label="Ask Alfred about Jonathan"
         aria-hidden={!askOpen}
         initial={false}
         animate={askOpen ? { x: 0, y: 0 } : wide ? { x: "100%", y: 0 } : { x: 0, y: "100%" }}
@@ -448,13 +417,10 @@ const Remix = () => {
         style={{ ...(wide ? { top: navH, bottom: 0, width: 490 } : { top: 0, bottom: 0, left: 0 }), visibility: drawerShown ? "visible" : "hidden" }}
       >
         <div className="flex-1 min-h-0">
-          <AskTerminal active={askOpen} onClose={closeAsk} onUnlock={unlock} />
+          <AskTerminal active={askOpen} onClose={closeAsk} />
         </div>
       </motion.aside>
 
-      {/* toasts step aside from an open drawer so they never cover its close button */}
-      <Toasts queue={toasts} top={askOpen && !wide ? navH + 40 : navH} right={askOpen && wide ? 506 : undefined} />
-      <Panel open={panelOpen} unlocked={unlocked} onClose={() => setPanelOpen(false)} top={navH} />
 
       <div className="rx-grain z-[60]" style={{ backgroundImage: `url(${grain})` }} />
     </div>

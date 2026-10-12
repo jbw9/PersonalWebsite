@@ -7,7 +7,7 @@ const FADE = "linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent
 
 // Cinema's vibe line, laid along the bottom of the hero: no frame, it fades into the page at both
 // edges and draws itself in once the titles are done. On phones it is wider than the screen and swipes.
-const HeroCurve = ({ vw, done, reduce, onPick, onVibe }: { vw: number; done: boolean; reduce: boolean; onPick: (i: number) => void; onVibe: () => void }) => {
+const HeroCurve = ({ vw, done, reduce, onPick }: { vw: number; done: boolean; reduce: boolean; onPick: (i: number) => void }) => {
   const wide = vw >= 768;
   const W = wide ? vw : 96 + (n - 1) * 66;
   // desktop keeps headroom above the peaks for the hover caption
@@ -76,15 +76,11 @@ const HeroCurve = ({ vw, done, reduce, onPick, onVibe }: { vw: number; done: boo
           onPointerEnter={(e) => {
             if (e.pointerType !== "mouse") return;
             setHover(i);
-            onVibe();
           }}
           onPointerLeave={() => setHover(null)}
           onFocus={() => setHover(i)}
           onBlur={() => setHover(null)}
-          onClick={() => {
-            onVibe();
-            onPick(i);
-          }}
+          onClick={() => onPick(i)}
           aria-label={`${s.title}, ${fmtMonth(s.date)}: watch this scene`}
           className={`absolute rounded-full bg-[#070b14] border flex items-center justify-center transition-colors ${
             wide ? "w-10 h-10 -ml-5 -mt-5 text-xl" : "w-8 h-8 -ml-4 -mt-4 text-base"

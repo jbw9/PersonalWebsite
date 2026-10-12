@@ -433,7 +433,7 @@ const AskTerminal = ({ active, onClose }: AskTerminalProps) => {
           <div className="mt-1.5 px-1 flex flex-wrap justify-between gap-x-4 text-[11px] ask-faint">
             <span className="hidden sm:inline">/help for commands · ↑↓ history</span>
             <span>
-              <span className="ask-ok">●</span> offline demo · answers only from Jonathan's knowledge base
+              <span className="ask-ok">●</span> {process.env.REACT_APP_ALFRED_URL ? "Claude Haiku on AWS Bedrock" : "offline demo"} · answers only from Jonathan's knowledge base
             </span>
           </div>
         )}

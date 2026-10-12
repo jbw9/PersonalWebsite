@@ -127,8 +127,31 @@ const unknown = (missing: string[]): Answer => ({
     `\nYou could ask him directly: ${CONTACT.email}`,
 });
 
-// The seam: swap this one function for a real LLM API call (with KB as context) later.
+// Set by alfred/deploy.sh: the Lambda that answers with Claude Haiku on Bedrock from this same KB
+const REMOTE = process.env.REACT_APP_ALFRED_URL;
+
 export async function answer(question: string): Promise<Answer> {
+  if (REMOTE) {
+    try {
+      const r = await fetch(REMOTE, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ question }),
+      });
+      if (r.ok) return await r.json();
+      if (r.status === 429)
+        return {
+          known: false,
+          reads: [],
+          text: `I've answered all the questions I can for today. You can ask Jonathan directly: ${CONTACT.email}`,
+        };
+    } catch {}
+    // Endpoint unreachable or erroring: fall back to keyword search over the same KB
+  }
+  return keywordAnswer(question);
+}
+
+async function keywordAnswer(question: string): Promise<Answer> {
   const asked = words(question).filter((w) => !STOP.has(w) && !STOP.has(stem(w)));
   const q = Array.from(new Set(asked.map(stem)));
   const missing = asked.filter((w) => !isKnown(stem(w)));

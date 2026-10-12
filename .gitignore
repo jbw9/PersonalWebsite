@@ -22,3 +22,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .gstack/
+
+# alfred lambda build output
+/alfred/.build
+/alfred/dist
+/alfred/alfred.zip

@@ -113,3 +113,24 @@
 - Sections headers keep their 01–05 numbers but lose the film kickers ("the cast", "now playing",
   "on location", "supporting roles", "director's commentary"); TaxBuddy's label is just
   "active project". Story mode keeps its film framing — that's the concept.
+
+## 2026-10-12 — Alfred calls Claude Haiku 4.5 on Bedrock via a Lambda Function URL
+- **Chose:** `alfred/handler.mjs` on Lambda (nodejs22.x, arm64) behind a public Function URL,
+  calling `InvokeModel` with the Anthropic messages body exactly like VisuLearn's `src/lib/bedrock.ts`.
+  Model `global.anthropic.claude-haiku-4-5-20251001-v1:0` in account 010438509327 (the CLI's
+  `amplify-dev` user; VisuLearn lives in 891376942131). Haiku 5.5 is listed but AccessDenied.
+- **Beat:** API Gateway (more pieces; throttling is per-second, not a daily budget), CDK/SAM (new
+  deps), calling Bedrock from the browser (credentials would be public on GitHub Pages).
+- **Grounding:** the KB is compiled from the same `knowledge.ts` the terminal uses
+  (`alfred/build.mjs`) and shipped inside the Lambda — the client sends only the question, so the
+  endpoint can't be used as a general LLM proxy with a custom prompt. Structured output via a forced
+  `reply` tool (`known`, `reads`, `text`); `reads` filtered to real KB paths. System prompt cached.
+  Today's date is in the prompt so tenses are right.
+- **Abuse caps (Jonathan chose these):** DynamoDB counters — 30/IP/day, 500/day total, reserved
+  concurrency 5, 300-char questions, 600 max tokens. Worst case ≈ $5/day. CORS allows only
+  jonathanbw.me, www, jbw9.github.io and the local dev origins (CORS doesn't stop curl; caps do).
+- **Fallback:** if `REACT_APP_ALFRED_URL` is unset or the call fails, the old keyword search answers.
+  429 shows a friendly "asked enough for today" with the email.
+- **Breaks at scale:** single-turn (no memory of earlier questions); the KB is ~8k tokens, fine to
+  ~50k; the daily cap is global, so a single abuser can exhaust it for everyone (IP cap slows that).
+  Redeploy (`alfred/deploy.sh`) after editing data or `EXTRA_FACTS`, since the KB is baked in.

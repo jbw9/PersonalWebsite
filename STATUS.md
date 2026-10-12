@@ -1,10 +1,8 @@
 # STATUS
 
 ## Now
-Round 2 fan-in done, green: demo.sh passes; `/v/remix` ("Director's Cut", 9th variant) verified at
-1280x800 and 390x844 — intro, sections, story toggle, Ask drawer (known + unknown answers),
-achievements — no console errors, no horizontal overflow. Temporary `ask-preview` route removed.
-Waiting on Jonathan's reaction.
+Round 3 (Director's Cut revision) green: graph embedded in hero + Story, blue palette, demo.sh passes,
+no console errors at 1280x800 / 390x844. Dev server is now 127.0.0.1:3001. Waiting on Jonathan.
 
 ## Left
 - Jonathan tries it by hand (drag-scrub on the strip, touch, real fonts on his machine).
@@ -15,7 +13,7 @@ Waiting on Jonathan's reaction.
   slash-less companyIcons in `data.ts`.
 
 ## Bit us
-- `localhost:3000` can hit the TaxBuddy Next.js server (IPv6); this site is `127.0.0.1:3000`.
+- Port 3000 is the TaxBuddy app; this site's dev server is on `127.0.0.1:3001`.
 - `data.ts` companyIcons `kredivoLogo.png` / `wehearyouLogo.png` lack a leading `/`.
 - Shared gstack browse tab races between parallel builders — each builder used its own Playwright.
 - Builders testing against each other's mid-edit code report phantom bugs; re-verify at fan-in.

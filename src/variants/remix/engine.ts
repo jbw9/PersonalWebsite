@@ -119,7 +119,7 @@ export const createField = (
 
   const region = () =>
     wide ? { x: vw * 0.6, y: vh * 0.2, w: vw * 0.34, h: vh * 0.56 } : { x: vw * 0.08, y: vh * 0.22, w: vw * 0.84, h: vh * 0.42 };
-  const nameCy = () => vh * (wide ? 0.38 : 0.33);
+  const nameCy = () => vh * (wide ? 0.3 : 0.25);
 
   const build = (k: ShapeKey): Float32Array => {
     const R = region();
@@ -248,8 +248,8 @@ export const createField = (
   };
   resize();
 
-  // cream, amber, ember
-  const COLORS = ["rgba(239,230,210,", "rgba(242,179,91,", "rgba(236,132,72,"];
+  // ice-white, ice-blue, blue
+  const COLORS = ["rgba(226,236,255,", "rgba(150,198,255,", "rgba(91,140,255,"];
   let raf = 0;
 
   const frame = (now: number) => {
@@ -296,7 +296,7 @@ export const createField = (
     dim += (wantDim - dim) * 0.06;
 
     ctx.globalCompositeOperation = "source-over";
-    ctx.fillStyle = `rgba(10,9,7,${intro ? 0.2 : 0.38})`;
+    ctx.fillStyle = `rgba(7,11,20,${intro ? 0.2 : 0.38})`;
     ctx.fillRect(0, 0, vw, vh);
 
     const R2 = 120 * 120;
@@ -347,7 +347,7 @@ export const createField = (
       vy[i] = (vy[i] + ay) * damp;
       x[i] += vx[i];
       y[i] += vy[i];
-      // speed lights a particle up, so swarms and shockwaves flare amber
+      // speed lights a particle up, so swarms and shockwaves flare blue
       const sp = vx[i] * vx[i] + vy[i] * vy[i];
       const b = shape === "sphere" && z[i] < 0 ? 3 : sp > 6 ? 1 : bucket[i];
       const s = sp > 6 ? 2 : 1.5;
@@ -371,7 +371,7 @@ export const createField = (
         shocks.splice(j, 1);
         continue;
       }
-      ctx.strokeStyle = `rgba(242,179,91,${0.5 * (1 - age / 0.9)})`;
+      ctx.strokeStyle = `rgba(150,198,255,${0.5 * (1 - age / 0.9)})`;
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.arc(sh.x, sh.y, 20 + age * 520, 0, Math.PI * 2);

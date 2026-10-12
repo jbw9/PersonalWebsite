@@ -90,3 +90,16 @@
 - WS4 reported "Off Script" not unlocking for an unknown question; fan-in re-ran it against the final
   `answer.ts` in the real drawer: refusal shown, unknown + ask + story unlocked (3/7). Stale code
   mid-build, not a bug.
+
+## 2026-10-11 — WS6 readback (remix revision: embedded graph, blue)
+- **Bottom vibe strip removed.** Story mode gets cinema's in-scene curve back verbatim; Sections
+  mode gets a new borderless `HeroCurve` (full-bleed, edge-faded, draws in after the intro, click a
+  node → Story at that scene). Rejected keeping a persistent strip in any form — Jonathan read it as
+  a bolted-on widget.
+- Hero curve labels are hover-only (always-on labels overlap at ~77px node spacing); on phones the
+  curve swipes sideways instead of squeezing 15 nodes into 390px. Story-mode drag-scrub dropped;
+  clicking a node replaces it.
+- **Palette → blue:** bg #070b14, text #e6ecf5, accent #5b9cff, glow #bcd7ff; terminal accent
+  #6aa8ff. Green only on TaxBuddy's live dot.
+- Fixed a round-2 bug: mobile Story jumps landed ~1 screen early (scene offsets were measured
+  relative to the list, now page-relative).

@@ -6,7 +6,6 @@ import AskTerminal from "./ask/AskTerminal";
 import { createField, Field, NameBox, ShapeKey } from "./engine";
 import Sections, { SECTIONS } from "./Sections";
 import Story, { StoryApi } from "./StoryMode";
-import VibeStrip, { Band } from "./VibeStrip";
 import { ACHIEVEMENTS, Panel, Toasts } from "./Achievements";
 import { scenes, pad } from "./timeline";
 import "./remix.css";
@@ -48,10 +47,10 @@ const useViewport = () => {
 
 // Segmented Sections | Story control
 const Toggle = ({ mode, onChange }: { mode: Mode; onChange: (m: Mode) => void }) => (
-  <div className="relative flex p-0.5 border border-[#efe6d2]/15 rx-mono text-[9px] md:text-[10px]" role="tablist" aria-label="View mode">
+  <div className="relative flex p-0.5 border border-[#e6ecf5]/15 rx-mono text-[9px] md:text-[10px]" role="tablist" aria-label="View mode">
     {(["sections", "story"] as Mode[]).map((m) => (
-      <button key={m} role="tab" aria-selected={mode === m} onClick={() => onChange(m)} className={`relative px-2.5 md:px-3 py-1.5 transition-colors ${mode === m ? "text-[#0a0907]" : "text-[#a99f8c] hover:text-[#efe6d2]"}`}>
-        {mode === m && <motion.span layoutId="rx-seg" className="absolute inset-0 bg-[#efe6d2]" transition={{ type: "spring", stiffness: 420, damping: 36 }} />}
+      <button key={m} role="tab" aria-selected={mode === m} onClick={() => onChange(m)} className={`relative px-2.5 md:px-3 py-1.5 transition-colors ${mode === m ? "text-[#070b14]" : "text-[#a3adbf] hover:text-[#e6ecf5]"}`}>
+        {mode === m && <motion.span layoutId="rx-seg" className="absolute inset-0 bg-[#e6ecf5]" transition={{ type: "spring", stiffness: 420, damping: 36 }} />}
         <span className="relative">{m === "story" ? "🎬 Story" : "Sections"}</span>
       </button>
     ))}
@@ -65,7 +64,6 @@ const Remix = () => {
   const { w: vw, h: vh } = useViewport();
   const wide = vw >= 768;
   const navH = wide ? 52 : 48;
-  const stripH = wide ? 72 : 60;
   const [fine] = useState(() => window.matchMedia("(pointer: fine)").matches);
 
   const rootRef = useRef<HTMLDivElement>(null);
@@ -86,7 +84,6 @@ const Remix = () => {
   const savedY = useRef(0);
 
   const [active, setActive] = useState("");
-  const [band, setBand] = useState<Band | null>(null);
   const [askOpen, setAskOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [unlocked, setUnlocked] = useState<AchievementId[]>([]);
@@ -193,7 +190,6 @@ const Remix = () => {
         savedY.current = window.scrollY;
         setStoryStart(opts.at ?? -1);
         field.current?.setRunning(false);
-        setBand(null);
         unlock("story");
       } else {
         restore.current = opts.section ?? savedY.current;
@@ -270,9 +266,11 @@ const Remix = () => {
   const barIntro = Math.max(28, (vh - Math.max(vw / (wide ? 2.39 : 1.85), vh * 0.42)) / 2);
   const closed = vh / 2 + 1;
   const topH = curtain ? closed : done ? navH : barIntro;
-  const botH = curtain ? closed : done ? stripH : barIntro;
-  const barT = curtain ? { duration: 0.5, ease: [0.6, 0, 0.4, 1] as typeof EASE } : { duration: skipped.current || busy.current ? 0.55 : 1.0, ease: EASE };
   const story = mode === "story";
+  // the bottom bar only stays (thin, as in cinema) while the film runs sideways
+  const botBar = story && wide ? 32 : 0;
+  const botH = curtain ? closed : done ? botBar : barIntro;
+  const barT = curtain ? { duration: 0.5, ease: [0.6, 0, 0.4, 1] as typeof EASE } : { duration: skipped.current || busy.current ? 0.55 : 1.0, ease: EASE };
   const cur = sceneIdx >= 0 ? scenes[sceneIdx] : null;
 
   return (
@@ -289,7 +287,7 @@ const Remix = () => {
           vw={vw}
           vh={vh}
           navH={navH}
-          stripH={stripH}
+          bar={botBar}
           progress={progress}
           api={storyApi}
           startAt={storyStart}
@@ -298,7 +296,19 @@ const Remix = () => {
           onAsk={openAsk}
         />
       ) : (
-        <Sections navH={navH} stripH={stripH} nameBox={nameBox} done={done} fine={fine} reduce={reduce} onOpen={openProject} onGuide={openGuide} onAsk={openAsk} onBand={setBand} />
+        <Sections
+          vw={vw}
+          navH={navH}
+          nameBox={nameBox}
+          done={done}
+          fine={fine}
+          reduce={reduce}
+          onOpen={openProject}
+          onGuide={openGuide}
+          onAsk={openAsk}
+          onPick={(i) => switchMode("story", { at: i })}
+          onVibe={() => unlock("vibe")}
+        />
       )}
 
       {/* intro: an anamorphic flare rides across the title as it forms */}
@@ -310,15 +320,15 @@ const Remix = () => {
           className="fixed z-[44] pointer-events-none -translate-x-1/2"
           style={{ top: vh / 2 }}
         >
-          <div className="w-[60vw] h-[2px] -translate-y-1/2" style={{ background: "linear-gradient(90deg, transparent, rgba(255,214,150,0.85), transparent)" }} />
-          <div className="absolute left-1/2 top-1/2 w-24 h-24 -translate-x-1/2 -translate-y-1/2 rounded-full" style={{ background: "radial-gradient(circle, rgba(255,236,200,0.75), transparent 60%)" }} />
+          <div className="w-[60vw] h-[2px] -translate-y-1/2" style={{ background: "linear-gradient(90deg, transparent, rgba(170,205,255,0.85), transparent)" }} />
+          <div className="absolute left-1/2 top-1/2 w-24 h-24 -translate-x-1/2 -translate-y-1/2 rounded-full" style={{ background: "radial-gradient(circle, rgba(220,235,255,0.75), transparent 60%)" }} />
         </motion.div>
       )}
 
       {/* ── Letterbox, top: 2.39:1 during the titles, then the nav ── */}
       <motion.header
         data-chrome
-        className="fixed top-0 inset-x-0 z-50 bg-black border-b border-[#efe6d2]/[0.07]"
+        className="fixed top-0 inset-x-0 z-50 bg-black border-b border-[#e6ecf5]/[0.07]"
         initial={{ height: reduce ? navH : barIntro }}
         animate={{ height: topH }}
         transition={barT}
@@ -335,10 +345,10 @@ const Remix = () => {
             className="text-[26px] md:text-[28px] italic leading-none pr-1 shrink-0"
             aria-label="Jonathan — back to top"
           >
-            J<span className="text-[#f2b35b]">.</span>
+            J<span className="text-[#5b9cff]">.</span>
           </button>
 
-          <div className="flex-1 min-w-0 rx-mono text-[10px] text-[#8f8676]">
+          <div className="flex-1 min-w-0 rx-mono text-[10px] text-[#8692a8]">
             {story ? (
               <div className="hidden sm:flex items-center gap-4">
                 <span className="truncate">
@@ -347,7 +357,7 @@ const Remix = () => {
                     <>
                       <span className="hidden md:inline">scene </span>
                       {pad(cur.n)}/{scenes.length}
-                      <span className="hidden md:inline text-[#cfc5b0]"> · {cur.short}</span>
+                      <span className="hidden md:inline text-[#c2cbdb]"> · {cur.short}</span>
                     </>
                   ) : (
                     <>
@@ -355,15 +365,15 @@ const Remix = () => {
                     </>
                   )}
                 </span>
-                <span ref={tcRef} className="hidden lg:inline tabular-nums text-[#6f675a]">
+                <span ref={tcRef} className="hidden lg:inline tabular-nums text-[#5d687c]">
                   {timecode(progress.get())}
                 </span>
               </div>
             ) : (
               <div className="hidden lg:flex items-center gap-6">
                 {SECTIONS.map((s) => (
-                  <button key={s.id} onClick={() => goSection(s.id)} className={`flex items-center gap-1.5 transition-colors ${active === s.id ? "text-[#efe6d2]" : "hover:text-[#efe6d2]"}`}>
-                    <span className={`w-1 h-1 rounded-full transition-colors ${active === s.id ? "bg-[#f2b35b]" : "bg-transparent"}`} />
+                  <button key={s.id} onClick={() => goSection(s.id)} className={`flex items-center gap-1.5 transition-colors ${active === s.id ? "text-[#e6ecf5]" : "hover:text-[#e6ecf5]"}`}>
+                    <span className={`w-1 h-1 rounded-full transition-colors ${active === s.id ? "bg-[#5b9cff]" : "bg-transparent"}`} />
                     {s.label}
                   </button>
                 ))}
@@ -372,7 +382,7 @@ const Remix = () => {
           </div>
 
           <Toggle mode={mode} onChange={(m) => switchMode(m)} />
-          <button data-trophy onClick={() => setPanelOpen((o) => !o)} className={`rx-mono text-[10px] flex items-center gap-1.5 px-1 shrink-0 transition-colors ${panelOpen ? "text-[#f2b35b]" : "text-[#a99f8c] hover:text-[#efe6d2]"}`} aria-label="Achievements">
+          <button data-trophy onClick={() => setPanelOpen((o) => !o)} className={`rx-mono text-[10px] flex items-center gap-1.5 px-1 shrink-0 transition-colors ${panelOpen ? "text-[#5b9cff]" : "text-[#a3adbf] hover:text-[#e6ecf5]"}`} aria-label="Achievements">
             <motion.span key={unlocked.length} initial={{ scale: unlocked.length ? 1.6 : 1 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 400, damping: 12 }} className="text-[13px] leading-none">
               🏆
             </motion.span>
@@ -383,7 +393,7 @@ const Remix = () => {
           <button
             onClick={() => (askOpen ? closeAsk() : openAsk())}
             className={`rx-mono text-[10px] flex items-center gap-2 px-2.5 md:px-3.5 py-1.5 md:py-2 border shrink-0 transition-colors ${
-              askOpen ? "bg-[#f2b35b] text-[#0a0907] border-[#f2b35b]" : "border-[#f2b35b]/50 text-[#f2b35b] hover:bg-[#f2b35b] hover:text-[#0a0907]"
+              askOpen ? "bg-[#5b9cff] text-[#070b14] border-[#5b9cff]" : "border-[#5b9cff]/50 text-[#5b9cff] hover:bg-[#5b9cff] hover:text-[#070b14]"
             }`}
           >
             <span className="text-[12px] leading-none">✻</span>
@@ -394,33 +404,13 @@ const Remix = () => {
         </motion.nav>
       </motion.header>
 
-      {/* ── Letterbox, bottom: the vibe strip ── */}
-      <motion.footer
-        data-chrome
-        className="fixed bottom-0 inset-x-0 z-50 bg-black border-t border-[#efe6d2]/[0.07]"
-        initial={{ height: reduce ? stripH : barIntro }}
+      {/* ── Letterbox, bottom: opens away entirely in Sections ── */}
+      <motion.div
+        className={`fixed bottom-0 inset-x-0 z-50 bg-black ${botH > 0 ? "border-t border-[#e6ecf5]/[0.07]" : ""}`}
+        initial={{ height: reduce ? 0 : barIntro }}
         animate={{ height: botH }}
         transition={barT}
-      >
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: done ? 1 : 0 }}
-          transition={{ duration: 0.8, delay: done && !skipped.current ? 0.6 : 0 }}
-          className="absolute inset-x-0 bottom-0"
-          style={{ height: stripH, pointerEvents: done ? "auto" : "none" }}
-        >
-          <VibeStrip
-            W={vw}
-            H={stripH}
-            story={story}
-            progress={progress}
-            band={band}
-            onPick={(i) => switchMode("story", { at: i })}
-            onScrub={(f) => storyApi.current?.seek(f)}
-            onVibe={() => unlock("vibe")}
-          />
-        </motion.div>
-      </motion.footer>
+      />
 
       {/* the slate shown while the bars are shut */}
       <motion.div
@@ -430,9 +420,9 @@ const Remix = () => {
         className="fixed inset-x-0 z-[51] pointer-events-none flex items-center justify-center gap-4"
         style={{ top: vh / 2 - 12, height: 24 }}
       >
-        <span className="w-16 h-px bg-[#f2b35b]/50" />
-        <span className="rx-mono text-[11px] text-[#efe6d2]">{slate}</span>
-        <span className="w-16 h-px bg-[#f2b35b]/50" />
+        <span className="w-16 h-px bg-[#5b9cff]/50" />
+        <span className="rx-mono text-[11px] text-[#e6ecf5]">{slate}</span>
+        <span className="w-16 h-px bg-[#5b9cff]/50" />
       </motion.div>
 
       {/* ── Ask drawer: mounted once so the conversation survives closing ── */}
@@ -443,7 +433,7 @@ const Remix = () => {
         transition={{ duration: 0.3 }}
         onClick={closeAsk}
         className="fixed inset-x-0 z-[61] bg-black/45"
-        style={{ top: navH, bottom: stripH, pointerEvents: askOpen && wide ? "auto" : "none" }}
+        style={{ top: navH, bottom: 0, pointerEvents: askOpen && wide ? "auto" : "none" }}
       />
       <motion.aside
         data-chrome
@@ -453,8 +443,9 @@ const Remix = () => {
         animate={askOpen ? { x: 0, y: 0 } : wide ? { x: "100%", y: 0 } : { x: 0, y: "100%" }}
         transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
         onAnimationComplete={() => !askOpen && setDrawerShown(false)}
-        className="fixed right-0 z-[62] flex flex-col bg-[#0d0b09] border-l border-[#efe6d2]/10 shadow-[-30px_0_80px_rgba(0,0,0,0.55)]"
-        style={{ ...(wide ? { top: navH, bottom: stripH, width: 540 } : { top: 0, bottom: 76, left: 0 }), visibility: drawerShown ? "visible" : "hidden" }}
+        className="fixed right-0 z-[62] flex flex-col bg-[#0a0f1a] border-l border-[#e6ecf5]/10 shadow-[-30px_0_80px_rgba(0,0,0,0.55)]"
+        // 490 wide so it ends right of the switcher pill at bottom-centre
+        style={{ ...(wide ? { top: navH, bottom: 0, width: 490 } : { top: 0, bottom: 0, left: 0 }), visibility: drawerShown ? "visible" : "hidden" }}
       >
         <div className="flex-1 min-h-0">
           <AskTerminal active={askOpen} onClose={closeAsk} onUnlock={unlock} />
@@ -462,7 +453,7 @@ const Remix = () => {
       </motion.aside>
 
       {/* toasts step aside from an open drawer so they never cover its close button */}
-      <Toasts queue={toasts} top={askOpen && !wide ? navH + 40 : navH} right={askOpen && wide ? 556 : undefined} />
+      <Toasts queue={toasts} top={askOpen && !wide ? navH + 40 : navH} right={askOpen && wide ? 506 : undefined} />
       <Panel open={panelOpen} unlocked={unlocked} onClose={() => setPanelOpen(false)} top={navH} />
 
       <div className="rx-grain z-[60]" style={{ backgroundImage: `url(${grain})` }} />

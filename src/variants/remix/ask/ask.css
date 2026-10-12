@@ -1,15 +1,15 @@
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap");
 
 .v-remix-ask {
-  --ask-bg: #100e0c;
-  --ask-raise: #1a1714;
-  --ask-line: #312a24;
-  --ask-ink: #e8dfd1;
-  --ask-bright: #fbf6ec;
-  --ask-dim: #948877;
-  --ask-faint: #5f574d;
-  --ask-accent: #d97757;
-  --ask-ok: #8fb573;
+  --ask-bg: #0a0f1a;
+  --ask-raise: #121a29;
+  --ask-line: #22304a;
+  --ask-ink: #dde5f1;
+  --ask-bright: #f5f8fd;
+  --ask-dim: #8592a8;
+  --ask-faint: #56617a;
+  --ask-accent: #6aa8ff;
+  --ask-ok: #9fd0ff;
   background: var(--ask-bg);
   color: var(--ask-ink);
   font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;

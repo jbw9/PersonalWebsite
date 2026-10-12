@@ -52,13 +52,6 @@ projects.forEach((p) => {
 export const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
 export const firstYear = scenes[0].year;
 
-// ── The vibe strip's time axis ──
-// Milestones are spaced evenly (the first semester is too dense to read by date) and time between
-// them is interpolated, so any period still maps to a band. A short tail past "now" holds the future.
-
-export const FUTURE = new Date(2027, 5, 1).getTime();
-export const knotTimes = [...scenes.map((s) => s.time), FUTURE];
-
 // Piecewise-linear lookup: xs[i] at keys[i]
 export const lerpAt = (keys: number[], xs: number[], k: number) => {
   if (k <= keys[0]) return xs[0];

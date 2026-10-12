@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion, useMotionValue, useMotionValueEvent, useReducedMotion } from "framer-motion";
 import AskTerminal from "./ask/AskTerminal";
-import { createField, Field, NameBox, ShapeKey } from "./engine";
+import { createField, Field } from "./engine";
+import { guidePath, NameBox, projectPath, Resume, ShapeKey } from "./contracts";
 import Sections, { SECTIONS } from "./Sections";
 import Story, { StoryApi } from "./StoryMode";
 import { scenes, pad } from "./timeline";
@@ -10,6 +11,7 @@ import "./remix.css";
 
 type Mode = "sections" | "story";
 const instant = "instant" as ScrollBehavior;
+const docTop = (el: HTMLElement) => el.getBoundingClientRect().top + window.scrollY;
 const EASE: [number, number, number, number] = [0.7, 0, 0.2, 1];
 const typing = (t: EventTarget | null) => {
   const el = t as HTMLElement | null;
@@ -45,10 +47,10 @@ const useViewport = () => {
 
 // Segmented Sections | Story control
 const Toggle = ({ mode, onChange }: { mode: Mode; onChange: (m: Mode) => void }) => (
-  <div className="relative flex p-0.5 border border-[#e6ecf5]/15 rx-mono text-[9px] md:text-[10px]" role="tablist" aria-label="View mode">
+  <div className="relative flex p-1 rounded-full border border-[#e6ecf5]/12 bg-[#0b111e]/70 backdrop-blur-md rx-mono text-[9px] md:text-[10px]" role="tablist" aria-label="View mode">
     {(["sections", "story"] as Mode[]).map((m) => (
-      <button key={m} role="tab" aria-selected={mode === m} onClick={() => onChange(m)} className={`relative px-2.5 md:px-3 py-1.5 transition-colors ${mode === m ? "text-[#070b14]" : "text-[#a3adbf] hover:text-[#e6ecf5]"}`}>
-        {mode === m && <motion.span layoutId="rx-seg" className="absolute inset-0 bg-[#e6ecf5]" transition={{ type: "spring", stiffness: 420, damping: 36 }} />}
+      <button key={m} role="tab" aria-selected={mode === m} onClick={() => onChange(m)} className={`relative px-3 md:px-3.5 py-1.5 rounded-full transition-colors ${mode === m ? "text-[#070b14]" : "text-[#a3adbf] hover:text-[#e6ecf5]"}`}>
+        {mode === m && <motion.span layoutId="rx-seg" className="absolute inset-0 rounded-full bg-[#e6ecf5]" transition={{ type: "spring", stiffness: 420, damping: 36 }} />}
         <span className="relative">{m === "story" ? "🎬 Story" : "Sections"}</span>
       </button>
     ))}
@@ -57,6 +59,9 @@ const Toggle = ({ mode, onChange }: { mode: Mode; onChange: (m: Mode) => void })
 
 const Remix = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  // back from a detail page: no intro, land where the visitor left off
+  const [resume] = useState(() => (location.state as Resume | null)?.resume ?? null);
   const reduce = !!useReducedMotion();
   const grain = useGrain();
   const { w: vw, h: vh } = useViewport();
@@ -68,8 +73,8 @@ const Remix = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const field = useRef<Field | null>(null);
   const [nameBox, setNameBox] = useState<NameBox | null>(null);
-  const [done, setDone] = useState(reduce);
-  const skipped = useRef(reduce);
+  const [done, setDone] = useState(reduce || !!resume);
+  const skipped = useRef(reduce || !!resume);
 
   const [mode, setMode] = useState<Mode>("sections");
   const [curtain, setCurtain] = useState(false);
@@ -91,6 +96,7 @@ const Remix = () => {
   useEffect(() => {
     const f = createField(canvasRef.current as HTMLCanvasElement, {
       reduce,
+      resume: !!resume,
       onNameBox: setNameBox,
       onIntroDone: () => setDone(true),
     });
@@ -99,7 +105,20 @@ const Remix = () => {
       f.destroy();
       field.current = null;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduce]);
+
+  // after VariantPage's scroll-to-top; the stamp is consumed so a reload plays the intro again
+  useEffect(() => {
+    if (!resume) return;
+    const st = window.history.state || {};
+    window.history.replaceState({ ...st, usr: null }, "");
+    const id = requestAnimationFrame(() => {
+      const el = resume.section ? document.getElementById(`rx-${resume.section}`) : null;
+      window.scrollTo({ top: el ? docTop(el) : resume.y ?? 0, behavior: instant });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [resume]);
 
   // ── Intro: scroll locked, any input skips; the title settles into the hero as the bars open ──
   useEffect(() => {
@@ -195,8 +214,8 @@ const Remix = () => {
     const r = restore.current;
     restore.current = null;
     const el = typeof r === "string" ? document.getElementById(`rx-${r}`) : null;
-    window.scrollTo({ top: el ? el.offsetTop - navH : (r as number), behavior: instant });
-  }, [mode, navH]);
+    window.scrollTo({ top: el ? docTop(el) : (r as number), behavior: instant });
+  }, [mode]);
 
   const goSection = (id: string) => switchMode("sections", { section: id });
   // the drawer stays mounted; it is only hidden once it has slid out, and is visible in the same
@@ -238,18 +257,27 @@ const Remix = () => {
     if (tcRef.current) tcRef.current.textContent = timecode(f);
   });
 
-  const openProject = (id: string) => navigate(`/project/${id}`);
-  const openGuide = (id: string) => navigate(`/guide/${id}`);
+  const leave = (path: string, section: string) => {
+    const st = window.history.state || {};
+    const back: Resume = { resume: mode === "story" ? { section } : { y: window.scrollY } };
+    window.history.replaceState({ ...st, usr: back }, "");
+    navigate(path);
+  };
+  const openProject = (id: string) => leave(projectPath(id), "projects");
+  const openGuide = (id: string) => leave(guidePath(id), "guides");
 
   const barIntro = Math.max(28, (vh - Math.max(vw / (wide ? 2.39 : 1.85), vh * 0.42)) / 2);
   const closed = vh / 2 + 1;
-  const topH = curtain ? closed : done ? navH : barIntro;
   const story = mode === "story";
+  // no bar in Sections; Story keeps its letterbox
+  const topH = curtain ? closed : done ? (story ? navH : 0) : barIntro;
   // the bottom bar only stays (thin, as in cinema) while the film runs sideways
   const botBar = story && wide ? 32 : 0;
   const botH = curtain ? closed : done ? botBar : barIntro;
   const barT = curtain ? { duration: 0.5, ease: [0.6, 0, 0.4, 1] as typeof EASE } : { duration: skipped.current || busy.current ? 0.55 : 1.0, ease: EASE };
   const cur = sceneIdx >= 0 ? scenes[sceneIdx] : null;
+  // on phones the open terminal is full-screen and has its own close
+  const chrome = done && (wide || !askOpen);
 
   return (
     <div ref={rootRef} className="v-remix relative min-h-screen">
@@ -276,7 +304,7 @@ const Remix = () => {
       ) : (
         <Sections
           vw={vw}
-          navH={navH}
+          navH={24}
           nameBox={nameBox}
           done={done}
           fine={fine}
@@ -302,76 +330,87 @@ const Remix = () => {
         </motion.div>
       )}
 
-      {/* ── Letterbox, top: 2.39:1 during the titles, then the nav ── */}
+      {/* ── Letterbox, top: 2.39:1 during the titles; Story keeps a thin bar with its HUD ── */}
       <motion.header
         data-chrome
-        className="fixed top-0 inset-x-0 z-50 bg-black border-b border-[#e6ecf5]/[0.07]"
-        initial={{ height: reduce ? navH : barIntro }}
+        className={`fixed top-0 inset-x-0 z-50 bg-black ${topH > 0 ? "border-b border-[#e6ecf5]/[0.07]" : ""}`}
+        initial={{ height: reduce || resume ? 0 : barIntro }}
         animate={{ height: topH }}
         transition={barT}
       >
+        {story && (
+          <div className="absolute top-0 left-0 flex items-center gap-4 px-4 md:px-6 rx-mono text-[10px] text-[#8692a8]" style={{ height: navH }}>
+            <span className="truncate">
+              <span className="text-[#c4372b] mr-2">●</span>
+              {cur ? (
+                <>
+                  <span className="hidden md:inline">scene </span>
+                  {pad(cur.n)}/{scenes.length}
+                  <span className="hidden md:inline text-[#c2cbdb]"> · {cur.short}</span>
+                </>
+              ) : (
+                <>
+                  <span className="hidden md:inline">title </span>card
+                </>
+              )}
+            </span>
+            <span ref={tcRef} className="hidden lg:inline tabular-nums text-[#5d687c]">
+              {timecode(progress.get())}
+            </span>
+          </div>
+        )}
+      </motion.header>
+
+      {/* ── Floating controls: no bar, just two pills in the corner ── */}
+      <motion.div
+        data-chrome
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: chrome ? 1 : 0, y: chrome ? 0 : -8 }}
+        transition={{ duration: 0.6, delay: chrome && !skipped.current ? 0.5 : 0 }}
+        className="fixed right-3 md:right-5 z-[63] flex items-center gap-2"
+        style={{ top: story ? (navH - 36) / 2 : wide ? 18 : 12, pointerEvents: chrome ? "auto" : "none" }}
+      >
+        <Toggle mode={mode} onChange={(m) => switchMode(m)} />
+        <button
+          onClick={() => (askOpen ? closeAsk() : openAsk())}
+          className={`rx-mono text-[10px] h-9 flex items-center gap-2 px-3.5 md:px-4 rounded-full border shrink-0 backdrop-blur-md transition-colors ${
+            askOpen ? "bg-[#5b9cff] text-[#070b14] border-[#5b9cff]" : "bg-[#0b111e]/70 border-[#5b9cff]/50 text-[#5b9cff] hover:bg-[#5b9cff] hover:text-[#070b14]"
+          }`}
+        >
+          <span className="text-[12px] leading-none">✻</span>
+          <span>
+            {askOpen ? "Close" : <>Ask<span className="hidden md:inline"> Alfred</span></>}
+          </span>
+        </button>
+      </motion.div>
+
+      {/* ── Section rail: where you are, one click to anywhere ── */}
+      {!story && (
         <motion.nav
+          data-chrome
+          aria-label="Sections"
           initial={{ opacity: 0 }}
           animate={{ opacity: done ? 1 : 0 }}
-          transition={{ duration: 0.6, delay: done && !skipped.current ? 0.5 : 0 }}
-          className="absolute top-0 inset-x-0 flex items-center gap-3 md:gap-5 px-3 md:px-6"
-          style={{ height: navH, pointerEvents: done ? "auto" : "none" }}
+          transition={{ duration: 0.6, delay: done && !skipped.current ? 0.7 : 0 }}
+          className="hidden lg:flex fixed right-5 top-1/2 -translate-y-1/2 z-[55] flex-col items-end gap-3.5"
+          style={{ pointerEvents: done ? "auto" : "none" }}
         >
-          <button
-            onClick={() => (story ? switchMode("sections") : window.scrollTo({ top: 0, behavior: "smooth" }))}
-            className="text-[26px] md:text-[28px] italic leading-none pr-1 shrink-0"
-            aria-label="Jonathan — back to top"
-          >
-            J<span className="text-[#5b9cff]">.</span>
-          </button>
-
-          <div className="flex-1 min-w-0 rx-mono text-[10px] text-[#8692a8]">
-            {story ? (
-              <div className="hidden sm:flex items-center gap-4">
-                <span className="truncate">
-                  <span className="text-[#c4372b] mr-2">●</span>
-                  {cur ? (
-                    <>
-                      <span className="hidden md:inline">scene </span>
-                      {pad(cur.n)}/{scenes.length}
-                      <span className="hidden md:inline text-[#c2cbdb]"> · {cur.short}</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="hidden md:inline">title </span>card
-                    </>
-                  )}
-                </span>
-                <span ref={tcRef} className="hidden lg:inline tabular-nums text-[#5d687c]">
-                  {timecode(progress.get())}
-                </span>
-              </div>
-            ) : (
-              <div className="hidden lg:flex items-center gap-6">
-                {SECTIONS.map((s) => (
-                  <button key={s.id} onClick={() => goSection(s.id)} className={`flex items-center gap-1.5 transition-colors ${active === s.id ? "text-[#e6ecf5]" : "hover:text-[#e6ecf5]"}`}>
-                    <span className={`w-1 h-1 rounded-full transition-colors ${active === s.id ? "bg-[#5b9cff]" : "bg-transparent"}`} />
-                    {s.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <Toggle mode={mode} onChange={(m) => switchMode(m)} />
-          <button
-            onClick={() => (askOpen ? closeAsk() : openAsk())}
-            className={`rx-mono text-[10px] flex items-center gap-2 px-2.5 md:px-3.5 py-1.5 md:py-2 border shrink-0 transition-colors ${
-              askOpen ? "bg-[#5b9cff] text-[#070b14] border-[#5b9cff]" : "border-[#5b9cff]/50 text-[#5b9cff] hover:bg-[#5b9cff] hover:text-[#070b14]"
-            }`}
-          >
-            <span className="text-[12px] leading-none">✻</span>
-            <span>
-              Ask<span className="hidden md:inline"> Alfred</span>
-            </span>
-          </button>
+          {[{ id: "", label: "Top" }, ...SECTIONS].map((sct) => {
+            const on = active === sct.id;
+            return (
+              <button
+                key={sct.label}
+                onClick={() => (sct.id ? goSection(sct.id) : window.scrollTo({ top: 0, behavior: "smooth" }))}
+                className="group flex items-center gap-3 rx-mono text-[9px]"
+                aria-label={sct.label}
+              >
+                <span className={`transition-all duration-300 ${on ? "opacity-100 text-[#e6ecf5]" : "opacity-0 translate-x-1 text-[#8692a8] group-hover:opacity-100 group-hover:translate-x-0"}`}>{sct.label}</span>
+                <span className={`rounded-full transition-all duration-300 ${on ? "w-1.5 h-6 bg-[#5b9cff] shadow-[0_0_10px_rgba(91,156,255,0.8)]" : "w-1.5 h-1.5 bg-[#e6ecf5]/30 group-hover:bg-[#e6ecf5]/70"}`} />
+              </button>
+            );
+          })}
         </motion.nav>
-      </motion.header>
+      )}
 
       {/* ── Letterbox, bottom: opens away entirely in Sections ── */}
       <motion.div
@@ -401,20 +440,20 @@ const Remix = () => {
         animate={{ opacity: askOpen && wide ? 1 : 0 }}
         transition={{ duration: 0.3 }}
         onClick={closeAsk}
-        className="fixed inset-x-0 z-[61] bg-black/45"
-        style={{ top: navH, bottom: 0, pointerEvents: askOpen && wide ? "auto" : "none" }}
+        className="fixed inset-0 z-[61] bg-black/45"
+        style={{ pointerEvents: askOpen && wide ? "auto" : "none" }}
       />
       <motion.aside
         data-chrome
         aria-label="Ask Alfred about Jonathan"
         aria-hidden={!askOpen}
         initial={false}
-        animate={askOpen ? { x: 0, y: 0 } : wide ? { x: "100%", y: 0 } : { x: 0, y: "100%" }}
+        animate={askOpen ? { x: 0, y: 0 } : wide ? { x: "110%", y: 0 } : { x: 0, y: "100%" }}
         transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
         onAnimationComplete={() => !askOpen && setDrawerShown(false)}
-        className="fixed right-0 z-[62] flex flex-col bg-[#0a0f1a] border-l border-[#e6ecf5]/10 shadow-[-30px_0_80px_rgba(0,0,0,0.55)]"
-        // 490 wide so it ends right of the switcher pill at bottom-centre
-        style={{ ...(wide ? { top: navH, bottom: 0, width: 490 } : { top: 0, bottom: 0, left: 0 }), visibility: drawerShown ? "visible" : "hidden" }}
+        className="fixed right-0 z-[62] flex flex-col overflow-hidden bg-[#0a0f1a] border border-[#e6ecf5]/10 shadow-[-30px_0_80px_rgba(0,0,0,0.55)] md:rounded-[28px]"
+        // floats below the corner pills; 470 wide so it ends right of the switcher pill at bottom-centre
+        style={{ ...(wide ? { top: 66, bottom: 16, right: 16, width: 470 } : { top: 0, bottom: 0, left: 0 }), visibility: drawerShown ? "visible" : "hidden" }}
       >
         <div className="flex-1 min-h-0">
           <AskTerminal active={askOpen} onClose={closeAsk} />

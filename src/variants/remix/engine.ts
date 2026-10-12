@@ -1,21 +1,12 @@
-import { experiences, involvements } from "../../data";
-import { projects } from "../../data/projects";
-
-// "title" is the name centred in the letterbox during the intro; "name" is where it rests in the hero
-export type ShapeKey = "title" | "name" | "cloud" | "grid" | "gpa" | "gantt" | "sphere";
-export type NameBox = { cy: number; h: number };
+import { FieldOptions, FRAME_SELECTOR, NameBox, ShapeKey } from "./contracts";
+export type { NameBox, ShapeKey };
 
 const FONT = '"Cormorant Garamond"';
 const WEIGHT = 500;
 const TRACK = 0.24;
-const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
-const monthOf = (s: string) => {
-  const m = s.match(/([A-Za-z]{3})[a-z]*\s+(\d{4})/);
-  return m ? +m[2] * 12 + MONTHS.indexOf(m[1].toLowerCase()) : 0;
-};
 
 // How bright each formation sits beside the content; mobile dims further since text overlaps it
-const DIM: Record<ShapeKey, number> = { title: 1, name: 1, cloud: 0.62, grid: 0.16, gpa: 0.6, gantt: 0.62, sphere: 0.6 };
+const DIM: Record<ShapeKey, number> = { title: 1, name: 1, cloud: 0.62, frames: 0.5, gpa: 0.6, people: 0.62, book: 0.6 };
 
 // Draw a formation onto an offscreen canvas, then sample N points with density ∝ pixel alpha
 const sample = (vw: number, vh: number, n: number, draw: (c: CanvasRenderingContext2D) => void) => {
@@ -70,7 +61,7 @@ const drawTracked = (c: CanvasRenderingContext2D, text: string, cx: number, cy: 
 
 export const createField = (
   canvas: HTMLCanvasElement,
-  opts: { reduce: boolean; onNameBox: (b: NameBox) => void; onIntroDone: () => void }
+  opts: FieldOptions
 ) => {
   const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
   let vw = window.innerWidth;
@@ -86,12 +77,18 @@ export const createField = (
   let tx = new Float32Array(N * 2);
   const kmul = new Float32Array(N);
   const bucket = new Uint8Array(N);
-  const z = new Float32Array(N).fill(1);
   const phase = new Float32Array(N);
   // galaxy phase: polar coords on three spiral arms, wound in by differential rotation
   const rad = new Float32Array(N);
   const ang = new Float32Array(N);
   const diag = Math.hypot(vw, vh);
+  // frames: particle i rides element fe[i], ff[i] of the way round its perimeter, fo[i] px outside it
+  const fbuf = new Float32Array(N * 2);
+  const fe = new Uint16Array(N);
+  const ff = new Float32Array(N);
+  const fo = new Float32Array(N);
+  let fCount = -1;
+  let fTotal = 0;
 
   for (let i = 0; i < N; i++) {
     rad[i] = diag * (0.12 + 0.6 * Math.pow(Math.random(), 0.6));
@@ -102,19 +99,23 @@ export const createField = (
     const roll = Math.random();
     bucket[i] = roll < 0.8 ? 0 : roll < 0.94 ? 1 : 2;
     phase[i] = Math.random() * Math.PI * 2;
+    fo[i] = Math.random() < 0.75 ? Math.random() * 2.5 : 2.5 + Math.pow(Math.random(), 2) * 7;
+    if (opts.resume) {
+      x[i] = Math.random() * vw;
+      y[i] = Math.random() * vh;
+    }
   }
 
-  let shape: ShapeKey = opts.reduce ? "name" : "title";
+  let shape: ShapeKey = opts.reduce || opts.resume ? "name" : "title";
   let ready = false;
   let running = true;
   let cache: Partial<Record<ShapeKey, Float32Array>> = {};
-  let sphere = new Float32Array(0);
   let dim = 1;
   const mouse = { x: -9999, y: -9999, on: false };
   const shocks: { x: number; y: number; t: number }[] = [];
   const t0 = performance.now();
-  let introEnd = opts.reduce ? 0 : 2.3;
-  let galaxyEnd = opts.reduce ? 0 : 0.95;
+  let introEnd = opts.reduce || opts.resume ? 0 : 2.3;
+  let galaxyEnd = opts.reduce || opts.resume ? 0 : 0.95;
   let introDone = false;
 
   const region = () =>
@@ -166,70 +167,151 @@ export const createField = (
         });
         c.fillRect(cx - 1.15 * u, cy + 1.03 * u - 1.5, 2.1 * u, 3);
       });
-    if (k === "gantt")
+    if (k === "people")
       return sample(vw, vh, N, (c) => {
-        const rows = [...experiences.map((e) => ({ p: e.period, a: 0.5 })), ...involvements.map((v) => ({ p: v.period, a: 1 }))];
-        const now = new Date();
-        const nowM = now.getFullYear() * 12 + now.getMonth();
-        const spans = rows.map((r) => {
-          const [s, e] = r.p.split("-");
-          const sm = monthOf(s);
-          const em = e ? monthOf(e) : sm + 3;
-          return { sm, em: Math.min(Math.max(em, sm + 1), Math.max(nowM, sm + 3)), a: r.a };
-        });
-        const lo = Math.min(...spans.map((s) => s.sm));
-        const hi = Math.max(...spans.map((s) => s.em));
-        const rh = R.h / rows.length;
-        spans.forEach((s, i) => {
-          c.globalAlpha = s.a;
-          const bx = R.x + ((s.sm - lo) / (hi - lo)) * R.w;
-          const bw = Math.max(rh * 0.9, ((s.em - s.sm) / (hi - lo)) * R.w);
-          const by = R.y + i * rh + rh * 0.22;
-          const bh = rh * 0.56;
-          c.beginPath();
-          c.moveTo(bx + bh / 2, by);
-          c.arcTo(bx + bw, by, bx + bw, by + bh, bh / 2);
-          c.arcTo(bx + bw, by + bh, bx, by + bh, bh / 2);
-          c.arcTo(bx, by + bh, bx, by, bh / 2);
-          c.arcTo(bx, by, bx + bw, by, bh / 2);
-          c.fill();
-        });
-      });
-    if (k === "grid")
-      return sample(vw, vh, N, (c) => {
-        const cols = wide ? 5 : 2;
-        const rows = Math.ceil(projects.length / cols);
-        const gx = vw * 0.06;
-        const gw = (vw - gx * 2) / cols;
-        const gh = Math.min((vh * 0.76) / rows, gw * 0.75);
-        const gy = (vh - gh * rows) / 2;
-        projects.forEach((_, i) => {
-          const px = gx + (i % cols) * gw + 10;
-          const py = gy + Math.floor(i / cols) * gh + 10;
-          c.globalAlpha = 0.07;
-          c.fillRect(px, py, gw - 20, gh - 20);
+        // three busts, the middle one larger and in front; each erases what it covers so the rims occlude
+        const s = Math.min(R.w / 5.2, R.h / 3.1);
+        const base = cy + 1.45 * s;
+        const bust = (px: number, u: number) => {
+          const w = 1.15 * u;
+          const top = base - 1.5 * u;
+          const rr = 0.8 * u;
+          const body = new Path2D();
+          body.moveTo(px - w, base);
+          body.lineTo(px - w, top + rr);
+          body.quadraticCurveTo(px - w, top, px - w + rr, top);
+          body.lineTo(px + w - rr, top);
+          body.quadraticCurveTo(px + w, top, px + w, top + rr);
+          body.lineTo(px + w, base);
+          const head = new Path2D();
+          head.arc(px, base - 2.28 * u, 0.62 * u, 0, Math.PI * 2);
           c.globalAlpha = 1;
-          c.lineWidth = 2.5;
-          c.strokeRect(px, py, gw - 20, gh - 20);
-        });
+          c.globalCompositeOperation = "destination-out";
+          c.lineWidth = 0.24 * u;
+          [body, head].forEach((pth) => {
+            c.fill(pth);
+            c.stroke(pth);
+          });
+          c.globalCompositeOperation = "source-over";
+          c.globalAlpha = 0.07;
+          c.fill(body);
+          c.fill(head);
+          c.globalAlpha = 1;
+          c.lineWidth = 3.5;
+          c.stroke(body);
+          c.stroke(head);
+        };
+        bust(cx - 1.55 * s, 0.78 * s);
+        bust(cx + 1.55 * s, 0.78 * s);
+        bust(cx, s);
       });
-    // sphere: unit points; positions are projected per frame in the loop
-    sphere = new Float32Array(N * 3);
-    const off = 2 / N;
-    const inc = Math.PI * (3 - Math.sqrt(5));
-    for (let i = 0; i < N; i++) {
-      const yy = i * off - 1 + off / 2;
-      const r = Math.sqrt(1 - yy * yy);
-      sphere[i * 3] = Math.cos(i * inc) * r;
-      sphere[i * 3 + 1] = yy;
-      sphere[i * 3 + 2] = Math.sin(i * inc) * r;
-    }
-    return new Float32Array(N * 2);
+    // book: open, both pages bowing down into the spine, a few lines of text on each
+    return sample(vw, vh, N, (c) => {
+      const W = Math.min(R.w * 0.47, (R.h * 0.84) / 1.25);
+      const H = W * 1.2;
+      const d = H * 0.2;
+      const top = cy - H / 2;
+      // t runs spine → outer edge along a quadratic curve; v runs top → bottom of the page
+      const pt = (side: number, t: number, v: number): [number, number] => [
+        cx + side * W * (0.7 * t * (1 - t) + t * t),
+        top + d * (1 - t) * (1 - t) + v * (H - d),
+      ];
+      const line = (side: number, t0: number, t1: number, v: number) => {
+        c.beginPath();
+        for (let t = t0; t <= t1 + 1e-6; t += 0.02) c.lineTo(...pt(side, t, v));
+        c.stroke();
+      };
+      [-1, 1].forEach((side) => {
+        c.beginPath();
+        for (let t = 0; t <= 1.0001; t += 0.02) c.lineTo(...pt(side, t, 0));
+        for (let t = 1; t >= -0.0001; t -= 0.02) c.lineTo(...pt(side, t, 1));
+        c.closePath();
+        c.globalAlpha = 0.05;
+        c.fill();
+        c.globalAlpha = 1;
+        c.lineWidth = 3.5;
+        c.stroke();
+        // page-stack edge under the leaves
+        c.lineWidth = 2.5;
+        c.globalAlpha = 0.8;
+        line(side, 0, 1, 1.06);
+        c.globalAlpha = 0.75;
+        [0.16, 0.27, 0.38, 0.49, 0.62, 0.73, 0.84].forEach((v, j) => line(side, 0.14, j === 3 || j === 6 ? 0.55 : 0.86, v));
+      });
+    });
   };
 
   const target = (k: ShapeKey) => {
     if (!cache[k]) cache[k] = build(k);
     return cache[k] as Float32Array;
+  };
+  // frames has no cached shape: it starts from the previous targets, so a page without frames holds still
+  const aim = () => {
+    if (shape !== "frames") return void (tx = target(shape));
+    fbuf.set(tx);
+    tx = fbuf;
+    fCount = -1;
+  };
+
+  const DX = [1, 0, -1, 0];
+  const DY = [0, 1, 0, -1];
+  const trace = () => {
+    const boxes = Array.from(document.querySelectorAll<HTMLElement>(FRAME_SELECTOR)).map((el) => {
+      const b = el.getBoundingClientRect();
+      const r = Math.min(+(el.dataset.frame || 0), b.width / 2, b.height / 2);
+      const l = b.left + r;
+      const t = b.top + r;
+      const rr = b.right - r;
+      const bb = b.bottom - r;
+      return { w: b.width - 2 * r, h: b.height - 2 * r, r, cx: [l, rr, rr, l], cy: [t, t, bb, bb], per: 2 * (b.width + b.height) + (2 * Math.PI - 8) * r };
+    });
+    const total = boxes.reduce((s, b) => s + b.per, 0);
+    if (!total) return;
+    if (boxes.length !== fCount || Math.abs(total - fTotal) > fTotal * 0.2) {
+      // spread evenly over the combined perimeter, then each particle keeps its element and place on it
+      fCount = boxes.length;
+      fTotal = total;
+      let e = 0;
+      let acc = 0;
+      for (let i = 0; i < N; i++) {
+        const g = ((i + 0.5) / N) * total;
+        while (e < fCount - 1 && g > acc + boxes[e].per) acc += boxes[e++].per;
+        fe[i] = e;
+        ff[i] = boxes[e].per ? Math.min(1, (g - acc) / boxes[e].per) : 0;
+      }
+    }
+    for (let i = 0; i < N; i++) {
+      const b = boxes[fe[i]];
+      let s = ff[i] * b.per;
+      let px = b.cx[0];
+      let py = b.cy[0] - b.r;
+      let nx = 0;
+      let ny = -1;
+      // walk the four sides, each a straight run then a quarter-arc round the next corner
+      for (let q = 0; q < 4; q++) {
+        const len = q % 2 ? b.h : b.w;
+        if (s < len) {
+          nx = DY[q];
+          ny = -DX[q];
+          px = b.cx[q] + b.r * nx + DX[q] * s;
+          py = b.cy[q] + b.r * ny + DY[q] * s;
+          break;
+        }
+        s -= len;
+        const arc = (Math.PI / 2) * b.r;
+        if (s < arc) {
+          const a = ((q - 1) * Math.PI) / 2 + s / b.r;
+          nx = Math.cos(a);
+          ny = Math.sin(a);
+          px = b.cx[(q + 1) % 4] + b.r * nx;
+          py = b.cy[(q + 1) % 4] + b.r * ny;
+          break;
+        }
+        s -= arc;
+      }
+      fbuf[i * 2] = px + nx * fo[i];
+      fbuf[i * 2 + 1] = py + ny * fo[i];
+    }
   };
 
   const resize = () => {
@@ -243,7 +325,7 @@ export const createField = (
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     if (!ready) return;
     cache = {};
-    tx = target(shape);
+    aim();
     target("name"); // keeps the hero layout box in sync
   };
   resize();
@@ -260,39 +342,16 @@ export const createField = (
       introDone = true;
       opts.onIntroDone();
     }
-    const galaxy = t < galaxyEnd || !ready;
+    const galaxy = !opts.resume && (t < galaxyEnd || !ready);
     const p = Math.min(1, Math.max(0, (t - galaxyEnd) / Math.max(0.1, introEnd - galaxyEnd - 0.2)));
     const ease = p * p * (3 - 2 * p);
     const k = galaxy ? 0 : intro ? 0.006 + 0.034 * ease : 0.034;
     const swirl = galaxy ? 0 : intro ? 0.5 * (1 - ease) : 0;
     const damp = intro ? 0.9 : 0.86;
 
-    if (shape === "sphere") {
-      const R = region();
-      const rad = Math.min(R.w, R.h) * 0.42;
-      const cx = R.x + R.w / 2;
-      const cy = R.y + R.h / 2;
-      const ry = t * 0.25;
-      const cr = Math.cos(ry);
-      const sr = Math.sin(ry);
-      const tilt = 0.35;
-      const ct = Math.cos(tilt);
-      const st = Math.sin(tilt);
-      for (let i = 0; i < N; i++) {
-        const px = sphere[i * 3];
-        const py = sphere[i * 3 + 1];
-        const pz = sphere[i * 3 + 2];
-        const x1 = px * cr + pz * sr;
-        const z1 = -px * sr + pz * cr;
-        const y1 = py * ct - z1 * st;
-        const z2 = py * st + z1 * ct;
-        tx[i * 2] = cx + x1 * rad;
-        tx[i * 2 + 1] = cy + y1 * rad;
-        z[i] = z2;
-      }
-    }
+    if (shape === "frames" && ready) trace();
 
-    const wantDim = (shape === "name" || shape === "title" || wide ? 1 : 0.32) * DIM[shape];
+    const wantDim = (shape === "name" || shape === "title" || shape === "frames" || wide ? 1 : 0.32) * DIM[shape];
     dim += (wantDim - dim) * 0.06;
 
     ctx.globalCompositeOperation = "source-over";
@@ -302,7 +361,7 @@ export const createField = (
     const R2 = 120 * 120;
     const cxs = vw / 2;
     const cys = vh / 2;
-    const paths = [new Path2D(), new Path2D(), new Path2D(), new Path2D()];
+    const paths = [new Path2D(), new Path2D(), new Path2D()];
     for (let i = 0; i < N; i++) {
       if (galaxy) {
         // spiral inward; velocity is kept so the hand-off to the springs is seamless
@@ -349,7 +408,7 @@ export const createField = (
       y[i] += vy[i];
       // speed lights a particle up, so swarms and shockwaves flare blue
       const sp = vx[i] * vx[i] + vy[i] * vy[i];
-      const b = shape === "sphere" && z[i] < 0 ? 3 : sp > 6 ? 1 : bucket[i];
+      const b = sp > 6 ? 1 : bucket[i];
       const s = sp > 6 ? 2 : 1.5;
       paths[b].rect(x[i], y[i], s, s);
     }
@@ -360,8 +419,6 @@ export const createField = (
     ctx.fill(paths[1]);
     ctx.fillStyle = COLORS[2] + 0.85 * dim + ")";
     ctx.fill(paths[2]);
-    ctx.fillStyle = COLORS[0] + 0.24 * dim + ")";
-    ctx.fill(paths[3]);
     ctx.globalCompositeOperation = "source-over";
 
     for (let j = shocks.length - 1; j >= 0; j--) {
@@ -423,11 +480,11 @@ export const createField = (
       vx[i] = vy[i] = 0;
     }
   };
-  Promise.race([fontLoaded, new Promise((r) => setTimeout(r, 1500))]).then(() => {
+  Promise.race([fontLoaded, new Promise((r) => setTimeout(r, opts.resume ? 0 : 1500))]).then(() => {
     if (!alive) return;
     ready = true;
     target("name");
-    tx = target(shape);
+    aim();
     if (opts.reduce) settle();
   });
   // a font that arrives after the timeout still gets the shapes re-sampled in it
@@ -435,7 +492,7 @@ export const createField = (
     if (!alive || !ready) return;
     cache = {};
     target("name");
-    tx = target(shape);
+    aim();
   });
   start();
 
@@ -443,8 +500,7 @@ export const createField = (
     setShape(k: ShapeKey) {
       if (k === shape) return;
       shape = k;
-      if (ready) tx = target(k);
-      if (k !== "sphere") z.fill(1);
+      if (ready) aim();
     },
     setRunning(on: boolean) {
       running = on;

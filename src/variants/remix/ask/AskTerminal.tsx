@@ -1,6 +1,6 @@
 import { KeyboardEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AskTerminalProps } from "../contracts";
+import { AskTerminalProps, projectPath } from "../contracts";
 import { projects } from "../../../data/projects";
 import { answer } from "./answer";
 import { KB, CONTACT } from "./knowledge";
@@ -311,14 +311,14 @@ const AskTerminal = ({ active, onClose }: AskTerminalProps) => {
         if (active && !t.closest("a,button,input") && !String(window.getSelection() || "")) inputRef.current?.focus({ preventScroll: true });
       }}
     >
-      <div className="flex items-center justify-between gap-3 px-4 h-10 shrink-0 border-b ask-line">
+      <div className="flex items-center justify-between gap-3 px-5 h-12 shrink-0 border-b ask-line">
         <div className="flex items-center gap-2 text-xs min-w-0 truncate">
           <span className="ask-accent">✻</span>
           <span className="ask-bright">alfred</span>
           <span className="ask-faint">~/jonathan</span>
         </div>
         <button type="button" onClick={onClose} className="flex items-center gap-2 text-xs ask-dim hover:text-[color:var(--ask-bright)]" aria-label="Close">
-          <span className="hidden sm:inline border ask-line rounded px-1.5 leading-5">esc</span>
+          <span className="hidden sm:inline border ask-line rounded-full px-2 leading-5">esc</span>
           <span className="text-base leading-none">✕</span>
         </button>
       </div>
@@ -331,7 +331,7 @@ const AskTerminal = ({ active, onClose }: AskTerminalProps) => {
         }}
         className="ask-scroll flex-1 min-h-0 overflow-y-auto px-4 pt-4 pb-3"
       >
-        <div className="ask-welcome border rounded-md px-4 py-3 max-w-[30rem]">
+        <div className="ask-welcome border rounded-2xl px-4 py-3 max-w-[30rem]">
           <div>
             <span className="ask-accent">✻</span> Good evening. I'm <span className="ask-bright font-semibold">Alfred</span>, Jonathan's assistant.
           </div>
@@ -349,7 +349,7 @@ const AskTerminal = ({ active, onClose }: AskTerminalProps) => {
 
         {items.map((it) =>
           it.kind === "user" ? (
-            <div key={it.id} className="ask-user mt-5 -mx-2 px-2 py-1 rounded flex gap-2 ask-dim">
+            <div key={it.id} className="ask-user mt-5 -mx-2 px-3 py-1.5 rounded-xl flex gap-2 ask-dim">
               <span className="shrink-0">&gt;</span>
               <span className="min-w-0 break-words">{it.text}</span>
             </div>
@@ -372,7 +372,7 @@ const AskTerminal = ({ active, onClose }: AskTerminalProps) => {
               <div className="min-w-0 flex-1 break-words">
                 {rich(it.shown >= it.text.length ? it.text : it.text.slice(0, it.shown).replace(/\*\*([^*]*)$/, "$1"))}
                 {it.project && it.shown >= it.text.length && (
-                  <button type="button" onClick={() => navigate(`/project/${it.project}`)} className="mt-2 ask-accent hover:underline">
+                  <button type="button" onClick={() => navigate(projectPath(it.project as string))} className="mt-2 ask-accent hover:underline">
                     ⎿ Open the project page →
                   </button>
                 )}
@@ -402,7 +402,7 @@ const AskTerminal = ({ active, onClose }: AskTerminalProps) => {
             ))}
           </div>
         )}
-        <label className="ask-prompt flex items-center gap-2 border rounded-md px-3 py-2 cursor-text">
+        <label className="ask-prompt flex items-center gap-2 border rounded-full px-4 py-2.5 cursor-text">
           <span className="ask-dim shrink-0">&gt;</span>
           <input
             ref={inputRef}

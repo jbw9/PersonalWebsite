@@ -13,7 +13,7 @@ const FS = range(-1, scenes.length);
 
 const ExtraCard = ({ e, onOpen }: { e: Extra; onOpen: (id: string) => void }) => {
   const isProject = e.kind === "project";
-  const label = { work: "cast", school: "location", club: "supporting", project: "production" }[e.kind];
+  const label = { work: "work", school: "school", club: "involvement", project: "project" }[e.kind];
   return (
     <motion.div
       initial={{ opacity: 0, y: 24, filter: "blur(6px)" }}
@@ -21,7 +21,7 @@ const ExtraCard = ({ e, onOpen }: { e: Extra; onOpen: (id: string) => void }) =>
       viewport={{ once: true, amount: 0.5 }}
       transition={{ duration: 0.9, ease: [0.2, 0.7, 0.2, 1] }}
       onClick={isProject && e.id ? () => onOpen(e.id as string) : undefined}
-      className={`w-full md:w-[230px] shrink-0 border border-[#e6ecf5]/15 bg-black/40 backdrop-blur-sm ${
+      className={`w-full md:w-[230px] shrink-0 rounded-2xl overflow-hidden border border-[#e6ecf5]/15 bg-black/40 backdrop-blur-sm ${
         isProject ? "cursor-pointer rx-poster hover:border-[#5b9cff]/70 transition-colors" : ""
       }`}
     >
@@ -30,13 +30,13 @@ const ExtraCard = ({ e, onOpen }: { e: Extra; onOpen: (id: string) => void }) =>
           <img src={e.img} alt={e.title} className="w-full h-full object-cover object-top" />
         </div>
       )}
-      <div className="p-3">
+      <div className="p-3.5">
         <div className="rx-mono text-[9px] text-[#5b9cff] mb-1.5 flex justify-between gap-2">
           <span>{label}</span>
           <span className="text-[#8692a8] truncate">{isProject ? "view →" : e.period}</span>
         </div>
         <div className="flex items-start gap-2.5">
-          {!isProject && e.img && <img src={e.img} alt="" className="w-7 h-7 rounded-sm object-contain bg-white/90 p-0.5 shrink-0 mt-0.5" />}
+          {!isProject && e.img && <img src={e.img} alt="" className="w-7 h-7 rounded-lg object-contain bg-white/90 p-0.5 shrink-0 mt-0.5" />}
           <div className="min-w-0">
             <div className="text-[17px] leading-tight italic">{e.title}</div>
             <div className={`text-[13px] text-[#8692a8] leading-snug mt-0.5 ${isProject ? "line-clamp-2" : ""}`}>{e.sub}</div>
@@ -108,10 +108,10 @@ const EndCard = ({ onBack, onAsk }: { onBack: () => void; onAsk: () => void }) =
     <div className="rx-mono text-[11px] text-[#5b9cff] mb-4">— end of reel one —</div>
     <div className="text-[clamp(2.4rem,4.6vw,4.2rem)] italic font-light leading-none">To be continued.</div>
     <div className="mt-10 flex flex-wrap justify-center gap-3">
-      <button onClick={onBack} className="rx-mono text-[11px] px-5 py-3 border border-[#e6ecf5]/25 hover:border-[#5b9cff] hover:text-[#5b9cff] transition-colors">
+      <button onClick={onBack} className="rx-btn-ghost">
         ← back to sections
       </button>
-      <button onClick={onAsk} className="rx-mono text-[11px] px-5 py-3 border border-[#5b9cff]/50 text-[#5b9cff] hover:bg-[#5b9cff] hover:text-[#070b14] transition-colors">
+      <button onClick={onAsk} className="rx-btn">
         ✻ ask alfred about it
       </button>
     </div>

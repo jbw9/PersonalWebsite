@@ -295,3 +295,57 @@ blue palette throughout; no console errors and no horizontal overflow at 1280×8
 ## Round 4 changes (2026-10-12, main thread)
 Achievements removed (contract no longer has `AchievementId`/`onUnlock`). Ask assistant renamed
 **Alfred**. Sections headers lose film kickers. Story mode unchanged.
+
+## Jonathan's feedback on round 4 (2026-10-12)
+Too boxy → rounder, like the original site. No top bar (logo + section links). Project clicks
+still open the old detail page → redesign project **and** guide pages in the remix look. Project
+particles are a grid of boxes that doesn't match the cards → make them sync. YC logo is broken
+(half missing) → new logo; he has a YC AI Startup School photo → show it on hover. Involvement
+and guide particles read as random symbols → meaningful shapes. Bring back the original site's
+experience timeline (git-graph style). Hero is crowded → calmer.
+
+## Round-5 contracts (frozen — main thread)
+- `src/variants/remix/contracts.ts` — `ShapeKey` (`cloud`/`frames`/`gpa`/`people`/`book`),
+  `FRAME_SELECTOR`, `FieldOptions` (adds `resume`), route helpers `HOME`/`projectPath`/`guidePath`,
+  `Resume` location state.
+- `src/variants/remix/remix.css` — rounded kit: `.rx-card` (24px radius, glass), `.rx-btn`
+  (blue pill), `.rx-btn-ghost` (outline pill), `.rx-chip`, `.rx-mono`, `.rx-plain`. Radii: big
+  surfaces/images `rounded-3xl`, medium `rounded-2xl`, logos `rounded-xl`, every button/chip/toggle
+  `rounded-full`. Palette: bg #070b14, ink #e6ecf5, soft #c2cbdb, muted #8692a8, accent #5b9cff,
+  glow #bcd7ff, live #7bd88f. Cormorant Garamond display/body, IBM Plex Mono labels.
+- `src/index.tsx` — `/v/remix/project/:id` → `pages/ProjectPage.tsx`, `/v/remix/guide/:id` →
+  `pages/GuidePage.tsx` (lazy, default export, no props).
+- Navigation: the remix stamps `{resume:{y}}` on its own history entry before opening a detail
+  page, so browser-back resumes without the intro. Detail-page back control: `navigate(-1)` when
+  `window.history.state?.idx > 0`, else `navigate(HOME, {state:{resume:{section}}})`. Prev/next
+  between detail pages use `{ replace: true }`.
+
+### WS7 — particle engine  (builder)
+owns: `src/variants/remix/engine.ts`
+- `createField(canvas, opts: FieldOptions)`; keep the existing API (`setShape`, `setRunning`,
+  `shock`, `skipIntro`, `destroy`) and the intro.
+- `resume: true` → no galaxy/intro: `onIntroDone` at once, particles gather into the current
+  shape in well under a second.
+- `frames`: every frame while active, read `document.querySelectorAll(FRAME_SELECTOR)` client
+  rects (attr = corner radius) and put particles on their rounded-rect perimeters, stable
+  index→element mapping so scrolling just slides targets (springs give a trailing glow). Off-screen
+  elements still own their particles. Bright enough to read as a glowing border, not a box fill.
+- `people` (involvement): a recognisable group-of-people silhouette (heads + shoulders), drawn in
+  the right-hand region like `cloud`. `book` (guides): an open book with text lines. Same drawing
+  style as `cloud` (faint fill + bright rim). Replace `gantt`/`sphere`/`grid` code entirely.
+done-when: tsc clean; each formation screenshot-checked at 1280×800 and 390×844.
+
+### WS8 — detail pages  (builder)
+owns: `src/variants/remix/pages/**`
+- `ProjectPage` + `GuidePage` replace `src/popup/ProjectDetail.tsx` / `GuideDetails.tsx` for the
+  remix: same data, every field rendered (images, screenshots, video, dmg, notebook iframe,
+  howItWorks markdown, features, technologies; guide markdown content), in the remix look with the
+  rounded kit. Root `<div className="v-remix …">` and `import "../remix.css"`; any extra CSS in a
+  scoped `pages/pages.css`. No top bar: a floating round back control. Prev/next item at the foot.
+- `react-markdown` + `remark-gfm` + `react-syntax-highlighter` are already deps; reuse them.
+done-when: tsc clean; every project and guide id renders with no console errors at 1280×800 and
+390×844; markdown, code blocks, tables, video, notebook look right.
+
+### Main thread (round 5)
+owns: `index.tsx`, `Sections.tsx`, `StoryMode.tsx`, `HeroCurve.tsx`, `remix.css`, `ask/**`,
+`src/data.ts` (YC logo + photo), `public/ycLogo.svg`.

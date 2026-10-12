@@ -64,6 +64,10 @@
   animation: vrx-ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
+.v-remix .rx-ping {
+  animation: vrx-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
 @keyframes vrx-ping {
   75%, 100% { transform: scale(2.4); opacity: 0; }
 }
@@ -98,12 +102,56 @@
   transform: scale(1.03);
 }
 
+/* ── Shared rounded kit (sections, story, detail pages) ── */
 .v-remix .rx-card {
-  background: rgba(9, 14, 24, 0.72);
+  background: rgba(11, 17, 30, 0.66);
+  border: 1px solid rgba(226, 236, 255, 0.08);
+  border-radius: 24px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.v-remix .rx-btn,
+.v-remix .rx-btn-ghost,
+.v-remix .rx-chip {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.v-remix .rx-btn {
+  font-size: 12px;
+  padding: 0.7rem 1.25rem;
+  background: #5b9cff;
+  color: #070b14;
+  box-shadow: 0 0 40px rgba(91, 156, 255, 0.18);
+}
+
+.v-remix .rx-btn:hover {
+  background: #8ab8ff;
+}
+
+.v-remix .rx-btn-ghost {
+  font-size: 12px;
+  padding: 0.7rem 1.25rem;
+  border: 1px solid rgba(226, 236, 255, 0.18);
+  color: #e6ecf5;
+}
+
+.v-remix .rx-btn-ghost:hover {
+  border-color: #5b9cff;
+  color: #5b9cff;
+}
+
+.v-remix .rx-chip {
+  font-size: 10.5px;
+  padding: 0.15rem 0.65rem;
   border: 1px solid rgba(226, 236, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition: border-color 0.3s ease, background 0.3s ease;
+  color: #a3adbf;
 }
 
 @media (max-width: 767px) {

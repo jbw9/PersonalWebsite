@@ -134,3 +134,21 @@
 - **Breaks at scale:** single-turn (no memory of earlier questions); the KB is ~8k tokens, fine to
   ~50k; the daily cap is global, so a single abuser can exhaust it for everyone (IP cap slows that).
   Redeploy (`alfred/deploy.sh`) after editing data or `EXTRA_FACTS`, since the KB is baked in.
+
+## 2026-10-12 — Round 5: rounder, barless, real detail pages
+- **Detail pages are new routes (`/v/remix/project/:id`, `/v/remix/guide/:id`)**, not an in-page
+  overlay and not edits to `src/popup/*`. Beat: overlay (no back button, no shareable URL) and
+  restyling the old pages (the live `/` still uses them). Cost: the remix remounts on return, so it
+  stamps `{resume:{y}}` into its own `history.state.usr` before leaving and skips the intro when it
+  finds one (stamp is consumed so a reload still plays the intro). Breaks if React Router stops
+  reading `history.state.usr` — it's an internal shape. On promotion these become `/project/:id`.
+- **Project particles follow live DOM rects** (`[data-frame]`, read every frame) instead of a
+  pre-sampled grid. Beat: re-sampling an offscreen canvas on scroll (too slow per frame). Cost: ~12
+  `getBoundingClientRect` calls per frame while Projects is active.
+- **No top bar.** Sections/Story toggle + Ask Alfred float as pills top-right; a dot rail on the
+  right edge (≥1024px) replaces the section links. Story keeps its letterbox (it's the film).
+- **YC logo is an SVG** (`public/ycLogo.svg`) instead of the inline base64 PNG that rendered half
+  missing. YC photo is `education[].photo`; the hover peek only exists once the image loads, so a
+  missing file just means no peek.
+- **Experience is the original site's git-graph timeline**, redrawn dark: one branch, nodes,
+  current/upcoming roles glow, the line draws itself with scroll.

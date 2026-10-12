@@ -248,3 +248,46 @@ work with no console errors at 1280×800 and 390×844.
 - Fire `onUnlock("ask")` on the first known answer, `"unknown"` on the first unknown, and `"hire"` on
   `sudo hire jonathan` (a small playful sequence ending in a mailto).
 - Don't steal focus when `active` is false. Focus the prompt when `active` flips to true.
+
+---
+
+# Round 3 — Director's Cut revision (2026-10-11)
+
+## Jonathan's feedback on round 2
+- "The graph is kinda separated, unlike the previous version where it's a lot smoother and looks
+  embedded into the overall look. This just feels like an addition."
+  Diagnosis: in cinema, the vibe curve is **large and part of the scene**. It's in the lower third,
+  full width, with emoji nodes, labels, a playhead line, drawn as you go, and no container. In remix
+  it was shrunk into a thin sparkline inside a separate bottom bar with its own caption, and
+  cinema's in-scene curve was removed.
+- "Change the color. I don't really like the dark yellow/orange look. I like the color blue."
+
+## WS6 — remix revision  (builder; continues WS4)
+owns: `src/variants/remix/**` except `src/variants/remix/contracts.ts` (now **including** `ask/**`,
+for colours only — don't change terminal behaviour or retrieval)
+done-when: tsc clean for `src/variants/remix`; no bottom strip bar; graph embedded in both modes;
+blue palette throughout; no console errors and no horizontal overflow at 1280×800 and 390×844.
+**Dev server is now http://127.0.0.1:3001** (port 3000 is the TaxBuddy app).
+
+- **Remove the bottom strip bar entirely.** The bottom letterbox bar no longer becomes chrome.
+- **Story mode:** restore cinema's original in-scene vibe curve **as it was in
+  `src/variants/cinema`**: large, in the lower part of the run, emoji nodes with labels, the centre
+  playhead line, drawn up to the playhead, a glowing dot riding it. Drag-to-scrub may move onto the
+  curve itself, or be dropped.
+- **Sections mode:** the same curve style, embedded at the bottom of the hero.
+  - Full-bleed, roughly 200–260px tall on desktop, with no box, border or caption bar; it fades out
+    at the edges into the page.
+  - After the intro it draws itself in left to right, with the emoji nodes popping in.
+  - Hovering a node shows its milestone; clicking one enters Story at that scene.
+  - It scrolls away with the hero, like part of the page.
+  - It should feel like one continuous piece with the hero, the way cinema's run feels.
+  - The experience-hover period band can go if it no longer has a home.
+  - Mobile: a shorter version (horizontal swipe is fine).
+- **Palette → blue.**
+  - Deep blue-black background (e.g. #060a13–#0a1020) with cool off-white text.
+  - One clear blue accent (around #4d8dff–#6aa8ff) and a lighter ice-blue for glows.
+  - Particles in ice-white/blue.
+  - Replace every amber/orange/terracotta, including the Ask terminal's accent, the achievement
+    toasts, the CTA, the nav dot and the playhead.
+  - Keep the film grain and vignette, but cool. Keep the cinematic serif typography.
+  - Green stays only for the live "TaxBuddy" dot.

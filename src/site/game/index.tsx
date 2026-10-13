@@ -1,21 +1,26 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { milestones } from "../../data/journey";
 import { GameProps } from "../contracts";
 import { CONTACT, fmtMonth } from "../timeline";
-import { GATES, NOW, START } from "./chapters";
+import { GATES, NOW } from "./chapters";
 import { createGame, GameApi, GameEvent } from "./scene";
 
 type Gate = Extract<GameEvent, { kind: "gate" }>;
 type Stop = Extract<GameEvent, { kind: "stop" }>;
 type Fin = Extract<GameEvent, { kind: "finale" }>;
 const ext = { target: "_blank", rel: "noopener noreferrer" };
+const emojiOf = (short: string) => milestones.find((m) => m.short === short)?.emoji || "";
+// a chapter card stays up this long unless skipped
+const HOLD = 10;
 
-// The hidden journey: a paper plane from Bandung to Seattle, one gate per chapter
+// The hidden journey: a paper plane the long way round from Bandung to Seattle, one gate per chapter
 const Game = ({ onExit }: GameProps) => {
   const canvas = useRef<HTMLCanvasElement>(null);
   const marker = useRef<HTMLDivElement>(null);
-  const markerLabel = useRef<HTMLSpanElement>(null);
+  const dist = useRef<HTMLSpanElement>(null);
   const boost = useRef<HTMLDivElement>(null);
+  const vibe = useRef<HTMLDivElement>(null);
   const api = useRef<GameApi | null>(null);
   const [flying, setFlying] = useState(false);
   const [passed, setPassed] = useState(0);
@@ -32,22 +37,18 @@ const Game = ({ onExit }: GameProps) => {
     let g: GameApi;
     try {
       g = createGame(
-      canvas.current as HTMLCanvasElement,
-      { marker: marker.current as HTMLElement, markerLabel: markerLabel.current as HTMLElement, boost: boost.current as HTMLElement },
-      (e) => {
-        if (e.kind === "gate") {
-          setPassed(e.i + 1);
-          setCard(e);
-          setToast(null);
-          if (e.i < GATES.length - 1) later(() => setCard((c) => (c === e ? null : c)), 4200);
-        } else if (e.kind === "stop") {
-          setToast(e);
-          later(() => setToast((t) => (t === e ? null : t)), 3600);
-        } else {
-          setCard(null);
-          setFin(e);
+        canvas.current as HTMLCanvasElement,
+        { marker: marker.current as HTMLElement, dist: dist.current as HTMLElement, boost: boost.current as HTMLElement, vibe: vibe.current as HTMLElement },
+        (e) => {
+          if (e.kind === "gate") {
+            setPassed(e.i + 1);
+            setToast(null);
+            setCard(e);
+          } else if (e.kind === "stop") {
+            setToast(e);
+            later(() => setToast((t) => (t === e ? null : t)), 4200);
+          } else setFin(e);
         }
-      }
       );
     } catch {
       // no WebGL (old device, or hardware acceleration off): say so instead of a blank screen
@@ -66,10 +67,22 @@ const Game = ({ onExit }: GameProps) => {
     api.current?.start();
     setFlying(true);
   };
+  const carryOn = () => {
+    setCard(null);
+    api.current?.resume();
+  };
+  // the chapter card moves on by itself after HOLD seconds
+  useEffect(() => {
+    if (!card) return;
+    const id = setTimeout(carryOn, HOLD * 1000);
+    return () => clearTimeout(id);
+  }, [card]);
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
       if (e.key === "Escape") return onExit();
-      if (!flying && (e.key === "Enter" || e.key === " ")) takeOff();
+      if (e.key !== "Enter" && e.key !== " ") return;
+      if (!flying) takeOff();
+      else if (card) carryOn();
     };
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
@@ -83,9 +96,9 @@ const Game = ({ onExit }: GameProps) => {
     setFlying(false);
   };
 
-  // drag anywhere to steer: sideways turns, up climbs
+  // drag anywhere to steer: sideways turns, up climbs. Let go and the autopilot follows the path.
   const onDown = (e: React.PointerEvent) => {
-    if (!flying || fin) return;
+    if (!flying || fin || card) return;
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
     setStick({ x: e.clientX, y: e.clientY, dx: 0, dy: 0 });
   };
@@ -114,6 +127,11 @@ const Game = ({ onExit }: GameProps) => {
       </div>
     );
 
+  const next = GATES[passed];
+  const hudOn = flying && !fin && !card;
+  const cg = card ? GATES[card.i] : null;
+  const after = card ? GATES[card.i + 1] : null;
+
   return (
     <div className="fixed inset-0 z-[100] bg-[#070b14] select-none overflow-hidden" data-chrome style={{ touchAction: "none" }}>
       <canvas ref={canvas} className="absolute inset-0 w-full h-full" onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp} />
@@ -121,7 +139,7 @@ const Game = ({ onExit }: GameProps) => {
       {/* next gate: on screen it rings the target, off screen it sits on the edge and points */}
       <div ref={marker} className="rx-gm-marker absolute left-0 top-0 pointer-events-none opacity-0" style={{ transition: "opacity 0.3s" }}>
         <div className="rx-gm-arrow" />
-        <span ref={markerLabel} className="rx-mono absolute left-1/2 top-[26px] -translate-x-1/2 whitespace-nowrap text-[10px] text-[#bcd7ff]" />
+        <span className="absolute left-1/2 top-[22px] -translate-x-1/2 text-lg">{next ? emojiOf(next.short) : ""}</span>
       </div>
 
       {stick && (
@@ -130,33 +148,51 @@ const Game = ({ onExit }: GameProps) => {
         </div>
       )}
 
-      {/* top: exit and the chapter track */}
+      {/* top: exit, the chapter track, and where to go next */}
       <button onClick={onExit} className="rx-btn-ghost absolute top-4 left-4 !py-2 !px-4 bg-black/40" aria-label="Exit the game">
         ✕ exit
       </button>
-      <div className="absolute top-[68px] md:top-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 md:gap-2 rounded-full bg-black/40 border border-[#e6ecf5]/10 px-3 py-2">
-        {GATES.map((g, i) => (
-          <span
-            key={g.m.short}
-            title={g.m.short}
-            className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center text-sm md:text-base transition-all duration-500 ${
-              i < passed ? "bg-[#4ade80]/20 border border-[#4ade80]/70" : i === passed && flying ? "border border-[#5b9cff] shadow-[0_0_14px_rgba(91,156,255,0.6)]" : "border border-[#e6ecf5]/10 opacity-40 grayscale"
-            }`}
-          >
-            {g.m.emoji}
-          </span>
-        ))}
+      <div className="absolute top-[68px] md:top-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+        <div className="flex items-center gap-1.5 md:gap-2 rounded-full bg-black/40 border border-[#e6ecf5]/10 px-3 py-2">
+          {GATES.map((g, i) => (
+            <span
+              key={g.short}
+              title={g.name}
+              className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center text-sm md:text-base transition-all duration-500 ${
+                i < passed ? "bg-[#4ade80]/20 border border-[#4ade80]/70" : i === passed && flying ? "border border-[#5b9cff] shadow-[0_0_14px_rgba(91,156,255,0.6)]" : "border border-[#e6ecf5]/10 opacity-40 grayscale"
+              }`}
+            >
+              {emojiOf(g.short)}
+            </span>
+          ))}
+        </div>
+        <div
+          className="rx-mono text-[10px] md:text-[11px] rounded-full bg-[#5b9cff]/15 border border-[#5b9cff]/50 px-4 py-1.5 text-[#e6ecf5] whitespace-nowrap transition-opacity duration-500"
+          style={{ opacity: hudOn && next ? 1 : 0 }}
+        >
+          <span className="text-[#5b9cff]">NEXT →</span> {next ? `${emojiOf(next.short)} ${next.name}` : ""} <span className="text-[#8692a8]">·</span>{" "}
+          <span ref={dist} className="text-[#bcd7ff]" />
+        </div>
       </div>
 
-      {/* bottom: boost */}
-      {/* always mounted: the loop writes the boost level into it every frame */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none transition-opacity duration-500" style={{ opacity: flying && !fin ? 1 : 0 }}>
-          <div className="w-40 h-1.5 rounded-full bg-[#e6ecf5]/10 overflow-hidden">
-            <div ref={boost} className="h-full w-full rounded-full origin-left bg-gradient-to-r from-[#5b9cff] to-[#bcd7ff]" />
-          </div>
-          {!touch && <div className="rx-mono text-[9px] text-[#8692a8]">← → steer · ↑ ↓ climb · space boost · rings refill</div>}
+      {/* left: height is the vibe */}
+      <div className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 pointer-events-none transition-opacity duration-500" style={{ opacity: hudOn ? 1 : 0 }}>
+        <span className="rx-mono text-[9px] text-[#4ade80]">high</span>
+        <div className="relative w-1.5 h-40 rounded-full bg-gradient-to-b from-[#4ade80]/50 via-[#5b9cff]/30 to-[#ff8a8a]/50">
+          <div ref={vibe} className="absolute left-1/2 w-4 h-4 -ml-2 -mb-2 rounded-full bg-[#e6ecf5] shadow-[0_0_10px_rgba(255,255,255,0.7)]" />
+        </div>
+        <span className="rx-mono text-[9px] text-[#ff8a8a]">low</span>
+        <span className="rx-mono text-[9px] text-[#8692a8] mt-1">vibe</span>
       </div>
-      {touch && flying && !fin && (
+
+      {/* bottom: boost; always mounted, the loop writes its level every frame */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none transition-opacity duration-500" style={{ opacity: hudOn ? 1 : 0 }}>
+        <div className="w-40 h-1.5 rounded-full bg-[#e6ecf5]/10 overflow-hidden">
+          <div ref={boost} className="h-full w-full rounded-full origin-left bg-gradient-to-r from-[#5b9cff] to-[#bcd7ff]" />
+        </div>
+        {!touch && <div className="rx-mono text-[9px] text-[#8692a8]">follow the glowing path · ← → ↑ ↓ to steer, or let go · space boost</div>}
+      </div>
+      {touch && hudOn && (
         <button
           className="absolute bottom-6 right-5 w-16 h-16 rounded-full bg-[#5b9cff]/25 border border-[#5b9cff]/60 text-2xl"
           onPointerDown={() => setBoost(true)}
@@ -176,48 +212,66 @@ const Game = ({ onExit }: GameProps) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.6 }}
-            className="absolute inset-x-0 bottom-[12vh] flex flex-col items-center text-center px-6"
+            className="absolute inset-x-0 bottom-[10vh] flex flex-col items-center text-center px-6"
           >
             <div className="rx-mono text-[10px] text-[#5b9cff] mb-3">✦ you found it</div>
             <h2 className="text-[clamp(2.4rem,6vw,4.4rem)] italic font-light leading-[0.95]">The long way to Seattle</h2>
-            <p className="mt-4 max-w-[34rem] text-[1.1rem] text-[#c2cbdb] leading-snug">
-              Fly a paper plane through my journey: from {START.place}, through a finance major turned CS, to AWS. Every gate is a chapter; storms are the rough patches.
+            <p className="mt-4 max-w-[36rem] text-[1.1rem] text-[#c2cbdb] leading-snug">
+              Fly my journey east around the world, from home in Bandung to AWS in Seattle. Follow the glowing path: it climbs when things went well, and dips and loops back when I hit a wall.
             </p>
             <button onClick={takeOff} className="rx-btn mt-7 !text-[13px]">
               ✈ Take off
             </button>
-            <div className="rx-mono text-[9px] text-[#8692a8] mt-4">{touch ? "drag to steer · ⚡ to boost" : "← → steer · ↑ ↓ climb · space to boost · esc to leave"}</div>
+            <div className="rx-mono text-[9px] text-[#8692a8] mt-4">
+              {touch ? "drag to steer, or let go and it flies itself · ⚡ to boost" : "← → ↑ ↓ to steer, or let go and it flies itself · space to boost · esc to leave"}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* a chapter, as you fly through its gate */}
+      {/* a chapter: the flight pauses and circles the monument until you carry on */}
       <AnimatePresence>
-        {card && !fin && (
+        {card && cg && !fin && (
           <motion.div
             key={card.i}
-            initial={{ opacity: 0, y: -20, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ type: "spring", stiffness: 300, damping: 28 }}
-            className="absolute top-20 left-1/2 -translate-x-1/2 w-[min(92vw,440px)] rx-card !bg-[#0b111e]/85 p-5 pointer-events-none"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ type: "spring", stiffness: 260, damping: 28 }}
+            onClick={carryOn}
+            className="absolute bottom-[5vh] left-1/2 -translate-x-1/2 md:left-8 md:translate-x-0 w-[min(94vw,480px)] rx-card !bg-[#0b111e]/90 p-6 md:p-7 cursor-pointer overflow-hidden"
           >
-            <div className="rx-mono text-[9px] text-[#4ade80]">
+            <div className="rx-mono text-[10px] text-[#4ade80]">
               ✦ chapter {card.i + 1} of {GATES.length} · {fmtMonth(card.m.date)}
-              {card.place ? ` · ${card.place}` : ""}
+              {cg.place ? ` · ${cg.place}` : ""}
             </div>
-            <div className="mt-2 flex items-start gap-3">
-              <span className="text-3xl leading-none">{card.m.emoji}</span>
-              <div>
-                <div className="text-[1.3rem] italic leading-tight">{card.m.title}</div>
-                <p className="mt-1.5 text-[1rem] text-[#c2cbdb] leading-snug">{card.m.body}</p>
+            <div className="mt-3 flex items-center gap-3">
+              {cg.logo ? <img src={cg.logo} alt="" className="w-11 h-11 rounded-xl object-cover" /> : <span className="text-4xl leading-none">{card.m.emoji}</span>}
+              <div className="rx-mono text-[11px] text-[#8692a8]">{cg.name}</div>
+            </div>
+            <div className="mt-3 text-[1.6rem] italic leading-tight">{card.m.title}</div>
+            <p className="mt-2 text-[1.08rem] text-[#c2cbdb] leading-snug">{card.m.body}</p>
+            <div className="mt-5 flex items-center justify-between gap-3 flex-wrap">
+              <div className="rx-mono text-[10px] text-[#8692a8]">
+                {after ? (
+                  <>
+                    next → <span className="text-[#bcd7ff]">{emojiOf(after.short)} {after.name}</span>
+                  </>
+                ) : (
+                  "last stop: time to land"
+                )}
               </div>
+              <button onClick={carryOn} className="rx-btn !py-2 !px-4">
+                {after ? "Continue ✈" : "Land in Seattle ✈"} <span className="opacity-60 hidden md:inline">space</span>
+              </button>
             </div>
+            {/* runs out when the card moves on by itself */}
+            <motion.div className="absolute left-0 bottom-0 h-[3px] bg-[#5b9cff]" initial={{ width: "100%" }} animate={{ width: "0%" }} transition={{ duration: HOLD, ease: "linear" }} />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* the moments in between: storms (dips) and small wins */}
+      {/* the moments in between: storms (rough patches) and small wins */}
       <AnimatePresence>
         {toast && !card && (
           <motion.div
@@ -225,12 +279,12 @@ const Game = ({ onExit }: GameProps) => {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
-            className="absolute bottom-24 left-1/2 -translate-x-1/2 w-[min(92vw,400px)] rx-card !bg-[#0b111e]/85 px-4 py-3 pointer-events-none"
+            className="absolute bottom-24 left-1/2 -translate-x-1/2 w-[min(92vw,420px)] rx-card !bg-[#0b111e]/85 px-4 py-3 pointer-events-none"
           >
             <div className={`rx-mono text-[9px] ${toast.dip ? "text-[#ff8a8a]" : "text-[#ffd479]"}`}>
-              {toast.dip ? "⛈ turbulence" : "✦ picked up"} · {fmtMonth(toast.m.date)}
+              {toast.dip ? "⛈ rough patch · U-turn" : "✦ small win"} · {fmtMonth(toast.m.date)}
             </div>
-            <div className="mt-1 text-[1.08rem] italic leading-tight">
+            <div className="mt-1 text-[1.1rem] italic leading-tight">
               {toast.m.emoji} {toast.m.title}
             </div>
             <p className="mt-1 text-[0.95rem] text-[#a3adbf] leading-snug">{toast.m.body}</p>

@@ -1,35 +1,57 @@
 import { milestones, Milestone } from "../../data/journey";
 
-export type Mark = "bank" | "laptop" | "tulip" | "hand" | "card" | "guitar" | "seattle";
-export type Gate = { lat: number; lon: number; mark: Mark; place?: string; m: Milestone };
-export type Stop = { m: Milestone; dip: boolean };
-export type Leg = { from: { lat: number; lon: number }; to: Gate; stops: Stop[] };
+export type Mark = "flag" | "gedungsate" | "blocki" | "bank" | "laptop" | "heart" | "tulip" | "hand" | "monas" | "card" | "guitar" | "seattle";
+export type GateInfo = { short: string; name: string; place?: string; logo?: string; marks: Mark[] };
 
-const find = (short: string) => milestones.find((x) => x.short === short) as Milestone;
-
-export const START = { lat: -6.9175, lon: 107.6191, place: "Bandung, Indonesia" };
-
-// One gate per big chapter. Places are real where the story has one (Champaign, Seattle); the rest sit
-// wherever makes a good flight, including a long hop back over the Pacific toward home for Kredivo.
-export const GATES: Gate[] = [
-  { lat: 40.1164, lon: -88.2434, mark: "bank", place: "Champaign, IL", m: find("finance major") },
-  { lat: 54, lon: -66, mark: "laptop", m: find("fell in love") },
-  { lat: 28, lon: -58, mark: "tulip", m: find("iVenture + Tulip") },
-  { lat: 18, lon: -98, mark: "hand", m: find("We Hear You") },
-  { lat: -4, lon: 112, mark: "card", m: find("Kredivo") },
-  { lat: 30, lon: -150, mark: "guitar", m: find("Massive") },
-  { lat: 47.6062, lon: -122.3321, mark: "seattle", place: "Seattle, WA", m: find("AWS") },
+// The big chapters: each is a gate you fly through, with its monuments beside the path
+export const GATES: GateInfo[] = [
+  { short: "finance major", name: "UIUC, as a finance major", place: "Champaign, IL", marks: ["blocki", "bank"] },
+  { short: "fell in love", name: "Falling for CS", place: "Champaign, IL", marks: ["laptop", "heart"] },
+  { short: "iVenture + Tulip", name: "Tulip × iVenture", logo: "/tulip.png", marks: ["tulip"] },
+  { short: "We Hear You", name: "We Hear You", logo: "/wehearyouLogo.png", marks: ["hand"] },
+  { short: "Kredivo", name: "Kredivo", logo: "/kredivoLogo.png", marks: ["monas", "card"] },
+  { short: "Massive", name: "Massive", logo: "/massiveLogo.png", marks: ["guitar"] },
+  { short: "AWS", name: "Amazon Web Services", place: "Seattle, WA", logo: "/awsLogo.png", marks: ["seattle"] },
 ];
-
+export const START = { name: "Bandung, Indonesia", marks: ["flag", "gedungsate"] as Mark[] };
 export const NOW = milestones[milestones.length - 1];
 
-// Every milestone between two gates (by date) lands on the leg that leads to the later one: the dips
-// become storms you fly through, the small wins become orbs to pick up.
-export const LEGS: Leg[] = GATES.map((g, i) => {
-  const lo = i ? GATES[i - 1].m.date : "";
+// ── The route: always east, the long way round ──
+// Three stretches between real places, in eastward-unwrapped longitude: Bandung → Champaign over the
+// South Pacific, Champaign → Jakarta over the Atlantic and Asia, Jakarta → Seattle over the North
+// Pacific. `bow` bends each stretch north or south so the two Pacific crossings never overlap.
+const SEGS = [
+  { lon: [107.6, 271.8], lat: [-6.9, 40.1], bow: -22, ends: "finance major" },
+  { lon: [271.8, 466.8], lat: [40.1, -6.2], bow: 12, ends: "Kredivo" },
+  { lon: [466.8, 597.7], lat: [-6.2, 47.6], bow: 20, ends: "AWS" },
+];
+const smooth = (t: number) => t * t * (3 - 2 * t);
+export const geo = (seg: number, t: number) => {
+  const s = SEGS[seg];
   return {
-    from: i ? GATES[i - 1] : START,
-    to: g,
-    stops: milestones.filter((x) => x.date > lo && x.date < g.m.date).map((m) => ({ m, dip: !!m.dip })),
+    lon: s.lon[0] + (s.lon[1] - s.lon[0]) * t,
+    lat: s.lat[0] + (s.lat[1] - s.lat[0]) * smooth(t) + s.bow * Math.sin(Math.PI * t),
   };
-});
+};
+
+// Height is the vibe: good stretches fly high, rough ones dip
+export const altOf = (vibe: number) => 5 + (vibe / 100) * 17;
+
+export type Node = { seg: number; t: number; alt: number; kind: "start" | "gate" | "win" | "dip"; m?: Milestone; gate?: number };
+
+// Every milestone up to AWS sits on the route in order, evenly spaced within its stretch
+export const NODES: Node[] = (() => {
+  const out: Node[] = [{ seg: 0, t: 0, alt: 9, kind: "start" }];
+  const list = milestones.slice(0, -1);
+  let from = 0;
+  SEGS.forEach((s, seg) => {
+    const end = list.findIndex((m) => m.short === s.ends);
+    const chunk = list.slice(from, end + 1);
+    chunk.forEach((m, j) => {
+      const gate = GATES.findIndex((g) => g.short === m.short);
+      out.push({ seg, t: (j + 1) / chunk.length, alt: altOf(m.vibe), kind: gate >= 0 ? "gate" : m.dip ? "dip" : "win", m, gate: gate >= 0 ? gate : undefined });
+    });
+    from = end + 1;
+  });
+  return out;
+})();

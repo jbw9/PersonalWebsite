@@ -1,8 +1,9 @@
 # STATUS
 
 ## Now
-Round 8 done: experience rows redesigned (logo, summary, tech tags, details sheet), per-company particle
-shapes (We Hear You signs "hello"), and the hidden paper-plane game (flick the globe 3×). demo.sh green.
+Round 8 done: experience rows redesigned, per-company particles (We Hear You signs "hello"), and the
+hidden game v2 (flick the globe 3×): one eastward route, height = vibe, U-turn loops at dips, chapter
+pauses, monuments + logos, autopilot. demo.sh green.
 
 ## Left
 - Jonathan checks the drafted experience `summary`/`tags`/`details` in `data.ts` (tech tags are guesses).

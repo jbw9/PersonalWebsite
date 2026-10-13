@@ -203,3 +203,16 @@
 - **Beat:** a car (Bruno Simon's), a particle comet (Jonathan picked the plane), react-three-fiber (3 deps).
 - **Cost:** ~530KB chunk for three (not on the main path); no WebGL → friendly fallback screen.
 - **Breaks when:** a milestone's `short` is renamed (gates look them up by `short`).
+
+## 2026-10-12 — Game v2: one eastward route, height = vibe, U-turn loops, pauses, autopilot
+- **Chose:** every milestone (not just gates) sits on one route that always heads east: Bandung →
+  Champaign (South Pacific) → Jakarta (Atlantic/Asia) → Seattle (North Pacific), latitude bowed so the
+  two Pacific crossings don't overlap. Altitude = `vibe`; each `dip` adds a full left loop (a U-turn) with
+  a storm. The route is drawn as a tube (done green / current bright / later faint), the next gate gets a
+  light pillar, a NEXT pill with path distance, and a vibe altimeter. Letting go of the controls hands
+  over to an autopilot that follows the path. Gates pause the flight: the camera circles the chapter's
+  monuments while a card waits 10s (skip with space/click). Future islands stay hidden until next.
+- **Beat:** v1's real-place gates (Jonathan: "clumped up and going back and forth", hard to follow).
+- **Cost:** chapter places are no longer geographic except Bandung, Champaign, Jakarta (Kredivo's
+  Monas) and Seattle; the autopilot makes the game easy by design: it's a story first.
+- **Breaks when:** milestones grow a lot (each stretch is evenly divided; >15 per stretch gets tight).

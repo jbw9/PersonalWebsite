@@ -40,12 +40,8 @@ const Reveal = ({ children, className, delay = 0 }: { children: ReactNode; class
   </motion.div>
 );
 
-const Head = ({ n, title }: { n: string; title: string }) => (
+const Head = ({ title }: { title: string }) => (
   <Reveal className="mb-10 md:mb-12">
-    <div className="rx-mono text-[10px] md:text-[11px] text-[#5b9cff] mb-3 flex items-center gap-3">
-      <span>{n}</span>
-      <span className="w-8 h-px rounded-full bg-[#5b9cff]/40" />
-    </div>
     <h2 className="text-[clamp(2.6rem,5.5vw,4.6rem)] font-light italic leading-[0.95]">{title}</h2>
   </Reveal>
 );
@@ -66,15 +62,18 @@ const SHAPE_OF: Record<string, ShapeKey> = {
 
 // Experience as a git graph: one branch, newest commit on top, the line draws itself as you scroll.
 // A row reads company → what I did → stack; clicking it opens the longer story in a sheet.
-const Timeline = () => {
+const Timeline = ({ reduce }: { reduce: boolean }) => {
   const ref = useRef<HTMLOListElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 80%", "end 55%"] });
   const grow = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
   const [open, setOpen] = useState<Exp | null>(null);
   // the row crossing the middle of the screen is the one the particles are drawing, so it lights up
   const [live, setLive] = useState(-1);
+  // a clicked row holds the light while its sheet is open, even as the page scrolls it to the middle
+  const held = useRef(-1);
   useEffect(() => {
     const onScroll = () => {
+      if (held.current >= 0) return;
       const mid = window.innerHeight * 0.5;
       const rows = Array.from(ref.current?.children ?? []).filter((c) => c.tagName === "LI");
       setLive(rows.findIndex((r) => {
@@ -114,7 +113,13 @@ const Timeline = () => {
               <Reveal delay={0.04 * i}>
                 <button
                   data-card
-                  onClick={() => setOpen(e)}
+                  onClick={(ev) => {
+                    held.current = i;
+                    setLive(i);
+                    // centred, so the particles switch to this company's drawing behind the sheet
+                    ev.currentTarget.closest("li")?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+                    setOpen(e);
+                  }}
                   aria-label={`${e.company}: more about this role`}
                   className={`group w-full text-left rounded-3xl px-4 md:px-5 py-4 my-1 -ml-1 flex gap-4 border transition-all duration-500 ${
                     on ? "bg-[#5b9cff]/[0.08] border-[#5b9cff]/40 shadow-[0_0_40px_rgba(91,156,255,0.14)]" : "border-transparent hover:bg-[#e6ecf5]/[0.04]"
@@ -144,7 +149,13 @@ const Timeline = () => {
           );
         })}
       </ol>
-      <ExpSheet e={open} onClose={() => setOpen(null)} />
+      <ExpSheet
+        e={open}
+        onClose={() => {
+          held.current = -1;
+          setOpen(null);
+        }}
+      />
     </>
   );
 };
@@ -336,14 +347,14 @@ const Sections = ({ vw, navH, globe, done, fine, reduce, onOpen, onGuide, onAsk,
         {/* ── Experience ── */}
         <section id="rx-experience" data-shape="cloud" data-sec="experience" style={sec} className={`${pad} py-20 md:py-28`}>
           <div className={col}>
-            <Head n="01" title="Experience" />
-            <Timeline />
+            <Head title="Experience" />
+            <Timeline reduce={reduce} />
           </div>
         </section>
 
         {/* ── Projects: the particles trace every [data-frame] ── */}
         <section id="rx-projects" data-shape="frames" data-sec="projects" style={sec} className="px-5 md:px-[7vw] py-20 md:py-28">
-          <Head n="02" title="Projects" />
+          <Head title="Projects" />
           {featured && (
             <Reveal>
               <div data-frame="28" className="rx-card rx-poster !rounded-[28px] overflow-hidden grid md:grid-cols-[1.25fr_1fr] !border-[#5b9cff]/25">
@@ -393,11 +404,8 @@ const Sections = ({ vw, navH, globe, done, fine, reduce, onOpen, onGuide, onAsk,
                         <div className="w-full h-full flex items-center justify-center text-3xl italic font-light text-[#e6ecf5]/45 px-6 text-center">{p.title}</div>
                       )}
                     </div>
-                    <div className="mt-4 px-1 flex items-baseline gap-3">
-                      <span className="rx-mono text-[10px] text-[#5d687c]">{String(i + 2).padStart(2, "0")}</span>
-                      <span className="text-[1.5rem] italic leading-tight group-hover:text-[#5b9cff] transition-colors">{p.title}</span>
-                    </div>
-                    <p className="mt-1 pl-9 pr-1 text-[#8692a8] text-[1rem] leading-snug line-clamp-2">{p.description}</p>
+                    <div className="mt-4 px-1 text-[1.5rem] italic leading-tight group-hover:text-[#5b9cff] transition-colors">{p.title}</div>
+                    <p className="mt-1 px-1 text-[#8692a8] text-[1rem] leading-snug line-clamp-2">{p.description}</p>
                   </button>
                 </Reveal>
               );
@@ -408,7 +416,7 @@ const Sections = ({ vw, navH, globe, done, fine, reduce, onOpen, onGuide, onAsk,
         {/* ── School ── */}
         <section id="rx-school" data-shape="gpa" data-sec="school" style={sec} className={`${pad} py-20 md:py-28 md:min-h-[90vh]`}>
           <div className={col}>
-            <Head n="03" title="School" />
+            <Head title="School" />
             <div className="space-y-4">
               {education.map((e) => {
                 const card = (
@@ -471,7 +479,7 @@ const Sections = ({ vw, navH, globe, done, fine, reduce, onOpen, onGuide, onAsk,
         {/* ── Involvement ── */}
         <section id="rx-involvement" data-shape="people" data-sec="involvement" style={sec} className={`${pad} py-20 md:py-28 md:min-h-[90vh]`}>
           <div className={col}>
-            <Head n="04" title="Involvement" />
+            <Head title="Involvement" />
             <div className="space-y-3">
               {involvements.map((v, i) => (
                 <Reveal key={v.organization} delay={0.05 * i}>
@@ -497,7 +505,7 @@ const Sections = ({ vw, navH, globe, done, fine, reduce, onOpen, onGuide, onAsk,
         {/* ── Guides + contact ── */}
         <section id="rx-guides" data-shape="book" data-sec="guides" style={sec} className={`${pad} pt-20 md:pt-28 pb-16`}>
           <div className={col}>
-            <Head n="05" title="Guides" />
+            <Head title="Guides" />
             <div className="space-y-2">
               {guides.map((g) => (
                 <Reveal key={g.id}>

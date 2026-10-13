@@ -232,68 +232,101 @@ export const createField = (
     return shape === "globe" && ready && Math.hypot(px - g.cx, py - g.cy) < g.r * 1.05;
   };
 
-  // the waving hand is a 3D point cloud (hand3, hand-local units, elbow at the origin), posed and
+  // Tulip's logo as an alpha mask cropped to its strokes: orange → opaque, the white page → clear
+  let logo: HTMLCanvasElement | null = null;
+  {
+    const img = new Image();
+    img.onload = () => {
+      const src = document.createElement("canvas");
+      src.width = img.width;
+      src.height = img.height;
+      const sc = src.getContext("2d") as CanvasRenderingContext2D;
+      sc.drawImage(img, 0, 0);
+      const px = sc.getImageData(0, 0, img.width, img.height);
+      let [x0, y0, x1, y1] = [img.width, img.height, 0, 0];
+      for (let i = 0; i < px.data.length; i += 4) {
+        const a = ((255 - px.data[i + 2]) * px.data[i + 3]) / 255; // orange has almost no blue; white is all blue
+        px.data[i] = px.data[i + 1] = px.data[i + 2] = 255;
+        px.data[i + 3] = a;
+        if (a > 128) {
+          const x = (i / 4) % img.width;
+          const y = Math.floor(i / 4 / img.width);
+          x0 = Math.min(x0, x);
+          y0 = Math.min(y0, y);
+          x1 = Math.max(x1, x);
+          y1 = Math.max(y1, y);
+        }
+      }
+      sc.putImageData(px, 0, 0);
+      const m = document.createElement("canvas");
+      m.width = x1 - x0 + 3;
+      m.height = y1 - y0 + 3;
+      (m.getContext("2d") as CanvasRenderingContext2D).drawImage(src, 1 - x0, 1 - y0);
+      logo = m;
+      delete cache.tulip;
+      if (shape === "tulip" && ready) aim();
+    };
+    img.src = "/tulip.png";
+  }
+  // the waving hand is a 3D point cloud (hand3, hand-local units, wrist at the origin), posed and
   // projected every frame; (cx, cy) is where the hand's middle lands and s is px per unit
   const hand3 = new Float32Array(N * 3);
   const hz = new Float32Array(N);
   let hello = { cx: 0, cy: 0, s: 1 };
   const pose = (i: number, t: number) => {
-    // the whole forearm swings about the elbow; the hand flexes a beat behind it at the wrist
-    const wave = Math.sin(t * 5.2);
-    const az = wave * 0.32;
-    const wz = Math.sin(t * 5.2 - 0.9) * 0.22;
-    const ay = 0.5 + Math.sin(t * 0.6) * 0.25; // turned partway to the side so it reads as solid
-    let px = hand3[i * 3];
-    let py = hand3[i * 3 + 1];
-    let pz = hand3[i * 3 + 2];
-    if (py > 1.6) {
-      const dx = px;
-      const dy = py - 1.6;
-      px = dx * Math.cos(wz) - dy * Math.sin(wz);
-      py = 1.6 + dx * Math.sin(wz) + dy * Math.cos(wz);
-    }
+    // rocks side to side about the wrist, turned partway to the side so it reads as solid
+    const az = Math.sin(t * 4.6) * 0.36;
+    const ay = -0.35 - Math.sin(t * 0.6) * 0.2; // thumb side toward the viewer
+    const px = hand3[i * 3];
+    const py = hand3[i * 3 + 1];
+    const pz = hand3[i * 3 + 2];
     const rx = px * Math.cos(az) - py * Math.sin(az);
     const ry = px * Math.sin(az) + py * Math.cos(az);
     const qx = rx * Math.cos(ay) + pz * Math.sin(ay);
     const qz = -rx * Math.sin(ay) + pz * Math.cos(ay);
     const f = 8 / (8 - qz);
-    return { x: hello.cx + qx * f * hello.s, y: hello.cy - (ry - 1.9) * f * hello.s, z: qz };
+    return { x: hello.cx + qx * f * hello.s, y: hello.cy - (ry - 1.0) * f * hello.s, z: qz };
   };
   {
-    // capsule surface from (x0, y0) to (x1, y1) in the palm's plane, radius r, rounded tip
-    const capsule = (i: number, x0: number, y0: number, x1: number, y1: number, r: number) => {
+    // tapered capsule surface from (x0, y0) to (x1, y1), radius r0 → r1, rounded tip, nudged to depth z
+    const capsule = (i: number, x0: number, y0: number, x1: number, y1: number, r0: number, r1: number, z = 0) => {
       const L = Math.hypot(x1 - x0, y1 - y0);
       const ux = (x1 - x0) / L;
       const uy = (y1 - y0) / L;
       const u = Math.random() * L;
-      const rr = u > L - r ? r * Math.sqrt(Math.max(0, 1 - ((u - L + r) / r) ** 2)) : r;
+      const r = r0 + (r1 - r0) * (u / L);
+      const rr = u > L - r1 ? r * Math.sqrt(Math.max(0, 1 - ((u - L + r1) / r1) ** 2)) : r;
       const a = Math.random() * Math.PI * 2;
       hand3[i * 3] = x0 + ux * u - uy * Math.cos(a) * rr;
       hand3[i * 3 + 1] = y0 + uy * u + ux * Math.cos(a) * rr;
-      hand3[i * 3 + 2] = Math.sin(a) * rr;
+      hand3[i * 3 + 2] = z + Math.sin(a) * rr;
     };
-    // pinky → index (x, length, lean, radius), fanned a little; the thumb sits out past the index
-    const fingers: [number, number, number, number][] = [
-      [-0.39, 0.68, -0.16, 0.105],
-      [-0.13, 0.9, -0.05, 0.12],
-      [0.13, 0.98, 0.03, 0.125],
-      [0.38, 0.85, 0.13, 0.12],
+    // pinky → index: base x, base y, length, lean, radius; the pinky sits lower, the middle is longest
+    const fingers: [number, number, number, number, number][] = [
+      [-0.4, 0.88, 0.62, -0.2, 0.1],
+      [-0.14, 0.97, 0.86, -0.07, 0.115],
+      [0.13, 1.0, 0.95, 0.03, 0.12],
+      [0.38, 0.95, 0.82, 0.14, 0.115],
     ];
+    const lens = fingers.reduce((sum, f) => sum + f[2], 0);
     for (let i = 0; i < N; i++) {
       const r = Math.random();
-      if (r < 0.14) capsule(i, 0, 0.3, 0, 1.85, 0.27);
-      else if (r < 0.52) {
-        // palm: a rounded slab, boxy in x/y and thin in z
+      if (r < 0.4) {
+        // palm: a rounded slab, narrower at the wrist than across the knuckles, thin in z
         const a = Math.random() * Math.PI * 2;
         const b = Math.acos(2 * Math.random() - 1);
-        const sq = (v: number) => Math.sign(v) * Math.pow(Math.abs(v), 0.35);
-        hand3[i * 3] = sq(Math.sin(b) * Math.cos(a)) * 0.52;
-        hand3[i * 3 + 1] = 2.25 + sq(Math.sin(b) * Math.sin(a)) * 0.62;
-        hand3[i * 3 + 2] = Math.cos(b) * 0.17;
-      } else if (r < 0.9) {
-        const [fx, len, lean, fr] = fingers[(Math.random() * 4) | 0];
-        capsule(i, fx, 2.75, fx + Math.sin(lean) * len, 2.75 + Math.cos(lean) * len, fr);
-      } else capsule(i, 0.42, 1.85, 0.98, 2.5, 0.14);
+        const sq = (v: number) => Math.sign(v) * Math.pow(Math.abs(v), 0.55);
+        const v = sq(Math.sin(b) * Math.sin(a));
+        hand3[i * 3] = sq(Math.sin(b) * Math.cos(a)) * (0.5 + v * 0.06);
+        hand3[i * 3 + 1] = 0.55 + v * 0.5;
+        hand3[i * 3 + 2] = Math.cos(b) * 0.16;
+      } else if (r < 0.86) {
+        let pick = Math.random() * lens;
+        const f = fingers.find((g) => (pick -= g[2]) < 0) || fingers[3];
+        const [fx, fy, len, lean, fr] = f;
+        capsule(i, fx, fy, fx + Math.sin(lean) * len, fy + Math.cos(lean) * len, fr, fr * 0.82);
+      } else if (r < 0.93) capsule(i, 0.32, 0.2, 0.68, 0.55, 0.17, 0.15, 0.06);
+      else capsule(i, 0.68, 0.55, 0.9, 0.92, 0.15, 0.12, 0.1);
     }
   }
   const build = (k: ShapeKey): Float32Array => {
@@ -480,38 +513,26 @@ export const createField = (
         c.lineTo(nx + 0.87 * u, ny - 0.17 * u);
         c.stroke();
       });
-    // iVenture: where Tulip was built, so Tulip's logo: three petals in a cup
-    if (k === "tulip")
+    // iVenture: where Tulip was built, so Tulip's logo, traced from the real PNG (see `logo`)
+    if (k === "tulip") {
+      const m = logo;
+      if (!m) return build("cloud");
       return sample(vw, vh, N, (c) => {
-        const u = Math.min(R.w, R.h) / 2.7;
-        const P = (x: number, y: number): [number, number] => [cx + x * u, cy + y * u];
-        c.lineCap = c.lineJoin = "round";
-        const outer = () => {
-          c.beginPath();
-          c.moveTo(...P(-1, -0.42));
-          c.bezierCurveTo(...P(-1.05, 0.45), ...P(-0.55, 0.92), ...P(0, 0.92));
-          c.bezierCurveTo(...P(0.55, 0.92), ...P(1.05, 0.45), ...P(1, -0.42));
-        };
-        outer();
-        c.globalAlpha = 0.06;
-        c.fill();
-        c.globalAlpha = 1;
-        c.lineWidth = 0.1 * u;
-        c.stroke();
-        // side petals curl in from their tips; the middle petal rises to a point between them
-        c.beginPath();
-        c.moveTo(...P(-1, -0.42));
-        c.bezierCurveTo(...P(-0.62, -0.34), ...P(-0.3, -0.05), ...P(-0.18, 0.5));
-        c.moveTo(...P(1, -0.42));
-        c.bezierCurveTo(...P(0.62, -0.34), ...P(0.3, -0.05), ...P(0.18, 0.5));
-        c.moveTo(...P(-0.44, -0.08));
-        c.bezierCurveTo(...P(-0.42, -0.5), ...P(-0.18, -0.78), ...P(0, -0.98));
-        c.bezierCurveTo(...P(0.18, -0.78), ...P(0.42, -0.5), ...P(0.44, -0.08));
-        c.stroke();
+        const u = (Math.min(R.w, R.h) * 0.9) / Math.max(m.width, m.height);
+        const w = m.width * u;
+        const h = m.height * u;
+        c.drawImage(m, cx - w / 2, cy - h / 2, w, h);
+        // the source is tiny, so upscaling blurs it: snap alpha back to crisp strokes
+        const x0 = Math.floor(cx - w / 2);
+        const y0 = Math.floor(cy - h / 2);
+        const img = c.getImageData(x0, y0, Math.ceil(w) + 1, Math.ceil(h) + 1);
+        for (let i = 3; i < img.data.length; i += 4) img.data[i] = img.data[i] > 128 ? 255 : 0;
+        c.putImageData(img, x0, y0);
       });
+    }
     // We Hear You: a hand waving hello, in 3D; the frame loop poses it (see `pose`)
     if (k === "hand") {
-      hello = { cx, cy, s: Math.min(R.w / 3.2, R.h / 4.9) };
+      hello = { cx, cy, s: Math.min(R.w / 2.4, R.h / 2.5) };
       const out = new Float32Array(N * 2);
       for (let i = 0; i < N; i++) {
         const p = pose(i, 0);

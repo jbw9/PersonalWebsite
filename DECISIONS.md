@@ -230,10 +230,21 @@
   bounce to `/`.
 
 ## 2026-10-12 — We Hear You: a 3D waving hand, posed per frame
-- **Chose:** the hand is a point cloud in 3D (capsule forearm/fingers/thumb, slab palm) that swings
-  about the elbow, flexes at the wrist and turns partway sideways, perspective-projected every frame;
+- **Chose:** the hand alone (no forearm: Jonathan found it weird) as a 3D point cloud: tapered slab
+  palm, tapering finger capsules, two-segment thumb. It rocks about the wrist and turns its thumb side
+  toward the viewer, perspective-projected every frame;
   back-facing dots draw in the dim bucket for depth. The experience row crossing mid-screen (the one
   the particles are drawing) is lit, the others dim to 75%.
 - **Beat:** the 2D ASL-hello figure (head + saluting hand). Jonathan: "weird with the person holding it".
 - **Cost:** one `pose()` per hand particle per frame (~4.5k trig-heavy calls) while the hand shows.
 - **Breaks when:** the row-highlight rule and index.tsx's shape rule ("crosses the middle") drift apart.
+
+## 2026-10-12 — iVenture's particles sample the real Tulip PNG; clicking a job lights it
+- **Chose:** `/tulip.png` loads once and becomes an alpha mask (orange → opaque, white → clear,
+  cropped to the strokes); the formation samples that mask upscaled, with alpha snapped back to crisp.
+  Clicking an experience row pins the highlight on it, scrolls it to the middle (so the drawing behind
+  the sheet is that company's) and opens the sheet; closing unpins.
+- **Beat:** hand-traced bezier petals (Jonathan: "its not a regular tulip").
+- **Cost:** the 200px logo's strokes are ~70px across, so edges are as smooth as the snap allows; if the
+  PNG hasn't loaded when the shape is first needed, it shows the cloud until it has.
+- **Breaks when:** the logo gets replaced with one that isn't a single warm colour on white.

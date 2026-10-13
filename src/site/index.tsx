@@ -1,13 +1,12 @@
 import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { motion, useMotionValue, useMotionValueEvent, useReducedMotion } from "framer-motion";
+import { motion, useMotionValue, useReducedMotion } from "framer-motion";
 import AskTerminal from "./ask/AskTerminal";
 import { createField, Field } from "./engine";
 import { GlobeBox, guidePath, projectPath, Resume, ShapeKey } from "./contracts";
 import Sections, { SECTIONS } from "./Sections";
 import Story, { StoryApi, storyNodes } from "./StoryMode";
 import Bridge, { Pt } from "./Bridge";
-import { scenes, pad } from "./timeline";
 import "./remix.css";
 
 // the hidden game pulls in three.js, so it loads only when someone finds it
@@ -87,8 +86,8 @@ const Remix = () => {
   const [bridge, setBridge] = useState<{ from: Pt[]; to: Pt[]; fadeIn: boolean } | null>(null);
   const busy = useRef(false);
   const storyApi = useRef<StoryApi | null>(null);
-  const progress = useMotionValue(-1);
-  const [storyStart, setStoryStart] = useState(-1);
+  const progress = useMotionValue(0);
+  const [storyStart, setStoryStart] = useState(0);
   const restore = useRef<number | string | null>(null);
   const savedY = useRef(0);
 
@@ -275,19 +274,6 @@ const Remix = () => {
     return () => window.removeEventListener("keydown", onKey);
   }, [done, askOpen, openAsk]);
 
-  // ── Story HUD: scene label + timecode in the top bar ──
-  const [sceneIdx, setSceneIdx] = useState(-1);
-  const tcRef = useRef<HTMLSpanElement>(null);
-  const timecode = (f: number) => {
-    const fr = Math.max(0, Math.round((f + 1) * 24 * 9));
-    return `00:${pad(Math.floor(fr / 1440) % 60)}:${pad(Math.floor(fr / 24) % 60)}:${pad(fr % 24)}`;
-  };
-  useMotionValueEvent(progress, "change", (f) => {
-    const i = f < -0.5 ? -1 : Math.min(scenes.length - 1, Math.round(f));
-    setSceneIdx((p) => (p === i ? p : i));
-    if (tcRef.current) tcRef.current.textContent = timecode(f);
-  });
-
   const leave = (path: string, section: string) => {
     const st = window.history.state || {};
     const back: Resume = { resume: mode === "story" ? { section } : { y: window.scrollY } };
@@ -304,7 +290,6 @@ const Remix = () => {
   const botBar = story && wide ? 32 : 0;
   const botH = botBar;
   const barT = { duration: 0.8, ease: EASE };
-  const cur = sceneIdx >= 0 ? scenes[sceneIdx] : null;
   // on phones the open terminal is full-screen and has its own close
   const chrome = done && (wide || !askOpen);
 
@@ -355,27 +340,6 @@ const Remix = () => {
         animate={{ height: topH }}
         transition={barT}
       >
-        {story && (
-          <div className="absolute top-0 left-0 flex items-center gap-4 px-4 md:px-6 rx-mono text-[10px] text-[#8692a8]" style={{ height: navH }}>
-            <span className="truncate">
-              <span className="text-[#c4372b] mr-2">●</span>
-              {cur ? (
-                <>
-                  <span className="hidden md:inline">scene </span>
-                  {pad(cur.n)}/{scenes.length}
-                  <span className="hidden md:inline text-[#c2cbdb]"> · {cur.short}</span>
-                </>
-              ) : (
-                <>
-                  <span className="hidden md:inline">title </span>card
-                </>
-              )}
-            </span>
-            <span ref={tcRef} className="hidden lg:inline tabular-nums text-[#5d687c]">
-              {timecode(progress.get())}
-            </span>
-          </div>
-        )}
       </motion.header>
 
       {/* ── Floating controls: no bar, just two pills in the corner ── */}

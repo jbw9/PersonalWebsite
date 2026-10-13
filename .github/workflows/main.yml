@@ -33,6 +33,10 @@ jobs:
 
       - name: Build
         run: CI=false npm run build
+        env:
+          # Alfred's Lambda (alfred/deploy.sh). Not a secret: CRA bakes it into the public bundle anyway;
+          # the Lambda's own per-IP, daily and concurrency caps are what bound the Bedrock bill.
+          REACT_APP_ALFRED_URL: https://r3wo2vqnq67dblqvvz5jgna57q0yshgi.lambda-url.us-east-1.on.aws/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

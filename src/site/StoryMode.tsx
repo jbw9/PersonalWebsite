@@ -6,8 +6,8 @@ export type StoryApi = { seek: (f: number) => void };
 
 const instant = "instant" as ScrollBehavior;
 const range = (a: number, b: number) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
-// -1 is the title card, 0…n-1 the scenes, n the end card
-const FS = range(-1, scenes.length);
+// 0…n-1 the scenes, n the end card
+const FS = range(0, scenes.length);
 
 // ── Scene pieces (from cinema) ──
 
@@ -57,7 +57,7 @@ const SceneText = ({ s, onOpen, wide }: { s: Scene; onOpen: (id: string) => void
         </div>
       )}
       <div className="rx-mono text-[11px] text-[#8692a8] mb-4">
-        Scene {pad(s.n)} · wk {s.week} · {fmtMonth(s.date)}
+        {fmtMonth(s.date)}
       </div>
       <motion.h3
         initial={{ opacity: 0, x: wide ? 40 : 0, y: wide ? 0 : 16 }}
@@ -79,29 +79,6 @@ const SceneText = ({ s, onOpen, wide }: { s: Scene; onOpen: (id: string) => void
     </div>
   );
 };
-
-const TitleCard = ({ wide }: { wide: boolean }) => (
-  <div className="w-full flex flex-col items-center text-center px-5">
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 1 }} className="rx-mono text-[10px] md:text-[11px] text-[#8692a8] mb-5 md:mb-7">
-      the director's cut · a story in {scenes.length} scenes
-    </motion.div>
-    <motion.h2
-      initial={{ clipPath: "inset(0 100% 0 0)", letterSpacing: wide ? "0.5em" : "0.32em", opacity: 0.4 }}
-      animate={{ clipPath: "inset(0 0% 0 0)", letterSpacing: wide ? "0.3em" : "0.2em", opacity: 1 }}
-      transition={{ delay: 0.35, duration: 1.4, ease: [0.25, 0.6, 0.2, 1] }}
-      className={`font-light leading-none ${wide ? "pl-[0.3em] text-[clamp(3rem,9vw,8.5rem)]" : "pl-[0.2em] text-[clamp(2rem,11.5vw,4rem)]"}`}
-      style={{ textShadow: "0 0 40px rgba(91,156,255,0.15)" }}
-    >
-      JONATHAN
-    </motion.h2>
-    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.1, duration: 1 }} className="mt-5 md:mt-7 text-lg md:text-2xl italic text-[#c2cbdb]">
-      From a finance major who'd never coded, to AWS.
-    </motion.div>
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.6, duration: 1 }} className="rx-mono text-[10px] text-[#5b9cff]/80 rx-blink mt-10 md:mt-14">
-      {wide ? "scroll to roll film →" : "scroll to roll film ↓"}
-    </motion.div>
-  </div>
-);
 
 const EndCard = ({ onBack, onAsk }: { onBack: () => void; onAsk: () => void }) => (
   <div className="flex flex-col items-center justify-center text-center px-5">
@@ -134,7 +111,8 @@ type Props = {
 // ── Desktop: vertical scroll scrubs sideways through the scenes ──
 
 const runLayout = (vw: number) => {
-  let x = vw;
+  // the first scene sits where every scene is framed, so the film opens on it
+  let x = vw * 0.25 - 40;
   const base = Math.min(Math.max(vw * 0.5, 540), 720);
   const panels = scenes.map((s) => {
     const w = Math.max(base, 120 + s.extras.length * 242);
@@ -142,9 +120,9 @@ const runLayout = (vw: number) => {
     x += w;
     return p;
   });
-  // scroll offset that frames each scene (index -1 is the title card)
+  // scroll offset that frames each scene
   const W = x + vw * 0.7;
-  const anchors = [0, ...panels.map((p) => p.x + 40 - vw * 0.25), W - vw];
+  const anchors = [...panels.map((p) => p.x + 40 - vw * 0.25), W - vw];
   return { panels, W, anchors };
 };
 // the vibe line, as in cinema: lower third, a node per scene
@@ -242,9 +220,6 @@ const HorizontalRun = ({ vw, vh, navH, bar, progress, api, startAt, onOpen, onBa
         </motion.div>
 
         <motion.div style={{ x: trackX, width: layout.W }} className="absolute inset-y-0 left-0">
-          <div className="absolute left-0 flex items-center" style={{ width: vw, top: navH, bottom: vh * 0.3 }}>
-            <TitleCard wide />
-          </div>
           {scenes.map((sc, i) => (
             <div key={sc.date + sc.short} className="absolute" style={{ left: layout.panels[i].x + 40, top: navH + vh * 0.07, width: layout.panels[i].w - 60 }}>
               <SceneText s={sc} onOpen={onOpen} wide />
@@ -316,7 +291,6 @@ const HorizontalRun = ({ vw, vh, navH, bar, progress, api, startAt, onOpen, onBa
 const MobileRun = ({ vh, navH, progress, api, startAt, onOpen, onBack, onAsk }: Props) => {
   const refs = useRef<(HTMLDivElement | null)[]>([]);
   const anchors = () => [
-    0,
     // page offsets: offsetTop would be relative to the positioned scene list
     ...refs.current.map((el) => (el ? el.getBoundingClientRect().top + window.scrollY - navH - 16 : 0)),
     document.documentElement.scrollHeight - window.innerHeight,
@@ -338,9 +312,6 @@ const MobileRun = ({ vh, navH, progress, api, startAt, onOpen, onBack, onAsk }: 
   }, []);
   return (
     <div style={{ paddingTop: navH, paddingBottom: 72 }}>
-      <div className="flex items-center" style={{ minHeight: vh - navH }}>
-        <TitleCard wide={false} />
-      </div>
       <div className="relative px-5 pb-10">
         <div className="absolute left-[38px] top-0 bottom-0 w-px bg-gradient-to-b from-[#8692a8]/40 via-[#5b9cff]/60 to-[#5b9cff]/0" />
         {scenes.map((sc, i) => (

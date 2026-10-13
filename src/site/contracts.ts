@@ -12,7 +12,9 @@ export interface AskTerminalProps {
 // gpa = school, people = involvement, book = guides.
 // "frames": particles trace the perimeters of every element matching FRAME_SELECTOR, following
 // them live as the page scrolls; the attribute's value is that element's corner radius in px.
-export type ShapeKey = "globe" | "cloud" | "frames" | "gpa" | "people" | "book";
+// Experience rows pick a formation per company: chart (Tulip), card (Kredivo), guitar (Massive),
+// tulip (iVenture, Tulip's logo), hand (We Hear You, ASL "I love you")
+export type ShapeKey = "globe" | "cloud" | "frames" | "gpa" | "people" | "book" | "chart" | "card" | "guitar" | "tulip" | "hand";
 export const FRAME_SELECTOR = ".v-remix [data-frame]";
 
 // Where the globe sits in the viewport, so the hero text can lay out around it
@@ -23,6 +25,14 @@ export interface FieldOptions {
   resume: boolean;
   onGlobe: (b: GlobeBox) => void;
   onIntroDone: () => void;
+  // A hard flick of the globe. Three in a row opens the hidden game.
+  onFlick: () => void;
+}
+
+// ── Easter egg: the journey game (src/site/game/, lazy, owns three.js) ──
+// Full-screen overlay; the particle field is paused while it is open.
+export interface GameProps {
+  onExit: () => void;
 }
 
 // ── Detail pages ──

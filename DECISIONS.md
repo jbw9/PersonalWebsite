@@ -178,3 +178,28 @@
   off. Toggle opens at scene 1 (the title card has no nodes on screen). Phones and the way back get
   a plain crossfade. Replaced the bars-close curtain.
 - Bandung is drawn as a waving 🇮🇩 flag on a pole, on the canvas with the other markers.
+
+## 2026-10-12 — Experience rows: company-first, per-company particle shapes, detail sheet
+- **Chose:** each row leads with logo + company, then one-line `summary`, then `tags`; full `details`
+  open in a portal sheet (not a route). Rows carry their own `data-shape`; the scroll picker now takes
+  the innermost `[data-shape]` hit, the section's `data-sec` still drives the rail.
+- **Beat:** a `/experience/:id` page (too little content), and keeping title-first rows (hard to scan).
+- **Cost:** `summary`/`tags`/`details` in `data.ts` are drafts inferred from existing copy; tech tags
+  are guesses Jonathan must correct. Five new hand-drawn formations (chart, card, guitar, tulip, hand)
+  share a `blob()` union-outline helper.
+- **Breaks when:** a company name changes (SHAPE_OF is keyed by name; unknown falls back to cloud).
+
+## 2026-10-12 — We Hear You formation signs ASL "hello" (animated)
+- **Chose:** head + flat hand at the temple; the hand's particles sit at the end of the target array and
+  the frame loop rotates them about the elbow on a 3.6s salute loop (springs at 2.2× so they keep up).
+- **Beat:** a static ILY hand (Jonathan: "just static"), and per-frame rebuilds of the sampled shape (too slow).
+- **Cost:** one shape-specific branch in the hot loop (`waving`), cheap: a cos/sin per frame.
+
+## 2026-10-12 — Easter egg: "The long way to Seattle", a paper-plane game on a tiny planet
+- **Chose:** three.js 0.162 (TS 4.9-compatible types), lazy chunk loaded only when found; trigger is three
+  hard globe flicks within 4s (`FieldOptions.onFlick`), with a "one more spin" hint after two and a console
+  hint. Low-poly Earth from the same `land()` mask; a gate per chapter; milestones between gates become
+  storms (dips) or orbs; finale lights the flown route in green (the hero's unlit arc, lit).
+- **Beat:** a car (Bruno Simon's), a particle comet (Jonathan picked the plane), react-three-fiber (3 deps).
+- **Cost:** ~530KB chunk for three (not on the main path); no WebGL → friendly fallback screen.
+- **Breaks when:** a milestone's `short` is renamed (gates look them up by `short`).

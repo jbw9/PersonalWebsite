@@ -359,3 +359,9 @@ site; keep the other versions in a folder.
   original site as `original`) at `/archive/<slug>`, with the switcher pill shown only there.
 - Contracts updated: `ShapeKey` drops `title`/`name` for `globe`; `NameBox`/`onNameBox` became
   `GlobeBox`/`onGlobe`; `HOME` is `/`. `src/site/world.ts` is a generated 1° land mask.
+
+## Round 8 — experience rows, per-company particles, journey game
+- Experience: company-first rows, `summary`/`tags`/`details` in `data.ts`, details sheet (no route).
+- Per-company formations: AWS cloud, Massive guitar, Kredivo card, Tulip candlestick chart, iVenture
+  Tulip logo, We Hear You animated ASL "hello".
+- Easter egg game in `src/site/game/` (three.js, lazy): flick the globe 3× → fly Bandung → Seattle.

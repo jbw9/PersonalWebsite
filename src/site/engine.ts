@@ -6,12 +6,12 @@ const FONT = '"Cormorant Garamond"';
 const WEIGHT = 500;
 
 // How bright each formation sits beside the content; mobile dims further since text overlaps it
-const DIM: Record<ShapeKey, number> = { globe: 1, cloud: 0.62, frames: 0.5, gpa: 0.6, people: 0.62, book: 0.6 };
+const DIM: Record<ShapeKey, number> = { globe: 1, cloud: 0.62, frames: 0.5, gpa: 0.6, people: 0.62, book: 0.6, chart: 0.62, card: 0.62, guitar: 0.62, tulip: 0.66, hand: 0.62 };
 // Share of the particles each formation uses (the globe needs them all for small islands); the rest
 // drift as faint dust, so the side formations stay airy
-const USE: Record<ShapeKey, number> = { globe: 1, cloud: 0.4, frames: 0.75, gpa: 0.5, people: 0.5, book: 0.55 };
+const USE: Record<ShapeKey, number> = { globe: 1, cloud: 0.4, frames: 0.75, gpa: 0.5, people: 0.5, book: 0.55, chart: 0.5, card: 0.45, guitar: 0.5, tulip: 0.45, hand: 0.5 };
 // px of slow drift per particle, so a formation breathes instead of sitting rigid
-const SWAY: Record<ShapeKey, number> = { globe: 0, cloud: 5, frames: 1, gpa: 2.2, people: 2.2, book: 2 };
+const SWAY: Record<ShapeKey, number> = { globe: 0, cloud: 5, frames: 1, gpa: 2.2, people: 2.2, book: 2, chart: 1.6, card: 1.6, guitar: 2, tulip: 2.2, hand: 2 };
 
 // ── Globe ──
 const RAD = Math.PI / 180;
@@ -19,7 +19,7 @@ const HOME_AT = { lat: 40.1164, lon: -88.2434 }; // Champaign, IL
 const NEXT_AT = { lat: 47.6062, lon: -122.3321 }; // Seattle, WA
 const BORN_AT = { lat: -6.9175, lon: 107.6191 }; // Bandung, Indonesia
 const TILT = 24 * RAD; // northern hemisphere leans toward the viewer
-const land = (lat: number, lon: number) => {
+export const land = (lat: number, lon: number) => {
   const row = LAND[Math.min(179, Math.max(0, Math.floor(90 - lat)))];
   const col = Math.min(359, Math.max(0, Math.floor(lon + 180)));
   return (parseInt(row[col >> 2], 16) >> (3 - (col & 3))) & 1;
@@ -86,6 +86,40 @@ const drawTracked = (c: CanvasRenderingContext2D, text: string, cx: number, cy: 
     c.fillText(ch, x, cy);
     x += c.measureText(ch).width + track * size;
   });
+};
+
+// Overlapping parts drawn as one silhouette: a bright rim around the union, a faint fill, no seams
+// where parts overlap. A part strokes its path at width w (round caps) and fills it when closed.
+type Part = { d: (c: CanvasRenderingContext2D) => void; w: number; fill?: boolean };
+const blob = (c: CanvasRenderingContext2D, parts: Part[], rim = 3.5) => {
+  c.lineCap = c.lineJoin = "round";
+  const pass = (grow: number) =>
+    parts.forEach((p) => {
+      c.beginPath();
+      p.d(c);
+      if (p.fill) c.fill();
+      if (p.w + grow > 0) {
+        c.lineWidth = p.w + grow;
+        c.stroke();
+      }
+    });
+  c.globalAlpha = 1;
+  pass(rim * 2);
+  c.globalCompositeOperation = "destination-out";
+  pass(0);
+  c.globalCompositeOperation = "source-over";
+  c.globalAlpha = 0.07;
+  pass(0);
+  c.globalAlpha = 1;
+};
+
+const rrect = (c: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) => {
+  c.moveTo(x + r, y);
+  c.arcTo(x + w, y, x + w, y + h, r);
+  c.arcTo(x + w, y + h, x, y + h, r);
+  c.arcTo(x, y + h, x, y, r);
+  c.arcTo(x, y, x + w, y, r);
+  c.closePath();
 };
 
 export const createField = (
@@ -198,6 +232,8 @@ export const createField = (
     return shape === "globe" && ready && Math.hypot(px - g.cx, py - g.cy) < g.r * 1.05;
   };
 
+  // the "hello" hand: particles from `from` on swing about the elbow (ex, ey)
+  let hello = { from: N, ex: 0, ey: 0, s: 1 };
   const build = (k: ShapeKey): Float32Array => {
     const R = region();
     const cx = R.x + R.w / 2;
@@ -235,6 +271,234 @@ export const createField = (
         });
         c.fillRect(cx - 1.15 * u, cy + 1.03 * u - 1.5, 2.1 * u, 3);
       });
+    // Tulip: a prediction market, so a candlestick chart climbing to the right
+    if (k === "chart")
+      return sample(vw, vh, N, (c) => {
+        const W = Math.min(R.w * 0.92, R.h * 1.1);
+        const H = W * 0.78;
+        const x0 = cx - W / 2;
+        const y0 = cy + H / 2;
+        const closes = [0.3, 0.37, 0.33, 0.44, 0.4, 0.52, 0.48, 0.6, 0.68, 0.63, 0.76, 0.86];
+        const step = W / (closes.length + 0.5);
+        const at = (v: number) => y0 - v * H;
+        c.lineCap = "round";
+        c.lineWidth = 3;
+        c.globalAlpha = 0.8;
+        c.beginPath();
+        c.moveTo(x0, y0 - H * 1.02);
+        c.lineTo(x0, y0);
+        c.lineTo(x0 + W, y0);
+        c.stroke();
+        c.globalAlpha = 0.35;
+        c.lineWidth = 1.5;
+        [0.33, 0.66].forEach((v) => {
+          for (let gx = x0 + 10; gx < x0 + W; gx += 14) c.fillRect(gx, at(v), 5, 1.5);
+        });
+        closes.forEach((v, i) => {
+          if (!i) return;
+          const o = closes[i - 1];
+          const mx = x0 + step * (i + 0.25);
+          const bw = step * 0.56;
+          const hi = Math.max(o, v) + 0.05;
+          const lo = Math.min(o, v) - 0.04;
+          c.globalAlpha = 0.9;
+          c.lineWidth = 2.5;
+          c.beginPath();
+          c.moveTo(mx, at(hi));
+          c.lineTo(mx, at(Math.max(o, v)));
+          c.moveTo(mx, at(Math.min(o, v)));
+          c.lineTo(mx, at(lo));
+          c.stroke();
+          c.beginPath();
+          rrect(c, mx - bw / 2, at(Math.max(o, v)), bw, Math.max(4, Math.abs(v - o) * H), 3);
+          // up days are solid, down days hollow
+          c.globalAlpha = v > o ? 0.45 : 0.04;
+          c.fill();
+          c.globalAlpha = 1;
+          c.lineWidth = 3;
+          c.stroke();
+        });
+      });
+    // Kredivo: fintech, so a credit card, tilted a little
+    if (k === "card")
+      return sample(vw, vh, N, (c) => {
+        const W = Math.min(R.w * 0.9, R.h * 1.25);
+        const H = W / 1.586;
+        c.translate(cx, cy);
+        c.rotate(-0.12);
+        c.translate(-W / 2, -H / 2);
+        c.beginPath();
+        rrect(c, 0, 0, W, H, W * 0.06);
+        c.globalAlpha = 0.02;
+        c.fill();
+        c.globalAlpha = 1;
+        c.lineWidth = 3.5;
+        c.stroke();
+        // chip with its contact lines, then the contactless waves beside it
+        c.lineWidth = 2.5;
+        c.beginPath();
+        rrect(c, W * 0.1, H * 0.3, W * 0.15, H * 0.22, 6);
+        c.globalAlpha = 0.3;
+        c.fill();
+        c.globalAlpha = 1;
+        c.lineWidth = 3.5;
+        c.stroke();
+        c.beginPath();
+        c.moveTo(W * 0.1, H * 0.41);
+        c.lineTo(W * 0.25, H * 0.41);
+        c.moveTo(W * 0.175, H * 0.3);
+        c.lineTo(W * 0.175, H * 0.52);
+        c.stroke();
+        [0.04, 0.07, 0.1].forEach((r) => {
+          c.beginPath();
+          c.arc(W * 0.29, H * 0.41, r * W, -0.7, 0.7);
+          c.stroke();
+        });
+        // number: four groups of four dots, then the name and expiry bars
+        for (let g = 0; g < 4; g++)
+          for (let d = 0; d < 4; d++) {
+            c.beginPath();
+            c.arc(W * (0.1 + g * 0.2 + d * 0.035), H * 0.68, Math.max(2.5, W * 0.009), 0, Math.PI * 2);
+            c.fill();
+          }
+        c.lineWidth = 4;
+        c.globalAlpha = 0.6;
+        c.beginPath();
+        c.moveTo(W * 0.1, H * 0.84);
+        c.lineTo(W * 0.42, H * 0.84);
+        c.moveTo(W * 0.72, H * 0.84);
+        c.lineTo(W * 0.86, H * 0.84);
+        c.stroke();
+        c.setTransform(1, 0, 0, 1, 0, 0);
+      });
+    // Massive: music, so a guitar on a slant with a couple of notes beside it
+    if (k === "guitar")
+      return sample(vw, vh, N, (c) => {
+        const u = Math.min(R.w, R.h) / 5.4;
+        c.translate(cx - 0.4 * u, cy + 0.2 * u);
+        c.rotate(0.62);
+        c.translate(0, 1.2 * u);
+        const disc = (y: number, r: number): Part => ({ d: (q) => q.arc(0, y * u, r * u, 0, Math.PI * 2), w: 0, fill: true });
+        const bar = (y0: number, y1: number, w: number): Part => ({
+          d: (q) => {
+            q.moveTo(0, y0 * u);
+            q.lineTo(0, y1 * u);
+          },
+          w: w * u,
+        });
+        blob(c, [disc(0.55, 0.78), disc(-0.5, 0.6), bar(-0.5, 0.6, 1.05), bar(-0.9, -3.0, 0.26), bar(-3.0, -3.55, 0.42)]);
+        c.lineWidth = 2.5;
+        c.beginPath();
+        c.arc(0, -0.15 * u, 0.24 * u, 0, Math.PI * 2);
+        c.stroke();
+        c.fillRect(-0.28 * u, 0.82 * u, 0.56 * u, 0.1 * u);
+        c.globalAlpha = 0.55;
+        c.lineWidth = 1.2;
+        [-0.09, -0.03, 0.03, 0.09].forEach((sx) => {
+          c.beginPath();
+          c.moveTo(sx * u, 0.85 * u);
+          c.lineTo(sx * u, -3.45 * u);
+          c.stroke();
+        });
+        for (let f = -1.05; f > -3; f -= 0.3) c.fillRect(-0.13 * u, f * u, 0.26 * u, 2);
+        c.setTransform(1, 0, 0, 1, 0, 0);
+        // a beamed pair of eighth notes, upper right
+        c.globalAlpha = 0.85;
+        const nx = cx + 1.25 * u;
+        const ny = cy - 0.7 * u;
+        [0, 0.7].forEach((dx, j) => {
+          c.beginPath();
+          c.ellipse(nx + dx * u, ny + (0.9 - j * 0.15) * u, 0.2 * u, 0.14 * u, -0.4, 0, Math.PI * 2);
+          c.fill();
+          c.fillRect(nx + (dx + 0.17) * u, ny - j * 0.15 * u - 0.05 * u, 3.5, 0.9 * u);
+        });
+        c.lineWidth = 0.13 * u;
+        c.beginPath();
+        c.moveTo(nx + 0.17 * u, ny - 0.02 * u);
+        c.lineTo(nx + 0.87 * u, ny - 0.17 * u);
+        c.stroke();
+      });
+    // iVenture: where Tulip was built, so Tulip's logo: three petals in a cup
+    if (k === "tulip")
+      return sample(vw, vh, N, (c) => {
+        const u = Math.min(R.w, R.h) / 2.7;
+        const P = (x: number, y: number): [number, number] => [cx + x * u, cy + y * u];
+        c.lineCap = c.lineJoin = "round";
+        const outer = () => {
+          c.beginPath();
+          c.moveTo(...P(-1, -0.42));
+          c.bezierCurveTo(...P(-1.05, 0.45), ...P(-0.55, 0.92), ...P(0, 0.92));
+          c.bezierCurveTo(...P(0.55, 0.92), ...P(1.05, 0.45), ...P(1, -0.42));
+        };
+        outer();
+        c.globalAlpha = 0.06;
+        c.fill();
+        c.globalAlpha = 1;
+        c.lineWidth = 0.1 * u;
+        c.stroke();
+        // side petals curl in from their tips; the middle petal rises to a point between them
+        c.beginPath();
+        c.moveTo(...P(-1, -0.42));
+        c.bezierCurveTo(...P(-0.62, -0.34), ...P(-0.3, -0.05), ...P(-0.18, 0.5));
+        c.moveTo(...P(1, -0.42));
+        c.bezierCurveTo(...P(0.62, -0.34), ...P(0.3, -0.05), ...P(0.18, 0.5));
+        c.moveTo(...P(-0.44, -0.08));
+        c.bezierCurveTo(...P(-0.42, -0.5), ...P(-0.18, -0.78), ...P(0, -0.98));
+        c.bezierCurveTo(...P(0.18, -0.78), ...P(0.42, -0.5), ...P(0.44, -0.08));
+        c.stroke();
+      });
+    // We Hear You: ASL "hello": a flat hand at the temple, saluting outward. The head is still; the hand's
+    // particles come last so the frame loop can swing them about the elbow (see `hello`).
+    if (k === "hand") {
+      const s = Math.min(R.w / 4.4, R.h / 4.7);
+      const headN = Math.round(N * 0.38);
+      const head = sample(vw, vh, headN, (c) => {
+        const hx = cx - 0.95 * s;
+        const hy = cy - 0.55 * s;
+        const parts: Part[] = [
+          { d: (q) => q.arc(hx, hy, 0.85 * s, 0, Math.PI * 2), w: 0, fill: true },
+          { d: (q) => rrect(q, hx - 1.25 * s, cy + 0.6 * s, 2.5 * s, 1.75 * s, 0.7 * s), w: 0, fill: true },
+        ];
+        blob(c, parts);
+      });
+      const ex = cx + 0.7 * s;
+      const ey = cy + 2.05 * s;
+      const hand = sample(vw, vh, N - headN, (c) => {
+        // drawn upright from the elbow, then leaned in so the fingertips touch the temple
+        c.translate(ex, ey);
+        c.rotate(-0.3);
+        const bar = (y0: number, y1: number, w: number): Part => ({
+          d: (q) => {
+            q.moveTo(0, -y0 * s);
+            q.lineTo(0, -y1 * s);
+          },
+          w: w * s,
+        });
+        const finger = (fx: number, y0: number, y1: number, w: number, lean = 0): Part => ({
+          d: (q) => {
+            q.moveTo(fx * s, -y0 * s);
+            q.lineTo((fx + lean) * s, -y1 * s);
+          },
+          w: w * s,
+        });
+        // four fingers side by side (middle longest) so the tips scallop, thumb along the palm's edge
+        blob(c, [
+          bar(0.25, 1.6, 0.62),
+          { d: (q) => rrect(q, -0.48 * s, -2.5 * s, 0.96 * s, 1.05 * s, 0.3 * s), w: 0, fill: true },
+          finger(-0.34, 2.3, 3.2, 0.23, -0.03),
+          finger(-0.115, 2.3, 3.45, 0.24),
+          finger(0.115, 2.3, 3.38, 0.24),
+          finger(0.34, 2.3, 3.08, 0.22, 0.03),
+          finger(-0.48, 1.55, 2.2, 0.26, -0.08),
+        ]);
+        c.setTransform(1, 0, 0, 1, 0, 0);
+      });
+      hello = { from: headN, ex, ey, s };
+      const out = new Float32Array(N * 2);
+      out.set(head);
+      out.set(hand, headN * 2);
+      return out;
+    }
     if (k === "people")
       return sample(vw, vh, N, (c) => {
         // three busts, the middle one larger and in front; each erases what it covers so the rims occlude
@@ -577,6 +841,15 @@ export const createField = (
     const cxs = vw / 2;
     const cys = vh / 2;
     const paths = [new Path2D(), new Path2D(), new Path2D(), new Path2D(), new Path2D()];
+    // ASL hello, on a loop: rest at the temple, salute out and away, hold, come back
+    const waving = shape === "hand" && ready;
+    const ph = (t % 3.6) / 3.6;
+    const sm = (u: number) => u * u * (3 - 2 * u);
+    const wv = ph < 0.2 ? 0 : ph < 0.45 ? sm((ph - 0.2) / 0.25) : ph < 0.72 ? 1 : ph < 0.95 ? 1 - sm((ph - 0.72) / 0.23) : 0;
+    const wc = Math.cos(wv * 0.55);
+    const ws = Math.sin(wv * 0.55);
+    const wox = wv * 0.4 * hello.s;
+    const woy = -wv * 0.15 * hello.s;
     for (let i = 0; i < N; i++) {
       if (galaxy) {
         // spiral inward; velocity is kept so the hand-off to the springs is seamless
@@ -597,8 +870,16 @@ export const createField = (
       if (ready) {
         if (pick[i] < USE[shape]) {
           const sw = SWAY[shape] + 1.1;
-          ax = (tx[i * 2] + Math.sin(t * 0.7 + phase[i]) * sw - x[i]) * k * kmul[i];
-          ay = (tx[i * 2 + 1] + Math.cos(t * 0.55 + phase[i]) * sw - y[i]) * k * kmul[i];
+          let gx = tx[i * 2];
+          let gy = tx[i * 2 + 1];
+          if (waving && i >= hello.from) {
+            const dx = gx - hello.ex;
+            const dy = gy - hello.ey;
+            gx = hello.ex + dx * wc - dy * ws + wox;
+            gy = hello.ey + dx * ws + dy * wc + woy;
+          }
+          ax = (gx + Math.sin(t * 0.7 + phase[i]) * sw - x[i]) * (waving && i >= hello.from ? k * 2.2 : k) * kmul[i];
+          ay = (gy + Math.cos(t * 0.55 + phase[i]) * sw - y[i]) * (waving && i >= hello.from ? k * 2.2 : k) * kmul[i];
         } else {
           // dust: a slow wander around a home spot anywhere on screen
           const hx = dustX[i] * vw + Math.sin(t * 0.15 + phase[i]) * 30;
@@ -697,6 +978,7 @@ export const createField = (
   };
   const onUp = () => {
     if (!drag) return;
+    if (Math.abs(drag.v) > 0.028) opts.onFlick();
     spin = Math.max(-0.035, Math.min(0.035, drag.v));
     drag = null;
     document.documentElement.style.cursor = "";

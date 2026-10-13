@@ -159,3 +159,46 @@
     background: rgba(9, 14, 24, 0.7);
   }
 }
+
+/* ── Journey game: the next-gate marker ── */
+.v-remix .rx-gm-marker {
+  width: 0;
+  height: 0;
+}
+.v-remix .rx-gm-marker::before {
+  content: "";
+  position: absolute;
+  left: -16px;
+  top: -16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  border: 1.5px solid #5b9cff;
+  box-shadow: 0 0 16px rgba(91, 156, 255, 0.6);
+  animation: rx-gm-pulse 1.6s ease-in-out infinite;
+}
+.v-remix .rx-gm-arrow {
+  display: none;
+  position: absolute;
+  left: -7px;
+  top: -7px;
+  width: 14px;
+  height: 14px;
+  transform: rotate(var(--a)) translateX(22px);
+}
+.v-remix .rx-gm-arrow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #5b9cff;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+.v-remix .rx-gm-marker[data-off="1"] .rx-gm-arrow {
+  display: block;
+}
+@keyframes rx-gm-pulse {
+  50% {
+    transform: scale(1.18);
+    opacity: 0.7;
+  }
+}

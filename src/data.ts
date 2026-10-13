@@ -34,6 +34,10 @@ export const experiences = [
     period: "Feb 2027",
     description:
       "AWS Managed Streaming for Apache Kafka (MSK)",
+    summary: "Returning full-time to the Amazon MSK team",
+    tags: ["Java", "Apache Kafka", "AWS"],
+    details:
+      "Coming back full-time to the team I interned with: Amazon Managed Streaming for Apache Kafka (MSK), the managed service that runs Kafka clusters for AWS customers.",
   },
   {
     title: "SDE Intern",
@@ -42,6 +46,10 @@ export const experiences = [
     period: "Jun 2026 - Aug 2026",
     description:
       "AWS Managed Streaming for Apache Kafka (MSK)",
+    summary: "Building on Amazon MSK, managed Apache Kafka",
+    tags: ["Java", "Apache Kafka", "AWS"],
+    details:
+      "Interned on Amazon MSK (Managed Streaming for Apache Kafka), the service that runs and scales Kafka clusters for AWS customers, at a scale I'm still wrapping my head around. The internship turned into a full-time offer.",
   },
   {
     title: "Software Engineer Intern",
@@ -50,6 +58,10 @@ export const experiences = [
     period: "Jul 2025 - Nov 2025",
     description:
       "Developing an algorithm to predict an artist's annual revenue from 130+ parameters",
+    summary: "Predicting an artist's yearly revenue from 130+ signals",
+    tags: ["Python", "Machine learning", "Data modeling"],
+    details:
+      "Massive works with music artists. I built the model behind one of its core numbers: an estimate of an artist's annual revenue, predicted from 130+ parameters.",
   },
   {
     title: "Software Engineer Intern",
@@ -58,6 +70,10 @@ export const experiences = [
     period: "May 2025 - Jul 2025",
     description:
       "Developing an MCP server, and integrating it with the company's LLM and customer support system",
+    summary: "An MCP server connecting a fintech's LLM to real customer data",
+    tags: ["MCP", "LLMs", "Python"],
+    details:
+      "Kredivo is a buy-now-pay-later and credit fintech in Southeast Asia. I built a Model Context Protocol (MCP) server so the company's LLM could use internal tools, and wired it into the customer support system. The finance major ended up building for a fintech.",
   },
   {
     title: "Co-Founder & CTO",
@@ -66,6 +82,10 @@ export const experiences = [
     period: "Jan 2024 - May 2025",
     description:
       "Led development of Tulip's mobile app, beta website and Automated Market Maker (AMM) algorithm.",
+    summary: "Co-founded a prediction market and built its app and pricing engine",
+    tags: ["React Native", "TypeScript", "AMM"],
+    details:
+      "Tulip is a prediction market. As co-founder and CTO I led the mobile app, the beta website, and the Automated Market Maker (AMM) algorithm that prices every market. Production code with real users, overnight.",
     website: "https://www.tulip.markets/",
   },
   {
@@ -74,6 +94,10 @@ export const experiences = [
     companyIcon: "/iventure_logo.png",
     period: "Jan 2024 - May 2025",
     description: "Building Tulip",
+    summary: "Building Tulip in the iV10 founder cohort",
+    tags: ["Startups", "Product", "Fundraising"],
+    details:
+      "Joined iVenture Accelerator's iV10 cohort as a Founder in Residence to build Tulip: mentorship, investor pitches, and learning to ship before it's perfect.",
   },
   {
     title: "Software Engineer Intern",
@@ -82,6 +106,10 @@ export const experiences = [
     period: "May 2024 - Aug 2024",
     description:
       "Developed a real time American Sign Language to English Android application. Optimized translation system through machine learning.",
+    summary: "Real-time sign language to English, on an Android phone",
+    tags: ["Android", "Machine learning", "Computer vision"],
+    details:
+      "My first software internship. I built an Android app that translates American Sign Language into English in real time from the camera, and tuned the machine learning behind the translation to make it faster and more accurate.",
   },
 ];
 

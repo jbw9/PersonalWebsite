@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, useMotionValue, useMotionValueEvent, useReducedMotion } from "framer-motion";
 import AskTerminal from "./ask/AskTerminal";
@@ -9,6 +9,9 @@ import Story, { StoryApi, storyNodes } from "./StoryMode";
 import Bridge, { Pt } from "./Bridge";
 import { scenes, pad } from "./timeline";
 import "./remix.css";
+
+// the hidden game pulls in three.js, so it loads only when someone finds it
+const Game = lazy(() => import("./game"));
 
 type Mode = "sections" | "story";
 const instant = "instant" as ScrollBehavior;
@@ -95,6 +98,25 @@ const Remix = () => {
   const later = (fn: () => void, ms: number) => timers.current.push(setTimeout(fn, ms));
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
+  // ── Easter egg: three hard flicks of the globe within 4s open the journey game ──
+  const [game, setGame] = useState(false);
+  const [stir, setStir] = useState(false);
+  const flicks = useRef<number[]>([]);
+  useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log("%c✈  psst: give the globe a few good spins.", "color:#5b9cff;font:12px monospace");
+  }, []);
+  useEffect(() => {
+    if (!game) return;
+    field.current?.setRunning(false);
+    document.documentElement.style.overflow = "hidden";
+    return () => {
+      document.documentElement.style.overflow = "";
+      if (mode === "sections") field.current?.setRunning(true);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [game]);
+
   // ── Particles ──
   useEffect(() => {
     const f = createField(canvasRef.current as HTMLCanvasElement, {
@@ -102,6 +124,18 @@ const Remix = () => {
       resume: true,
       onGlobe: setGlobe,
       onIntroDone: () => {},
+      onFlick: () => {
+        const now = Date.now();
+        flicks.current = flicks.current.filter((t) => now - t < 4000).concat(now);
+        if (flicks.current.length >= 3) {
+          flicks.current = [];
+          setStir(false);
+          setGame(true);
+        } else if (flicks.current.length === 2) {
+          setStir(true);
+          later(() => setStir(false), 2600);
+        }
+      },
     });
     field.current = f;
     return () => {
@@ -133,11 +167,14 @@ const Remix = () => {
     const onScroll = () => {
       const mid = window.innerHeight * 0.5;
       const secs = Array.from(document.querySelectorAll<HTMLElement>(".v-remix [data-shape]"));
-      const hit = secs.find((s) => {
+      const hits = secs.filter((s) => {
         const r = s.getBoundingClientRect();
         return r.top <= mid && r.bottom > mid;
       });
-      if (done) field.current?.setShape(((hit && hit.dataset.shape) || "globe") as ShapeKey);
+      // the innermost wins, so an experience row can override its section's shape
+      const inner = hits[hits.length - 1];
+      const hit = hits.find((s) => s.dataset.sec);
+      if (done) field.current?.setShape(((inner && inner.dataset.shape) || "globe") as ShapeKey);
       const id = (hit && hit.dataset.sec) || "";
       setActive(id);
     };
@@ -431,6 +468,22 @@ const Remix = () => {
 
 
       <div className="rx-grain z-[60]" style={{ backgroundImage: `url(${grain})` }} />
+
+      {stir && globe && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="fixed z-[70] -translate-x-1/2 rx-mono text-[11px] text-[#bcd7ff] pointer-events-none"
+          style={{ left: globe.cx, top: globe.cy + globe.r + 18 }}
+        >
+          ✈ something stirs… one more spin
+        </motion.div>
+      )}
+      {game && (
+        <Suspense fallback={<div className="fixed inset-0 z-[100] bg-[#070b14]" />}>
+          <Game onExit={() => setGame(false)} />
+        </Suspense>
+      )}
     </div>
   );
 };

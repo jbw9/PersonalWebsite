@@ -1,10 +1,12 @@
 # STATUS
 
 ## Now
-Director's Cut is the live site at `/` (`src/site/`); old versions at `/archive/<slug>`
-(`src/archive/`). Hero is a particle globe: green Champaign dot, dashed arc to Seattle. demo.sh green.
+Round 8 done: experience rows redesigned (logo, summary, tech tags, details sheet), per-company particle
+shapes (We Hear You signs "hello"), and the hidden paper-plane game (flick the globe 3×). demo.sh green.
 
 ## Left
+- Jonathan checks the drafted experience `summary`/`tags`/`details` in `data.ts` (tech tags are guesses).
+- Rerun `alfred/deploy.sh` so Alfred knows the new experience details.
 - Drop the YC AI Startup School photo at `public/yc-ai-sus.jpg` (hover peek appears once it exists).
 - Jonathan tries it by hand (drag-scrub on the strip, touch, real fonts on his machine).
 - Fill `EXTRA_FACTS` in `src/variants/remix/ask/knowledge.ts` with facts about himself.

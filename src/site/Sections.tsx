@@ -4,7 +4,8 @@ import { IconBrandGithub, IconBrandLinkedin, IconMail } from "@tabler/icons-reac
 import { experiences, education, involvements } from "../data";
 import { projects } from "../data/projects";
 import { guides } from "../data/guides";
-import { GlobeBox } from "./contracts";
+import { createPortal } from "react-dom";
+import { GlobeBox, ShapeKey } from "./contracts";
 import HeroCurve from "./HeroCurve";
 import { CONTACT, periodRange } from "./timeline";
 
@@ -50,57 +51,147 @@ const Head = ({ n, title }: { n: string; title: string }) => (
 );
 
 const Logo = ({ src, size = "w-11 h-11" }: { src: string; size?: string }) => (
-  <img src={imgOf(src)} alt="" className={`${size} rounded-xl bg-white object-contain p-1 shrink-0`} />
+  <img src={imgOf(src)} alt="" className={`${size} rounded-xl object-cover shrink-0`} />
 );
 
-// Experience as a git graph: one branch, newest commit on top, the line draws itself as you scroll
+type Exp = (typeof experiences)[number];
+// each company gets its own particle formation while its row crosses the middle of the screen
+const SHAPE_OF: Record<string, ShapeKey> = {
+  "Massive, Inc.": "guitar",
+  "Kredivo Group": "card",
+  Tulip: "chart",
+  "Iventure Accelerator": "tulip",
+  "We Hear You, Inc": "hand",
+};
+
+// Experience as a git graph: one branch, newest commit on top, the line draws itself as you scroll.
+// A row reads company → what I did → stack; clicking it opens the longer story in a sheet.
 const Timeline = () => {
   const ref = useRef<HTMLOListElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 80%", "end 55%"] });
   const grow = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
+  const [open, setOpen] = useState<Exp | null>(null);
   return (
-    <ol ref={ref} className="relative">
-      <span className="absolute left-[15px] top-3 bottom-3 w-px rounded-full bg-[#e6ecf5]/[0.08]" />
-      <motion.span
-        className="absolute left-[15px] top-3 bottom-3 w-px rounded-full origin-top"
-        style={{ scaleY: grow, background: "linear-gradient(#bcd7ff, #5b9cff 40%, rgba(91,156,255,0.25))", boxShadow: "0 0 12px rgba(91,156,255,0.6)" }}
-      />
-      {experiences.map((e, i) => {
-        const st = status(e.period);
-        return (
-          <li key={e.title + e.company} className="relative grid grid-cols-[32px_1fr] gap-3 md:gap-4">
-            <span className="relative flex justify-center pt-[1.55rem]">
-              {st && <span className="absolute top-[1.55rem] w-3.5 h-3.5 rounded-full bg-[#5b9cff] rx-ping" />}
-              <span
-                className={`relative w-3.5 h-3.5 rounded-full border-2 ${
-                  st ? "bg-[#5b9cff] border-[#bcd7ff] shadow-[0_0_14px_rgba(91,156,255,0.9)]" : "bg-[#070b14] border-[#5b9cff]/70"
-                }`}
-              />
-            </span>
-            <Reveal delay={0.04 * i}>
-              <div className="group rounded-3xl px-4 md:px-5 py-4 -ml-1 transition-colors hover:bg-[#e6ecf5]/[0.035]">
-                <div className="flex flex-wrap items-center gap-2.5">
-                  <span className="rx-mono text-[10px] text-[#8692a8]">{e.period}</span>
-                  {st && <span className="rx-mono text-[9px] px-2.5 py-0.5 rounded-full bg-[#5b9cff] text-[#070b14]">{i === 0 ? "head · " : ""}{st}</span>}
-                </div>
-                <div className="mt-1 text-[1.4rem] md:text-[1.55rem] italic leading-tight">{e.title}</div>
-                <div className="mt-1.5 flex items-center gap-2.5">
-                  <Logo src={e.companyIcon} size="w-7 h-7" />
-                  {e.website ? (
-                    <a href={e.website} {...ext(e.website)} className="text-[1.08rem] text-[#c2cbdb] hover:text-[#5b9cff] transition-colors">
-                      {e.company} ↗
-                    </a>
-                  ) : (
-                    <span className="text-[1.08rem] text-[#c2cbdb]">{e.company}</span>
-                  )}
-                </div>
-                <p className="text-[1rem] text-[#8692a8] leading-snug mt-2">{e.description}</p>
+    <>
+      <ol ref={ref} className="relative">
+        <span className="absolute left-[15px] top-3 bottom-3 w-px rounded-full bg-[#e6ecf5]/[0.08]" />
+        <motion.span
+          className="absolute left-[15px] top-3 bottom-3 w-px rounded-full origin-top"
+          style={{ scaleY: grow, background: "linear-gradient(#bcd7ff, #5b9cff 40%, rgba(91,156,255,0.25))", boxShadow: "0 0 12px rgba(91,156,255,0.6)" }}
+        />
+        {experiences.map((e, i) => {
+          const st = status(e.period);
+          return (
+            <li key={e.title + e.company} data-shape={SHAPE_OF[e.company] || "cloud"} className="relative grid grid-cols-[32px_1fr] gap-3 md:gap-4">
+              <span className="relative flex justify-center pt-[1.9rem]">
+                {st && <span className="absolute top-[1.9rem] w-3.5 h-3.5 rounded-full bg-[#5b9cff] rx-ping" />}
+                <span
+                  className={`relative w-3.5 h-3.5 rounded-full border-2 ${
+                    st ? "bg-[#5b9cff] border-[#bcd7ff] shadow-[0_0_14px_rgba(91,156,255,0.9)]" : "bg-[#070b14] border-[#5b9cff]/70"
+                  }`}
+                />
+              </span>
+              <Reveal delay={0.04 * i}>
+                <button
+                  data-card
+                  onClick={() => setOpen(e)}
+                  aria-label={`${e.company}: more about this role`}
+                  className="group w-full text-left rounded-3xl px-4 md:px-5 py-4 my-1 -ml-1 flex gap-4 transition-colors hover:bg-[#e6ecf5]/[0.04]"
+                >
+                  <Logo src={e.companyIcon} size="w-11 h-11 md:w-12 md:h-12 mt-0.5" />
+                  <span className="min-w-0 flex-1">
+                    <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                      <span className="text-[1.35rem] md:text-[1.5rem] font-medium leading-tight text-[#e6ecf5]">{e.company}</span>
+                      {st && <span className="rx-mono text-[9px] px-2.5 py-0.5 rounded-full bg-[#5b9cff] text-[#070b14] self-center">{st}</span>}
+                      <span className="rx-mono text-[10px] text-[#8692a8] md:ml-auto">{e.period}</span>
+                    </span>
+                    <span className="block text-[0.98rem] text-[#8692a8] mt-0.5">{e.title}</span>
+                    <span className="block text-[1.12rem] md:text-[1.2rem] text-[#c2cbdb] leading-snug mt-2">{e.summary}</span>
+                    <span className="mt-3 flex flex-wrap items-center gap-1.5">
+                      {e.tags.map((t) => (
+                        <span key={t} className="rx-chip">
+                          {t}
+                        </span>
+                      ))}
+                      <span className="rx-mono text-[10px] text-[#5b9cff] ml-1 opacity-60 group-hover:opacity-100 transition-opacity">more ›</span>
+                    </span>
+                  </span>
+                </button>
+              </Reveal>
+            </li>
+          );
+        })}
+      </ol>
+      <ExpSheet e={open} onClose={() => setOpen(null)} />
+    </>
+  );
+};
+
+// The longer story for one role: a small sheet over the page, not a new page
+const ExpSheet = ({ e, onClose }: { e: Exp | null; onClose: () => void }) => {
+  useEffect(() => {
+    if (!e) return;
+    const key = (ev: KeyboardEvent) => ev.key === "Escape" && onClose();
+    window.addEventListener("keydown", key);
+    return () => window.removeEventListener("keydown", key);
+  }, [e, onClose]);
+  const root = document.querySelector(".v-remix");
+  if (!root) return null;
+  const st = e ? status(e.period) : "";
+  return createPortal(
+    <AnimatePresence>
+      {e && (
+        <motion.div
+          data-card
+          className="fixed inset-0 z-[60] flex items-end md:items-center justify-center p-4 bg-[#03060c]/60 backdrop-blur-sm"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+        >
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label={e.company}
+            initial={{ opacity: 0, y: 30, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 340, damping: 30 }}
+            onClick={(ev) => ev.stopPropagation()}
+            className="rx-card !bg-[#0b111e]/95 w-full max-w-[520px] p-6 md:p-8 relative"
+          >
+            <button onClick={onClose} aria-label="Close" className="absolute top-4 right-4 w-9 h-9 rounded-full border border-[#e6ecf5]/15 text-[#8692a8] hover:text-[#e6ecf5] hover:border-[#5b9cff]/60 transition-colors">
+              ✕
+            </button>
+            <div className="flex items-center gap-4 pr-10">
+              <Logo src={e.companyIcon} size="w-14 h-14" />
+              <div>
+                <div className="text-[1.5rem] font-medium leading-tight">{e.company}</div>
+                <div className="text-[0.98rem] text-[#8692a8]">{e.title}</div>
               </div>
-            </Reveal>
-          </li>
-        );
-      })}
-    </ol>
+            </div>
+            <div className="mt-4 flex items-center gap-2.5">
+              <span className="rx-mono text-[10px] text-[#8692a8]">{e.period}</span>
+              {st && <span className="rx-mono text-[9px] px-2.5 py-0.5 rounded-full bg-[#5b9cff] text-[#070b14]">{st}</span>}
+            </div>
+            <p className="mt-4 text-[1.12rem] leading-relaxed text-[#c2cbdb]">{e.details}</p>
+            <div className="mt-5 flex flex-wrap gap-1.5">
+              {e.tags.map((t) => (
+                <span key={t} className="rx-chip">
+                  {t}
+                </span>
+              ))}
+            </div>
+            {e.website && (
+              <a href={e.website} {...ext(e.website)} className="rx-btn-ghost mt-6">
+                Visit {e.company} ↗
+              </a>
+            )}
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>,
+    root
   );
 };
 

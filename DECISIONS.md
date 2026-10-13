@@ -233,7 +233,7 @@
 - **Chose:** the hand is a point cloud in 3D (capsule forearm/fingers/thumb, slab palm) that swings
   about the elbow, flexes at the wrist and turns partway sideways, perspective-projected every frame;
   back-facing dots draw in the dim bucket for depth. The experience row crossing mid-screen (the one
-  the particles are drawing) is lit, the others dim to 45%, and a beam points right at the drawing.
+  the particles are drawing) is lit, the others dim to 75%.
 - **Beat:** the 2D ASL-hello figure (head + saluting hand). Jonathan: "weird with the person holding it".
 - **Cost:** one `pose()` per hand particle per frame (~4.5k trig-heavy calls) while the hand shows.
 - **Breaks when:** the row-highlight rule and index.tsx's shape rule ("crosses the middle") drift apart.

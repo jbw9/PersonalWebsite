@@ -101,14 +101,8 @@ const Timeline = () => {
             <li
               key={e.title + e.company}
               data-shape={SHAPE_OF[e.company] || "cloud"}
-              className={`relative grid grid-cols-[32px_1fr] gap-3 md:gap-4 transition-opacity duration-500 ${live >= 0 && !on ? "opacity-[0.45]" : ""}`}
+              className={`relative grid grid-cols-[32px_1fr] gap-3 md:gap-4 transition-opacity duration-500 ${live >= 0 && !on ? "opacity-75" : ""}`}
             >
-              {/* desktop: a beam from the lit row out toward its drawing on the right */}
-              <span
-                aria-hidden
-                className={`hidden md:block absolute left-full top-1/2 w-[16vw] h-px origin-left transition-all duration-500 ${on ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0"}`}
-                style={{ background: "linear-gradient(to right, rgba(91,156,255,0.8), transparent)" }}
-              />
               <span className="relative flex justify-center pt-[1.9rem]">
                 {st && <span className="absolute top-[1.9rem] w-3.5 h-3.5 rounded-full bg-[#5b9cff] rx-ping" />}
                 <span

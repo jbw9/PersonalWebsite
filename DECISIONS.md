@@ -216,3 +216,24 @@
 - **Cost:** chapter places are no longer geographic except Bandung, Champaign, Jakarta (Kredivo's
   Monas) and Seattle; the autopilot makes the game easy by design: it's a story first.
 - **Breaks when:** milestones grow a lot (each stretch is evenly divided; >15 per stretch gets tight).
+
+## 2026-10-12 — Old /v/* URLs redirect; detail-page back keeps the history pop
+- **Chose:** `/v/remix` → `/`, `/v/remix/project|guide/:id` → `/project|guide/:id`, `/v/:slug` →
+  `/archive/:slug`, and a `*` catch-all → `/`, all `replace`. The detail page's back stays
+  "`history.idx > 0` → `navigate(-1)`, else `/`".
+- **Beat:** marking in-site arrivals with router state and only popping history then. That fixes stale
+  tabs too, but the archived versions also link into `/project/:id` without the state, so their back
+  would jump to `/` instead of returning to the archive.
+- **Cost:** popping onto a stale `/v/remix` entry lands on `/` through the redirect, without the
+  "resume at Projects" state, so the intro plays.
+- **Breaks when:** a route is renamed again without a redirect: the catch-all hides it as a silent
+  bounce to `/`.
+
+## 2026-10-12 — We Hear You: a 3D waving hand, posed per frame
+- **Chose:** the hand is a point cloud in 3D (capsule forearm/fingers/thumb, slab palm) that swings
+  about the elbow, flexes at the wrist and turns partway sideways, perspective-projected every frame;
+  back-facing dots draw in the dim bucket for depth. The experience row crossing mid-screen (the one
+  the particles are drawing) is lit, the others dim to 45%, and a beam points right at the drawing.
+- **Beat:** the 2D ASL-hello figure (head + saluting hand). Jonathan: "weird with the person holding it".
+- **Cost:** one `pose()` per hand particle per frame (~4.5k trig-heavy calls) while the hand shows.
+- **Breaks when:** the row-highlight rule and index.tsx's shape rule ("crosses the middle") drift apart.

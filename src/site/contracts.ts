@@ -13,7 +13,7 @@ export interface AskTerminalProps {
 // "frames": particles trace the perimeters of every element matching FRAME_SELECTOR, following
 // them live as the page scrolls; the attribute's value is that element's corner radius in px.
 // Experience rows pick a formation per company: chart (Tulip), card (Kredivo), guitar (Massive),
-// tulip (iVenture, Tulip's logo), hand (We Hear You, ASL "I love you")
+// tulip (iVenture, Tulip's logo), hand (We Hear You, waving hello in 3D)
 export type ShapeKey = "globe" | "cloud" | "frames" | "gpa" | "people" | "book" | "chart" | "card" | "guitar" | "tulip" | "hand";
 export const FRAME_SELECTOR = ".v-remix [data-frame]";
 

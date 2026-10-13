@@ -10,7 +10,7 @@ pauses, monuments + logos, autopilot. demo.sh green.
 - Rerun `alfred/deploy.sh` so Alfred knows the new experience details.
 - Drop the YC AI Startup School photo at `public/yc-ai-sus.jpg` (hover peek appears once it exists).
 - Jonathan tries it by hand (drag-scrub on the strip, touch, real fonts on his machine).
-- Fill `EXTRA_FACTS` in `src/variants/remix/ask/knowledge.ts` with facts about himself.
+- Fill `EXTRA_FACTS` in `src/site/ask/knowledge.ts` with facts about himself.
 - After editing data files or `EXTRA_FACTS`: rerun `alfred/deploy.sh` (KB is baked into the Lambda).
 - Fix the two slash-less companyIcons in `data.ts`.
 

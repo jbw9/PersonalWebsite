@@ -71,6 +71,21 @@ const Timeline = () => {
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 80%", "end 55%"] });
   const grow = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
   const [open, setOpen] = useState<Exp | null>(null);
+  // the row crossing the middle of the screen is the one the particles are drawing, so it lights up
+  const [live, setLive] = useState(-1);
+  useEffect(() => {
+    const onScroll = () => {
+      const mid = window.innerHeight * 0.5;
+      const rows = Array.from(ref.current?.children ?? []).filter((c) => c.tagName === "LI");
+      setLive(rows.findIndex((r) => {
+        const b = r.getBoundingClientRect();
+        return b.top <= mid && b.bottom > mid;
+      }));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   return (
     <>
       <ol ref={ref} className="relative">
@@ -81,8 +96,19 @@ const Timeline = () => {
         />
         {experiences.map((e, i) => {
           const st = status(e.period);
+          const on = live === i;
           return (
-            <li key={e.title + e.company} data-shape={SHAPE_OF[e.company] || "cloud"} className="relative grid grid-cols-[32px_1fr] gap-3 md:gap-4">
+            <li
+              key={e.title + e.company}
+              data-shape={SHAPE_OF[e.company] || "cloud"}
+              className={`relative grid grid-cols-[32px_1fr] gap-3 md:gap-4 transition-opacity duration-500 ${live >= 0 && !on ? "opacity-[0.45]" : ""}`}
+            >
+              {/* desktop: a beam from the lit row out toward its drawing on the right */}
+              <span
+                aria-hidden
+                className={`hidden md:block absolute left-full top-1/2 w-[16vw] h-px origin-left transition-all duration-500 ${on ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0"}`}
+                style={{ background: "linear-gradient(to right, rgba(91,156,255,0.8), transparent)" }}
+              />
               <span className="relative flex justify-center pt-[1.9rem]">
                 {st && <span className="absolute top-[1.9rem] w-3.5 h-3.5 rounded-full bg-[#5b9cff] rx-ping" />}
                 <span
@@ -96,7 +122,9 @@ const Timeline = () => {
                   data-card
                   onClick={() => setOpen(e)}
                   aria-label={`${e.company}: more about this role`}
-                  className="group w-full text-left rounded-3xl px-4 md:px-5 py-4 my-1 -ml-1 flex gap-4 transition-colors hover:bg-[#e6ecf5]/[0.04]"
+                  className={`group w-full text-left rounded-3xl px-4 md:px-5 py-4 my-1 -ml-1 flex gap-4 border transition-all duration-500 ${
+                    on ? "bg-[#5b9cff]/[0.08] border-[#5b9cff]/40 shadow-[0_0_40px_rgba(91,156,255,0.14)]" : "border-transparent hover:bg-[#e6ecf5]/[0.04]"
+                  }`}
                 >
                   <Logo src={e.companyIcon} size="w-11 h-11 md:w-12 md:h-12 mt-0.5" />
                   <span className="min-w-0 flex-1">

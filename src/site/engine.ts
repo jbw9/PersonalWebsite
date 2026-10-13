@@ -232,8 +232,70 @@ export const createField = (
     return shape === "globe" && ready && Math.hypot(px - g.cx, py - g.cy) < g.r * 1.05;
   };
 
-  // the "hello" hand: particles from `from` on swing about the elbow (ex, ey)
-  let hello = { from: N, ex: 0, ey: 0, s: 1 };
+  // the waving hand is a 3D point cloud (hand3, hand-local units, elbow at the origin), posed and
+  // projected every frame; (cx, cy) is where the hand's middle lands and s is px per unit
+  const hand3 = new Float32Array(N * 3);
+  const hz = new Float32Array(N);
+  let hello = { cx: 0, cy: 0, s: 1 };
+  const pose = (i: number, t: number) => {
+    // the whole forearm swings about the elbow; the hand flexes a beat behind it at the wrist
+    const wave = Math.sin(t * 5.2);
+    const az = wave * 0.32;
+    const wz = Math.sin(t * 5.2 - 0.9) * 0.22;
+    const ay = 0.5 + Math.sin(t * 0.6) * 0.25; // turned partway to the side so it reads as solid
+    let px = hand3[i * 3];
+    let py = hand3[i * 3 + 1];
+    let pz = hand3[i * 3 + 2];
+    if (py > 1.6) {
+      const dx = px;
+      const dy = py - 1.6;
+      px = dx * Math.cos(wz) - dy * Math.sin(wz);
+      py = 1.6 + dx * Math.sin(wz) + dy * Math.cos(wz);
+    }
+    const rx = px * Math.cos(az) - py * Math.sin(az);
+    const ry = px * Math.sin(az) + py * Math.cos(az);
+    const qx = rx * Math.cos(ay) + pz * Math.sin(ay);
+    const qz = -rx * Math.sin(ay) + pz * Math.cos(ay);
+    const f = 8 / (8 - qz);
+    return { x: hello.cx + qx * f * hello.s, y: hello.cy - (ry - 1.9) * f * hello.s, z: qz };
+  };
+  {
+    // capsule surface from (x0, y0) to (x1, y1) in the palm's plane, radius r, rounded tip
+    const capsule = (i: number, x0: number, y0: number, x1: number, y1: number, r: number) => {
+      const L = Math.hypot(x1 - x0, y1 - y0);
+      const ux = (x1 - x0) / L;
+      const uy = (y1 - y0) / L;
+      const u = Math.random() * L;
+      const rr = u > L - r ? r * Math.sqrt(Math.max(0, 1 - ((u - L + r) / r) ** 2)) : r;
+      const a = Math.random() * Math.PI * 2;
+      hand3[i * 3] = x0 + ux * u - uy * Math.cos(a) * rr;
+      hand3[i * 3 + 1] = y0 + uy * u + ux * Math.cos(a) * rr;
+      hand3[i * 3 + 2] = Math.sin(a) * rr;
+    };
+    // pinky → index (x, length, lean, radius), fanned a little; the thumb sits out past the index
+    const fingers: [number, number, number, number][] = [
+      [-0.39, 0.68, -0.16, 0.105],
+      [-0.13, 0.9, -0.05, 0.12],
+      [0.13, 0.98, 0.03, 0.125],
+      [0.38, 0.85, 0.13, 0.12],
+    ];
+    for (let i = 0; i < N; i++) {
+      const r = Math.random();
+      if (r < 0.14) capsule(i, 0, 0.3, 0, 1.85, 0.27);
+      else if (r < 0.52) {
+        // palm: a rounded slab, boxy in x/y and thin in z
+        const a = Math.random() * Math.PI * 2;
+        const b = Math.acos(2 * Math.random() - 1);
+        const sq = (v: number) => Math.sign(v) * Math.pow(Math.abs(v), 0.35);
+        hand3[i * 3] = sq(Math.sin(b) * Math.cos(a)) * 0.52;
+        hand3[i * 3 + 1] = 2.25 + sq(Math.sin(b) * Math.sin(a)) * 0.62;
+        hand3[i * 3 + 2] = Math.cos(b) * 0.17;
+      } else if (r < 0.9) {
+        const [fx, len, lean, fr] = fingers[(Math.random() * 4) | 0];
+        capsule(i, fx, 2.75, fx + Math.sin(lean) * len, 2.75 + Math.cos(lean) * len, fr);
+      } else capsule(i, 0.42, 1.85, 0.98, 2.5, 0.14);
+    }
+  }
   const build = (k: ShapeKey): Float32Array => {
     const R = region();
     const cx = R.x + R.w / 2;
@@ -447,56 +509,15 @@ export const createField = (
         c.bezierCurveTo(...P(0.18, -0.78), ...P(0.42, -0.5), ...P(0.44, -0.08));
         c.stroke();
       });
-    // We Hear You: ASL "hello": a flat hand at the temple, saluting outward. The head is still; the hand's
-    // particles come last so the frame loop can swing them about the elbow (see `hello`).
+    // We Hear You: a hand waving hello, in 3D; the frame loop poses it (see `pose`)
     if (k === "hand") {
-      const s = Math.min(R.w / 4.4, R.h / 4.7);
-      const headN = Math.round(N * 0.38);
-      const head = sample(vw, vh, headN, (c) => {
-        const hx = cx - 0.95 * s;
-        const hy = cy - 0.55 * s;
-        const parts: Part[] = [
-          { d: (q) => q.arc(hx, hy, 0.85 * s, 0, Math.PI * 2), w: 0, fill: true },
-          { d: (q) => rrect(q, hx - 1.25 * s, cy + 0.6 * s, 2.5 * s, 1.75 * s, 0.7 * s), w: 0, fill: true },
-        ];
-        blob(c, parts);
-      });
-      const ex = cx + 0.7 * s;
-      const ey = cy + 2.05 * s;
-      const hand = sample(vw, vh, N - headN, (c) => {
-        // drawn upright from the elbow, then leaned in so the fingertips touch the temple
-        c.translate(ex, ey);
-        c.rotate(-0.3);
-        const bar = (y0: number, y1: number, w: number): Part => ({
-          d: (q) => {
-            q.moveTo(0, -y0 * s);
-            q.lineTo(0, -y1 * s);
-          },
-          w: w * s,
-        });
-        const finger = (fx: number, y0: number, y1: number, w: number, lean = 0): Part => ({
-          d: (q) => {
-            q.moveTo(fx * s, -y0 * s);
-            q.lineTo((fx + lean) * s, -y1 * s);
-          },
-          w: w * s,
-        });
-        // four fingers side by side (middle longest) so the tips scallop, thumb along the palm's edge
-        blob(c, [
-          bar(0.25, 1.6, 0.62),
-          { d: (q) => rrect(q, -0.48 * s, -2.5 * s, 0.96 * s, 1.05 * s, 0.3 * s), w: 0, fill: true },
-          finger(-0.34, 2.3, 3.2, 0.23, -0.03),
-          finger(-0.115, 2.3, 3.45, 0.24),
-          finger(0.115, 2.3, 3.38, 0.24),
-          finger(0.34, 2.3, 3.08, 0.22, 0.03),
-          finger(-0.48, 1.55, 2.2, 0.26, -0.08),
-        ]);
-        c.setTransform(1, 0, 0, 1, 0, 0);
-      });
-      hello = { from: headN, ex, ey, s };
+      hello = { cx, cy, s: Math.min(R.w / 3.2, R.h / 4.9) };
       const out = new Float32Array(N * 2);
-      out.set(head);
-      out.set(hand, headN * 2);
+      for (let i = 0; i < N; i++) {
+        const p = pose(i, 0);
+        out[i * 2] = p.x;
+        out[i * 2 + 1] = p.y;
+      }
       return out;
     }
     if (k === "people")
@@ -841,15 +862,7 @@ export const createField = (
     const cxs = vw / 2;
     const cys = vh / 2;
     const paths = [new Path2D(), new Path2D(), new Path2D(), new Path2D(), new Path2D()];
-    // ASL hello, on a loop: rest at the temple, salute out and away, hold, come back
     const waving = shape === "hand" && ready;
-    const ph = (t % 3.6) / 3.6;
-    const sm = (u: number) => u * u * (3 - 2 * u);
-    const wv = ph < 0.2 ? 0 : ph < 0.45 ? sm((ph - 0.2) / 0.25) : ph < 0.72 ? 1 : ph < 0.95 ? 1 - sm((ph - 0.72) / 0.23) : 0;
-    const wc = Math.cos(wv * 0.55);
-    const ws = Math.sin(wv * 0.55);
-    const wox = wv * 0.4 * hello.s;
-    const woy = -wv * 0.15 * hello.s;
     for (let i = 0; i < N; i++) {
       if (galaxy) {
         // spiral inward; velocity is kept so the hand-off to the springs is seamless
@@ -872,14 +885,14 @@ export const createField = (
           const sw = SWAY[shape] + 1.1;
           let gx = tx[i * 2];
           let gy = tx[i * 2 + 1];
-          if (waving && i >= hello.from) {
-            const dx = gx - hello.ex;
-            const dy = gy - hello.ey;
-            gx = hello.ex + dx * wc - dy * ws + wox;
-            gy = hello.ey + dx * ws + dy * wc + woy;
+          if (waving) {
+            const p = pose(i, t);
+            gx = p.x;
+            gy = p.y;
+            hz[i] = p.z;
           }
-          ax = (gx + Math.sin(t * 0.7 + phase[i]) * sw - x[i]) * (waving && i >= hello.from ? k * 2.2 : k) * kmul[i];
-          ay = (gy + Math.cos(t * 0.55 + phase[i]) * sw - y[i]) * (waving && i >= hello.from ? k * 2.2 : k) * kmul[i];
+          ax = (gx + Math.sin(t * 0.7 + phase[i]) * sw - x[i]) * (waving ? k * 2.2 : k) * kmul[i];
+          ay = (gy + Math.cos(t * 0.55 + phase[i]) * sw - y[i]) * (waving ? k * 2.2 : k) * kmul[i];
         } else {
           // dust: a slow wander around a home spot anywhere on screen
           const hx = dustX[i] * vw + Math.sin(t * 0.15 + phase[i]) * 30;
@@ -919,7 +932,7 @@ export const createField = (
       }
       // speed lights a particle up, so swarms and shockwaves flare blue
       const sp = vx[i] * vx[i] + vy[i] * vy[i];
-      const b = pick[i] >= USE[shape] ? 4 : shape === "globe" && back[i] ? 3 : sp > 6 ? 1 : bucket[i];
+      const b = pick[i] >= USE[shape] ? 4 : (shape === "globe" && back[i]) || (waving && hz[i] < -0.08) ? 3 : sp > 6 ? 1 : bucket[i];
       const s = sp > 6 || (shape === "frames" && !wide) ? 2 : 1.5;
       paths[b].rect(x[i], y[i], s, s);
     }

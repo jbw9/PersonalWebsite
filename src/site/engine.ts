@@ -7,11 +7,17 @@ const WEIGHT = 500;
 
 // How bright each formation sits beside the content; mobile dims further since text overlaps it
 const DIM: Record<ShapeKey, number> = { globe: 1, cloud: 0.62, frames: 0.5, gpa: 0.6, people: 0.62, book: 0.6 };
+// Share of the particles each formation uses (the globe needs them all for small islands); the rest
+// drift as faint dust, so the side formations stay airy
+const USE: Record<ShapeKey, number> = { globe: 1, cloud: 0.4, frames: 0.75, gpa: 0.5, people: 0.5, book: 0.55 };
+// px of slow drift per particle, so a formation breathes instead of sitting rigid
+const SWAY: Record<ShapeKey, number> = { globe: 0, cloud: 5, frames: 1, gpa: 2.2, people: 2.2, book: 2 };
 
 // ── Globe ──
 const RAD = Math.PI / 180;
 const HOME_AT = { lat: 40.1164, lon: -88.2434 }; // Champaign, IL
 const NEXT_AT = { lat: 47.6062, lon: -122.3321 }; // Seattle, WA
+const BORN_AT = { lat: -6.9175, lon: 107.6191 }; // Bandung, Indonesia
 const TILT = 24 * RAD; // northern hemisphere leans toward the viewer
 const land = (lat: number, lon: number) => {
   const row = LAND[Math.min(179, Math.max(0, Math.floor(90 - lat)))];
@@ -91,7 +97,7 @@ export const createField = (
   let vh = window.innerHeight;
   let wide = vw >= 768;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const N = Math.round(Math.min(5200, Math.max(1600, (vw * vh) / 200)));
+  const N = Math.round(Math.min(9000, Math.max(2600, (vw * vh) / 115)));
 
   const x = new Float32Array(N);
   const y = new Float32Array(N);
@@ -101,6 +107,9 @@ export const createField = (
   const kmul = new Float32Array(N);
   const bucket = new Uint8Array(N);
   const phase = new Float32Array(N);
+  const pick = new Float32Array(N);
+  const dustX = new Float32Array(N);
+  const dustY = new Float32Array(N);
   // galaxy phase: polar coords on three spiral arms, wound in by differential rotation
   const rad = new Float32Array(N);
   const ang = new Float32Array(N);
@@ -147,6 +156,9 @@ export const createField = (
     const roll = Math.random();
     bucket[i] = roll < 0.8 ? 0 : roll < 0.94 ? 1 : 2;
     phase[i] = Math.random() * Math.PI * 2;
+    pick[i] = Math.random();
+    dustX[i] = Math.random();
+    dustY[i] = Math.random();
     fo[i] = Math.random() < 0.75 ? Math.random() * 2.5 : 2.5 + Math.pow(Math.random(), 2) * 7;
     if (opts.resume) {
       x[i] = Math.random() * vw;
@@ -166,14 +178,25 @@ export const createField = (
   let galaxyEnd = opts.reduce || opts.resume ? 0 : 0.95;
   let introDone = false;
   let globeVis = 0;
+  let globeHold = 0;
+  // resume: the first projected frame places every particle straight on its target
+  let snap = opts.resume;
 
   const region = () =>
     wide ? { x: vw * 0.6, y: vh * 0.2, w: vw * 0.34, h: vh * 0.56 } : { x: vw * 0.08, y: vh * 0.22, w: vw * 0.84, h: vh * 0.42 };
   // desktop: right of the hero text; phone: above it
   const globeBox = (): GlobeBox =>
     wide ? { cx: vw * 0.68, cy: vh * 0.43, r: Math.min(vh * 0.3, vw * 0.23) } : { cx: vw / 2, cy: vh * 0.27, r: Math.min(vw * 0.38, vh * 0.19) };
-  // sways around North America so both cities stay on the near side
-  const lon0 = (t: number) => (-100 + (opts.reduce ? 0 : 50 * Math.sin(t * 0.11))) * RAD;
+  // Spins west→east on its own; grab it to turn it, and a flick keeps its momentum before easing back
+  const SPIN = opts.reduce ? 0 : -0.1 * RAD; // per frame, ~6°/s
+  let rot = 0;
+  let spin = SPIN;
+  let drag: { x: number; v: number } | null = null;
+  const lon0 = () => -100 * RAD + rot;
+  const overGlobe = (px: number, py: number) => {
+    const g = globeBox();
+    return shape === "globe" && ready && Math.hypot(px - g.cx, py - g.cy) < g.r * 1.05;
+  };
 
   const build = (k: ShapeKey): Float32Array => {
     const R = region();
@@ -436,6 +459,44 @@ export const createField = (
       ctx.stroke();
       tag("SEATTLE · NEXT", sea.x - 10, sea.y, "right", `rgba(163,173,191,${0.8 * fade(sea.z)})`, fade(sea.z));
     }
+    const born = project(BORN_AT.lat * RAD, BORN_AT.lon * RAD, l0, g);
+    const fb = fade(born.z);
+    if (fb > 0) {
+      // 🇮🇩 on a pole planted in Bandung: it leans out with the globe's curve and waves
+      const ox = (born.x - g.cx) / g.r;
+      const lean = Math.atan2(ox * 0.5, 1);
+      const len = 34;
+      const topX = born.x + Math.sin(lean) * len;
+      const topY = born.y - Math.cos(lean) * len;
+      ctx.save();
+      ctx.globalAlpha = fb;
+      ctx.strokeStyle = "rgba(226,236,255,0.9)";
+      ctx.lineWidth = 1.8;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(born.x, born.y);
+      ctx.lineTo(topX, topY);
+      ctx.stroke();
+      const fw = 21;
+      const fh = 14;
+      const wave = (u: number) => Math.sin(t * 4 - u * 5) * 1.4 * u;
+      const band = (y0: number, y1: number, color: string) => {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        for (let u = 0; u <= 1.0001; u += 0.1) ctx.lineTo(topX + u * fw, topY + y0 + wave(u));
+        for (let u = 1; u >= -0.0001; u -= 0.1) ctx.lineTo(topX + u * fw, topY + y1 + wave(u));
+        ctx.closePath();
+        ctx.fill();
+      };
+      band(0, fh / 2, "#e8112d");
+      band(fh / 2, fh, "#f4f6fa");
+      ctx.fillStyle = "rgba(226,236,255,0.9)";
+      ctx.beginPath();
+      ctx.arc(born.x, born.y, 1.8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      tag("BANDUNG · HOMETOWN", topX + fw + 12, topY + fh / 2, "left", `rgba(226,236,255,${0.85 * fb})`, fb);
+    }
     const home = project(a.lat, a.lon, l0, g);
     const f = fade(home.z);
     if (f > 0) {
@@ -475,7 +536,11 @@ export const createField = (
 
     if (shape === "frames" && ready) trace();
     const g = globeBox();
-    const l0 = lon0(t);
+    if (!drag) {
+      spin += (SPIN - spin) * 0.04;
+      rot += spin;
+    }
+    const l0 = lon0();
     if (shape === "globe") {
       for (let i = 0; i < N; i++) {
         if (glat[i] !== glat[i]) {
@@ -490,6 +555,13 @@ export const createField = (
         back[i] = q.z < 0 ? 1 : 0;
       }
     }
+    if (snap && ready && shape === "globe") {
+      snap = false;
+      for (let i = 0; i < N; i++) {
+        x[i] = live[i * 2];
+        y[i] = live[i * 2 + 1];
+      }
+    }
     globeVis += ((shape === "globe" && ready && t > introEnd - 0.3 ? 1 : 0) - globeVis) * 0.05;
 
     const wantDim = (shape === "globe" || shape === "frames" || wide ? 1 : 0.4) * DIM[shape];
@@ -499,10 +571,12 @@ export const createField = (
     ctx.fillStyle = `rgba(7,11,20,${intro ? 0.2 : 0.38})`;
     ctx.fillRect(0, 0, vw, vh);
 
-    const R2 = 120 * 120;
+    const R2 = 80 * 80;
+    // once formed, the globe's dots ride the surface exactly instead of springing after it
+    globeHold = shape === "globe" && !intro ? Math.min(1, globeHold + 0.02) : 0;
     const cxs = vw / 2;
     const cys = vh / 2;
-    const paths = [new Path2D(), new Path2D(), new Path2D(), new Path2D()];
+    const paths = [new Path2D(), new Path2D(), new Path2D(), new Path2D(), new Path2D()];
     for (let i = 0; i < N; i++) {
       if (galaxy) {
         // spiral inward; velocity is kept so the hand-off to the springs is seamless
@@ -521,8 +595,17 @@ export const createField = (
       let ax = 0;
       let ay = 0;
       if (ready) {
-        ax = (tx[i * 2] + Math.sin(t * 1.3 + phase[i]) * 1.1 - x[i]) * k * kmul[i];
-        ay = (tx[i * 2 + 1] + Math.cos(t * 1.1 + phase[i]) * 1.1 - y[i]) * k * kmul[i];
+        if (pick[i] < USE[shape]) {
+          const sw = SWAY[shape] + 1.1;
+          ax = (tx[i * 2] + Math.sin(t * 0.7 + phase[i]) * sw - x[i]) * k * kmul[i];
+          ay = (tx[i * 2 + 1] + Math.cos(t * 0.55 + phase[i]) * sw - y[i]) * k * kmul[i];
+        } else {
+          // dust: a slow wander around a home spot anywhere on screen
+          const hx = dustX[i] * vw + Math.sin(t * 0.15 + phase[i]) * 30;
+          const hy = dustY[i] * vh + Math.cos(t * 0.12 + phase[i]) * 30;
+          ax = (hx - x[i]) * k * 0.25;
+          ay = (hy - y[i]) * k * 0.25;
+        }
       }
       if (swirl > 0) {
         const dx = x[i] - cxs;
@@ -532,13 +615,13 @@ export const createField = (
         ax += (-dy / d) * f - (dx / d) * f * 0.18;
         ay += (dx / d) * f - (dy / d) * f * 0.18;
       }
-      if (mouse.on) {
+      if (mouse.on && shape !== "globe") {
         const dx = x[i] - mouse.x;
         const dy = y[i] - mouse.y;
         const d2 = dx * dx + dy * dy;
         if (d2 < R2) {
           const d = Math.sqrt(d2) + 0.01;
-          const f = (1 - d / 120) * 2.4;
+          const f = (1 - d / 80) * 1.1;
           ax += (dx / d) * f;
           ay += (dy / d) * f;
         }
@@ -547,9 +630,15 @@ export const createField = (
       vy[i] = (vy[i] + ay) * damp;
       x[i] += vx[i];
       y[i] += vy[i];
+      if (globeHold > 0) {
+        x[i] += (tx[i * 2] - x[i]) * globeHold * 0.6;
+        y[i] += (tx[i * 2 + 1] - y[i]) * globeHold * 0.6;
+        vx[i] *= 1 - globeHold;
+        vy[i] *= 1 - globeHold;
+      }
       // speed lights a particle up, so swarms and shockwaves flare blue
       const sp = vx[i] * vx[i] + vy[i] * vy[i];
-      const b = shape === "globe" && back[i] ? 3 : sp > 6 ? 1 : bucket[i];
+      const b = pick[i] >= USE[shape] ? 4 : shape === "globe" && back[i] ? 3 : sp > 6 ? 1 : bucket[i];
       const s = sp > 6 || (shape === "frames" && !wide) ? 2 : 1.5;
       paths[b].rect(x[i], y[i], s, s);
     }
@@ -562,6 +651,8 @@ export const createField = (
     ctx.fill(paths[2]);
     ctx.fillStyle = COLORS[0] + 0.13 * dim + ")";
     ctx.fill(paths[3]);
+    ctx.fillStyle = COLORS[0] + 0.055 * dim + ")";
+    ctx.fill(paths[4]);
     ctx.globalCompositeOperation = "source-over";
     if (globeVis > 0.01) drawRoute(t, g, l0);
 
@@ -588,7 +679,27 @@ export const createField = (
   const onMove = (e: PointerEvent) => {
     mouse.x = e.clientX;
     mouse.y = e.clientY;
-    mouse.on = true;
+    if (drag) {
+      // the surface under the cursor follows it
+      const d = (e.clientX - drag.x) / globeBox().r;
+      rot -= d;
+      drag.v = -d;
+      drag.x = e.clientX;
+    }
+    mouse.on = !drag;
+    document.documentElement.style.cursor = drag ? "grabbing" : overGlobe(e.clientX, e.clientY) ? "grab" : "";
+  };
+  const onDown = (e: PointerEvent) => {
+    if (!overGlobe(e.clientX, e.clientY) || (e.target as HTMLElement).closest("a,button,input,textarea,[data-chrome]")) return;
+    drag = { x: e.clientX, v: 0 };
+    mouse.on = false;
+    document.documentElement.style.cursor = "grabbing";
+  };
+  const onUp = () => {
+    if (!drag) return;
+    spin = Math.max(-0.035, Math.min(0.035, drag.v));
+    drag = null;
+    document.documentElement.style.cursor = "";
   };
   const onLeave = () => (mouse.on = false);
 
@@ -599,6 +710,9 @@ export const createField = (
   };
 
   window.addEventListener("pointermove", onMove);
+  window.addEventListener("pointerdown", onDown);
+  window.addEventListener("pointerup", onUp);
+  window.addEventListener("pointercancel", onUp);
   document.documentElement.addEventListener("pointerleave", onLeave);
   window.addEventListener("resize", onResize);
   document.addEventListener("visibilitychange", onVis);
@@ -645,6 +759,8 @@ export const createField = (
       shape = k;
       if (ready) aim();
     },
+    // a press that grabs the globe shouldn't also fire a shockwave
+    overGlobe,
     setRunning(on: boolean) {
       running = on;
       start();
@@ -672,6 +788,10 @@ export const createField = (
       clearTimeout(resizeTimer);
       clearTimeout(pollTimer);
       window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerdown", onDown);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+      document.documentElement.style.cursor = "";
       document.documentElement.removeEventListener("pointerleave", onLeave);
       window.removeEventListener("resize", onResize);
       document.removeEventListener("visibilitychange", onVis);

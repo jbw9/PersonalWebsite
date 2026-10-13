@@ -70,6 +70,7 @@ const HeroCurve = ({ vw, done, reduce, onPick }: { vw: number; done: boolean; re
         <motion.button
           key={s.date + s.short}
           data-card
+          data-hero-node
           initial={false}
           animate={i < reached ? { scale: hover === i ? 1.18 : 1, opacity: 1 } : { scale: 0.2, opacity: 0 }}
           transition={{ type: "spring", stiffness: 420, damping: 18 }}

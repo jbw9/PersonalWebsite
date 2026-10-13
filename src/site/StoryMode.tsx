@@ -133,30 +133,41 @@ type Props = {
 
 // ── Desktop: vertical scroll scrubs sideways through the scenes ──
 
-const HorizontalRun = ({ vw, vh, navH, bar, progress, api, startAt, onOpen, onBack, onAsk }: Props) => {
-  const runRef = useRef<HTMLDivElement>(null);
-  const layout = useMemo(() => {
-    let x = vw;
-    const base = Math.min(Math.max(vw * 0.5, 540), 720);
-    const panels = scenes.map((s) => {
-      const w = Math.max(base, 120 + s.extras.length * 242);
-      const p = { x, w };
-      x += w;
-      return p;
-    });
-    // scroll offset that frames each scene (index -1 is the title card)
-    const W = x + vw * 0.7;
-    const anchors = [0, ...panels.map((p) => p.x + 40 - vw * 0.25), W - vw];
-    return { panels, W, anchors };
-  }, [vw]);
-
-  // the vibe line, as in cinema: lower third, a node per scene, drawn up to the playhead
+const runLayout = (vw: number) => {
+  let x = vw;
+  const base = Math.min(Math.max(vw * 0.5, 540), 720);
+  const panels = scenes.map((s) => {
+    const w = Math.max(base, 120 + s.extras.length * 242);
+    const p = { x, w };
+    x += w;
+    return p;
+  });
+  // scroll offset that frames each scene (index -1 is the title card)
+  const W = x + vw * 0.7;
+  const anchors = [0, ...panels.map((p) => p.x + 40 - vw * 0.25), W - vw];
+  return { panels, W, anchors };
+};
+// the vibe line, as in cinema: lower third, a node per scene
+const runPoints = (layout: ReturnType<typeof runLayout>, vh: number, bar: number) => {
   const stripTop = vh * 0.7;
   const stripBottom = vh - bar - 34;
-  const pts = useMemo(
-    () => scenes.map((sc, i) => ({ x: layout.panels[i].x + 70, y: stripBottom - (sc.vibe / 100) * (stripBottom - stripTop) })),
-    [layout, stripTop, stripBottom]
-  );
+  return scenes.map((sc, i) => ({ x: layout.panels[i].x + 70, y: stripBottom - (sc.vibe / 100) * (stripBottom - stripTop) }));
+};
+// Where each vibe-line node sits on screen when the film opens at scene `at`, so the hero's line can
+// morph straight into it
+export const storyNodes = (vw: number, vh: number, bar: number, at: number) => {
+  const layout = runLayout(vw);
+  const off = lerpAt(FS, layout.anchors, at);
+  return runPoints(layout, vh, bar).map((p) => ({ x: p.x - off, y: p.y }));
+};
+
+const HorizontalRun = ({ vw, vh, navH, bar, progress, api, startAt, onOpen, onBack, onAsk }: Props) => {
+  const runRef = useRef<HTMLDivElement>(null);
+  const layout = useMemo(() => runLayout(vw), [vw]);
+  // drawn up to the playhead
+  const stripTop = vh * 0.7;
+  const stripBottom = vh - bar - 34;
+  const pts = useMemo(() => runPoints(layout, vh, bar), [layout, vh, bar]);
   const pathD = useMemo(() => {
     const d = curvePath(pts);
     return `M ${pts[0].x - 400} ${pts[0].y} L ${pts[0].x} ${pts[0].y} ${d.slice(d.indexOf("C"))} L ${layout.W} ${pts[pts.length - 1].y}`;

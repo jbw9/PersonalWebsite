@@ -167,24 +167,16 @@ const Sections = ({ vw, navH, globe, done, fine, reduce, onOpen, onGuide, onAsk,
             className={`absolute flex flex-col ${wide ? "items-start text-left" : "inset-x-0 items-center text-center px-5"}`}
             style={wide ? { left: "7vw", width: Math.min(globe.cx - globe.r - vw * 0.07 - 32, 600), top: globe.cy, transform: "translateY(-50%)" } : { top: globe.cy + globe.r + 30 }}
           >
-            <motion.div initial={reduce ? false : { opacity: 0, y: 14 }} animate={show} transition={{ duration: 0.9, delay: 0.2 }} className="rx-mono text-[10px] md:text-[11px] text-[#8692a8] flex items-center gap-2.5">
-              <span className="relative w-1.5 h-1.5 rx-live">
-                <span className="absolute inset-0 rounded-full bg-[#7bd88f]" />
-              </span>
-              <span className="text-[#c2cbdb]">Champaign, IL</span>
-              <span className="tracking-[0.3em] text-[#5d687c]">····→</span>
-              <span>Seattle, WA</span>
-            </motion.div>
             <motion.h1
               initial={reduce ? false : { opacity: 0, y: 14 }}
               animate={show}
               transition={{ duration: 0.9, delay: 0.3 }}
-              className="mt-4 text-[2.5rem] md:text-[clamp(2.8rem,4.2vw,3.9rem)] font-light italic leading-[1.02]"
+              className="text-[2.5rem] md:text-[clamp(2.8rem,4.2vw,3.9rem)] font-light italic leading-[1.02]"
             >
               Hi, I'm Jonathan.
             </motion.h1>
             <motion.p initial={reduce ? false : { opacity: 0, y: 14 }} animate={show} transition={{ duration: 0.9, delay: 0.4 }} className="mt-3 text-[1.2rem] md:text-[1.45rem] italic text-[#c2cbdb] leading-snug max-w-xl">
-              CS &amp; Econs @ UIUC — building software that solves real problems.
+              CS &amp; Econs @ UIUC — building software that <span className="whitespace-nowrap">solves real problems.</span>
             </motion.p>
             <motion.div
               initial={reduce ? false : { opacity: 0, y: 14 }}

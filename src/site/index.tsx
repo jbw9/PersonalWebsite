@@ -5,7 +5,8 @@ import AskTerminal from "./ask/AskTerminal";
 import { createField, Field } from "./engine";
 import { GlobeBox, guidePath, projectPath, Resume, ShapeKey } from "./contracts";
 import Sections, { SECTIONS } from "./Sections";
-import Story, { StoryApi } from "./StoryMode";
+import Story, { StoryApi, storyNodes } from "./StoryMode";
+import Bridge, { Pt } from "./Bridge";
 import { scenes, pad } from "./timeline";
 import "./remix.css";
 
@@ -73,12 +74,14 @@ const Remix = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const field = useRef<Field | null>(null);
   const [globe, setGlobe] = useState<GlobeBox | null>(null);
-  const [done, setDone] = useState(reduce || !!resume);
-  const skipped = useRef(reduce || !!resume);
+  // no splash: the page opens on the settled globe
+  const done = true;
+  const skipped = useRef(true);
 
   const [mode, setMode] = useState<Mode>("sections");
-  const [curtain, setCurtain] = useState(false);
-  const [slate, setSlate] = useState("");
+  // the outgoing mode fades while the incoming one fades in; bridge = the vibe line morphing into Story
+  const [leaving, setLeaving] = useState(false);
+  const [bridge, setBridge] = useState<{ from: Pt[]; to: Pt[]; fadeIn: boolean } | null>(null);
   const busy = useRef(false);
   const storyApi = useRef<StoryApi | null>(null);
   const progress = useMotionValue(-1);
@@ -96,9 +99,9 @@ const Remix = () => {
   useEffect(() => {
     const f = createField(canvasRef.current as HTMLCanvasElement, {
       reduce,
-      resume: !!resume,
+      resume: true,
       onGlobe: setGlobe,
-      onIntroDone: () => setDone(true),
+      onIntroDone: () => {},
     });
     field.current = f;
     return () => {
@@ -120,32 +123,9 @@ const Remix = () => {
     return () => cancelAnimationFrame(id);
   }, [resume]);
 
-  // ── Intro: scroll locked, any input skips; the title settles into the hero as the bars open ──
   useEffect(() => {
-    if (done) {
-      field.current?.setShape("globe");
-      return;
-    }
-    const html = document.documentElement;
-    const prev = html.style.overflow;
-    html.style.overflow = "hidden";
-    const skip = () => {
-      skipped.current = true;
-      field.current?.skipIntro();
-      setDone(true);
-    };
-    window.addEventListener("pointerdown", skip);
-    window.addEventListener("keydown", skip);
-    window.addEventListener("wheel", skip, { passive: true });
-    window.addEventListener("touchstart", skip, { passive: true });
-    return () => {
-      html.style.overflow = prev;
-      window.removeEventListener("pointerdown", skip);
-      window.removeEventListener("keydown", skip);
-      window.removeEventListener("wheel", skip);
-      window.removeEventListener("touchstart", skip);
-    };
-  }, [done]);
+    field.current?.setShape("globe");
+  }, []);
 
   // ── Sections: the section crossing the middle of the screen picks the particle shape ──
   useEffect(() => {
@@ -171,14 +151,14 @@ const Remix = () => {
     if (!done || mode !== "sections") return;
     const shock = (e: PointerEvent) => {
       const t = e.target as HTMLElement;
-      if (!rootRef.current?.contains(t) || t.closest("a,button,input,textarea,[data-card],[data-chrome]")) return;
+      if (!rootRef.current?.contains(t) || t.closest("a,button,input,textarea,[data-card],[data-chrome]") || field.current?.overGlobe(e.clientX, e.clientY)) return;
       field.current?.shock(e.clientX, e.clientY);
     };
     window.addEventListener("pointerdown", shock);
     return () => window.removeEventListener("pointerdown", shock);
   }, [done, mode]);
 
-  // ── Mode switching: the bars close, the reel changes, the bars reopen ──
+  // ── Mode switching: a crossfade; into Story on desktop the hero's vibe line becomes the film's ──
   const switchMode = (to: Mode, opts: { at?: number; section?: string } = {}) => {
     if (busy.current) return;
     if (to === mode) {
@@ -189,7 +169,7 @@ const Remix = () => {
     const swap = () => {
       if (to === "story") {
         savedY.current = window.scrollY;
-        setStoryStart(opts.at ?? -1);
+        setStoryStart(opts.at ?? 0);
         field.current?.setRunning(false);
       } else {
         restore.current = opts.section ?? savedY.current;
@@ -199,13 +179,27 @@ const Remix = () => {
     };
     if (reduce) return swap();
     busy.current = true;
-    setSlate(to === "story" ? "🎬  story mode" : "sections");
-    setCurtain(true);
-    later(swap, 520);
+    if (to === "story" && wide) {
+      const to = storyNodes(vw, vh, 32, opts.at ?? 0);
+      let from = Array.from(document.querySelectorAll<HTMLElement>(".v-remix [data-hero-node]")).map((el) => {
+        const r = el.getBoundingClientRect();
+        return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+      });
+      // scrolled away from the hero: the line rises in from the foot of the screen instead
+      const seen = from.length === to.length && from.some((q) => q.y > 0 && q.y < vh);
+      if (from.length !== to.length) from = to.map((q) => ({ x: q.x, y: vh + 60 }));
+      else if (!seen) {
+        const dy = vh - 70 - Math.max(...from.map((q) => q.y));
+        from = from.map((q) => ({ x: q.x, y: q.y + dy }));
+      }
+      setBridge({ from, to, fadeIn: !seen });
+    }
+    setLeaving(true);
     later(() => {
-      setCurtain(false);
-      busy.current = false;
-    }, 820);
+      swap();
+      setLeaving(false);
+    }, 420);
+    later(() => (busy.current = false), 900);
   };
 
   // returning to Sections lands where you left off (or on the section you asked for)
@@ -266,15 +260,13 @@ const Remix = () => {
   const openProject = (id: string) => leave(projectPath(id), "projects");
   const openGuide = (id: string) => leave(guidePath(id), "guides");
 
-  const barIntro = Math.max(28, (vh - Math.max(vw / (wide ? 2.39 : 1.85), vh * 0.42)) / 2);
-  const closed = vh / 2 + 1;
   const story = mode === "story";
   // no bar in Sections; Story keeps its letterbox
-  const topH = curtain ? closed : done ? (story ? navH : 0) : barIntro;
+  const topH = story ? navH : 0;
   // the bottom bar only stays (thin, as in cinema) while the film runs sideways
   const botBar = story && wide ? 32 : 0;
-  const botH = curtain ? closed : done ? botBar : barIntro;
-  const barT = curtain ? { duration: 0.5, ease: [0.6, 0, 0.4, 1] as typeof EASE } : { duration: skipped.current || busy.current ? 0.55 : 1.0, ease: EASE };
+  const botH = botBar;
+  const barT = { duration: 0.8, ease: EASE };
   const cur = sceneIdx >= 0 ? scenes[sceneIdx] : null;
   // on phones the open terminal is full-screen and has its own close
   const chrome = done && (wide || !askOpen);
@@ -288,6 +280,7 @@ const Remix = () => {
       />
       <div className="rx-vignette z-[5]" />
 
+      <motion.div key={mode} initial={{ opacity: 0 }} animate={{ opacity: leaving ? 0 : 1 }} transition={{ duration: leaving ? 0.38 : 0.6 }}>
       {story ? (
         <Story
           vw={vw}
@@ -315,12 +308,13 @@ const Remix = () => {
           onPick={(i) => switchMode("story", { at: i })}
         />
       )}
+      </motion.div>
 
       {/* ── Letterbox, top: 2.39:1 during the titles; Story keeps a thin bar with its HUD ── */}
       <motion.header
         data-chrome
         className={`fixed top-0 inset-x-0 z-50 bg-black ${topH > 0 ? "border-b border-[#e6ecf5]/[0.07]" : ""}`}
-        initial={{ height: reduce || resume ? 0 : barIntro }}
+        initial={{ height: 0 }}
         animate={{ height: topH }}
         transition={barT}
       >
@@ -401,23 +395,12 @@ const Remix = () => {
       {/* ── Letterbox, bottom: opens away entirely in Sections ── */}
       <motion.div
         className={`fixed bottom-0 inset-x-0 z-50 bg-black ${botH > 0 ? "border-t border-[#e6ecf5]/[0.07]" : ""}`}
-        initial={{ height: reduce ? 0 : barIntro }}
+        initial={{ height: 0 }}
         animate={{ height: botH }}
         transition={barT}
       />
 
-      {/* the slate shown while the bars are shut */}
-      <motion.div
-        initial={false}
-        animate={{ opacity: curtain ? 1 : 0 }}
-        transition={{ duration: 0.25, delay: curtain ? 0.25 : 0 }}
-        className="fixed inset-x-0 z-[51] pointer-events-none flex items-center justify-center gap-4"
-        style={{ top: vh / 2 - 12, height: 24 }}
-      >
-        <span className="w-16 h-px bg-[#5b9cff]/50" />
-        <span className="rx-mono text-[11px] text-[#e6ecf5]">{slate}</span>
-        <span className="w-16 h-px bg-[#5b9cff]/50" />
-      </motion.div>
+      {bridge && <Bridge {...bridge} onDone={() => setBridge(null)} />}
 
       {/* ── Ask drawer: mounted once so the conversation survives closing ── */}
       <motion.div

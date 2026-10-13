@@ -19,7 +19,7 @@ export const FRAME_SELECTOR = ".v-remix [data-frame]";
 export type GlobeBox = { cx: number; cy: number; r: number };
 export interface FieldOptions {
   reduce: boolean;
-  // Coming back from a detail page: no intro, the particles gather straight into shape
+  // No intro: particles start in place on the globe
   resume: boolean;
   onGlobe: (b: GlobeBox) => void;
   onIntroDone: () => void;

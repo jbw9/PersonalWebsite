@@ -164,3 +164,17 @@
 - **Archive, don't delete.** Old versions moved to `src/archive/` and stay routable at
   `/archive/<slug>` (lazy chunks; visitors to `/` never download them). Beat: moving them outside
   `src/` (would rot uncompiled). Cost: they still typecheck and build with every change.
+
+## 2026-10-12 — Round 7: no splash, live globe, morphing Story transition
+- **No intro.** The page opens on the settled globe (engine `resume` snaps particles onto it on the
+  first frame); the letterbox only exists in Story. The galaxy/intro code in the engine is now unused.
+- **Globe spins and can be dragged** (horizontal only, flick momentum capped, eases back to a ~6°/s
+  spin). Once formed its particles are locked to the surface (no springs, no cursor repulsion),
+  because the springy trail read as jitter. Particle cap went 5200 → 9000 so islands show.
+- **Per-formation particle budget** (`USE`): side shapes use 40–55% of particles, the rest drift as
+  very faint dust. Beat: separate particle counts per shape (would break the morphs between shapes).
+- **Into Story = the hero's vibe line morphs into the film's** (`Bridge.tsx`): node positions are
+  interpolated from the hero DOM to `storyNodes()` (Story's own geometry, now exported), then hand
+  off. Toggle opens at scene 1 (the title card has no nodes on screen). Phones and the way back get
+  a plain crossfade. Replaced the bars-close curtain.
+- Bandung is drawn as a waving 🇮🇩 flag on a pole, on the canvas with the other markers.

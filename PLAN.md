@@ -349,3 +349,13 @@ done-when: tsc clean; every project and guide id renders with no console errors 
 ### Main thread (round 5)
 owns: `index.tsx`, `Sections.tsx`, `StoryMode.tsx`, `HeroCurve.tsx`, `remix.css`, `ask/**`,
 `src/data.ts` (YC logo + photo), `public/ycLogo.svg`.
+
+## Round 6 (2026-10-12, main thread) — promote + globe
+Jonathan: the big particle "JONATHAN" is too much; make the hero a particle globe with a glowing
+green dot on Champaign and an unlit dotted path to Seattle (next job). Make Director's Cut the main
+site; keep the other versions in a folder.
+- **Layout now:** `src/site/` is the live site at `/` (was `src/variants/remix`); its detail pages are
+  `/project/:id` and `/guide/:id`. `src/archive/` holds every earlier version (8 variants + the
+  original site as `original`) at `/archive/<slug>`, with the switcher pill shown only there.
+- Contracts updated: `ShapeKey` drops `title`/`name` for `globe`; `NameBox`/`onNameBox` became
+  `GlobeBox`/`onGlobe`; `HOME` is `/`. `src/site/world.ts` is a generated 1° land mask.

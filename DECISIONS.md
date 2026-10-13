@@ -152,3 +152,15 @@
   missing file just means no peek.
 - **Experience is the original site's git-graph timeline**, redrawn dark: one branch, nodes,
   current/upcoming roles glow, the line draws itself with scroll.
+
+## 2026-10-12 — Round 6: globe hero, promotion to `/`
+- **Globe land is a baked 1° bitmap** (`src/site/world.ts`, ~17KB, Natural Earth 110m via
+  world-atlas, rasterised once in Python) instead of a topojson/d3-geo dependency or fetching at
+  runtime. Cost: coastlines are 1° blocky, invisible at particle density. Antimeridian-crossing
+  rings had to be unwrapped (and Antarctica closed via the pole) or the far north rasterised empty.
+- **The globe sways ±50° around 100°W instead of spinning**, so Champaign and Seattle never go round
+  the back. Cost: you never see Asia face-on. The markers/arc are drawn on the canvas, not as
+  particles, so the green dot stays crisp and labelled.
+- **Archive, don't delete.** Old versions moved to `src/archive/` and stay routable at
+  `/archive/<slug>` (lazy chunks; visitors to `/` never download them). Beat: moving them outside
+  `src/` (would rot uncompiled). Cost: they still typecheck and build with every change.

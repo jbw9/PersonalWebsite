@@ -8,10 +8,10 @@ const here = new URL(".", import.meta.url).pathname;
 rmSync(`${here}.build`, { recursive: true, force: true });
 rmSync(`${here}dist`, { recursive: true, force: true });
 execSync(
-  `npx tsc ${here}../src/variants/remix/ask/knowledge.ts --outDir ${here}.build --module commonjs --target es2019 --esModuleInterop --skipLibCheck`,
+  `npx tsc ${here}../src/site/ask/knowledge.ts --outDir ${here}.build --module commonjs --target es2019 --esModuleInterop --skipLibCheck`,
   { stdio: "inherit" }
 );
-const { KB } = createRequire(import.meta.url)(`${here}.build/variants/remix/ask/knowledge.js`);
+const { KB } = createRequire(import.meta.url)(`${here}.build/site/ask/knowledge.js`);
 mkdirSync(`${here}dist`);
 writeFileSync(`${here}dist/kb.json`, JSON.stringify(KB));
 copyFileSync(`${here}handler.mjs`, `${here}dist/handler.mjs`);

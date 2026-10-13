@@ -1,16 +1,15 @@
 # STATUS
 
 ## Now
-Alfred is live: Lambda `alfred` (us-east-1, account 010438509327) answering with Claude Haiku 4.5
-on Bedrock from the site KB. Verified with curl + from a browser on 127.0.0.1:3001; prod build bakes
-the URL in. Dev server must be restarted to read `.env.local`.
+Director's Cut is the live site at `/` (`src/site/`); old versions at `/archive/<slug>`
+(`src/archive/`). Hero is a particle globe: green Champaign dot, dashed arc to Seattle. demo.sh green.
 
 ## Left
+- Drop the YC AI Startup School photo at `public/yc-ai-sus.jpg` (hover peek appears once it exists).
 - Jonathan tries it by hand (drag-scrub on the strip, touch, real fonts on his machine).
 - Fill `EXTRA_FACTS` in `src/variants/remix/ask/knowledge.ts` with facts about himself.
 - After editing data files or `EXTRA_FACTS`: rerun `alfred/deploy.sh` (KB is baked into the Lambda).
-- Promote the winner into `App.tsx`; delete `src/variants/` + the 2 lines in `index.tsx`; fix the two
-  slash-less companyIcons in `data.ts`.
+- Fix the two slash-less companyIcons in `data.ts`.
 
 ## Bit us
 - Port 3000 is the TaxBuddy app; this site's dev server is on `127.0.0.1:3001`.

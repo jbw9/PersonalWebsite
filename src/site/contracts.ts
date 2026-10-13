@@ -1,0 +1,34 @@
+// Shared between the remix page shell, the particle engine, the Ask terminal and the detail pages.
+
+export interface AskTerminalProps {
+  // The drawer holding the terminal is open; focus the prompt each time this flips to true
+  active: boolean;
+  // Esc, `/exit` or `exit` inside the terminal
+  onClose: () => void;
+}
+
+// ── Particle formations ──
+// globe = hero (Champaign now, Seattle next), cloud = experience (AWS), frames = projects,
+// gpa = school, people = involvement, book = guides.
+// "frames": particles trace the perimeters of every element matching FRAME_SELECTOR, following
+// them live as the page scrolls; the attribute's value is that element's corner radius in px.
+export type ShapeKey = "globe" | "cloud" | "frames" | "gpa" | "people" | "book";
+export const FRAME_SELECTOR = ".v-remix [data-frame]";
+
+// Where the globe sits in the viewport, so the hero text can lay out around it
+export type GlobeBox = { cx: number; cy: number; r: number };
+export interface FieldOptions {
+  reduce: boolean;
+  // Coming back from a detail page: no intro, the particles gather straight into shape
+  resume: boolean;
+  onGlobe: (b: GlobeBox) => void;
+  onIntroDone: () => void;
+}
+
+// ── Detail pages ──
+export const HOME = "/";
+export const projectPath = (id: string) => `/project/${id}`;
+export const guidePath = (id: string) => `/guide/${id}`;
+// Router location state the remix reads on mount: skip the intro and land where the visitor left
+// off (y) or on a section (one of SECTIONS' ids)
+export type Resume = { resume: { y?: number; section?: string } };

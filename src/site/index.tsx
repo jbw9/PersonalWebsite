@@ -312,7 +312,6 @@ const Remix = () => {
           progress={progress}
           api={storyApi}
           startAt={storyStart}
-          onOpen={openProject}
           onBack={() => switchMode("sections")}
           onAsk={openAsk}
         />

@@ -1,5 +1,3 @@
-import { experiences, education, involvements } from "../data";
-import { projects } from "../data/projects";
 import { milestones, JOURNEY_START } from "../data/journey";
 
 // ── Dates ──
@@ -25,9 +23,8 @@ export const fmtTerm = (iso: string) => {
 };
 export const pad = (n: number) => String(n).padStart(2, "0");
 
-// ── Story: every experience / school / club / project is attached to the scene it happened in ──
+// ── Story ──
 
-export type Extra = { kind: "work" | "school" | "club" | "project"; title: string; sub: string; period: string; img?: string; id?: string };
 const t0 = new Date(JOURNEY_START).getTime();
 export const scenes = milestones.map((m, i) => ({
   ...m,
@@ -35,23 +32,8 @@ export const scenes = milestones.map((m, i) => ({
   time: new Date(m.date).getTime(),
   week: Math.round((new Date(m.date).getTime() - t0) / (7 * DAY)),
   year: new Date(m.date).getFullYear(),
-  extras: [] as Extra[],
 }));
 export type Scene = (typeof scenes)[number];
-const nearest = (t: number) => scenes.reduce((best, s) => (Math.abs(s.time - t) < Math.abs(best.time - t) ? s : best), scenes[0]);
-education.forEach((e) =>
-  nearest(periodRange(e.period)[0]).extras.push({ kind: "school", title: e.degree, sub: e.gpa ? `${e.school} · GPA ${e.gpa}` : e.school, period: e.period, img: e.image })
-);
-experiences.forEach((e) =>
-  nearest(periodRange(e.period)[0]).extras.push({ kind: "work", title: e.title, sub: e.company, period: e.period, img: e.companyIcon.replace(/^\/?/, "/") })
-);
-involvements.forEach((v) => nearest(periodRange(v.period)[0]).extras.push({ kind: "club", title: v.role, sub: v.organization, period: v.period, img: v.image }));
-projects.forEach((p) => {
-  const hit = scenes.find((s) => `${s.title} ${s.short}`.toLowerCase().includes(p.title.toLowerCase()));
-  if (hit) hit.extras.push({ kind: "project", title: p.title, sub: p.description, period: "", img: p.image || p.screenshots?.[0], id: p.id });
-});
-export const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
-export const firstYear = scenes[0].year;
 
 // Piecewise-linear lookup: xs[i] at keys[i]
 export const lerpAt = (keys: number[], xs: number[], k: number) => {

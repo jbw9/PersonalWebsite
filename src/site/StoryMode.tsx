@@ -1,6 +1,6 @@
 import { MutableRefObject, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { motion, MotionValue, useMotionValue, useMotionValueEvent, useScroll, useSpring, useTransform } from "framer-motion";
-import { scenes, Scene, Extra, ROMAN, firstYear, pad, fmtTerm, lerpAt, curveY, curvePath } from "./timeline";
+import { scenes, Scene, pad, fmtTerm, lerpAt, curveY, curvePath } from "./timeline";
 
 export type StoryApi = { seek: (f: number) => void };
 
@@ -11,51 +11,9 @@ const FS = range(0, scenes.length);
 
 // ── Scene pieces (from cinema) ──
 
-const ExtraCard = ({ e, onOpen }: { e: Extra; onOpen: (id: string) => void }) => {
-  const isProject = e.kind === "project";
-  const label = { work: "work", school: "school", club: "involvement", project: "project" }[e.kind];
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 24, filter: "blur(6px)" }}
-      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-      viewport={{ once: true, amount: 0.5 }}
-      transition={{ duration: 0.9, ease: [0.2, 0.7, 0.2, 1] }}
-      onClick={isProject && e.id ? () => onOpen(e.id as string) : undefined}
-      className={`w-full md:w-[230px] shrink-0 rounded-2xl overflow-hidden border border-[#e6ecf5]/15 bg-black/40 backdrop-blur-sm ${
-        isProject ? "cursor-pointer rx-poster hover:border-[#5b9cff]/70 transition-colors" : ""
-      }`}
-    >
-      {isProject && e.img && (
-        <div className="rx-still aspect-[16/8] bg-black">
-          <img src={e.img} alt={e.title} className="w-full h-full object-cover object-top" />
-        </div>
-      )}
-      <div className="p-3.5">
-        <div className="rx-mono text-[9px] text-[#5b9cff] mb-1.5 flex justify-between gap-2">
-          <span>{label}</span>
-          <span className="text-[#8692a8] truncate">{isProject ? "view →" : e.period}</span>
-        </div>
-        <div className="flex items-start gap-2.5">
-          {!isProject && e.img && <img src={e.img} alt="" className="w-7 h-7 rounded-lg object-contain bg-white/90 p-0.5 shrink-0 mt-0.5" />}
-          <div className="min-w-0">
-            <div className="text-[17px] leading-tight italic">{e.title}</div>
-            <div className={`text-[13px] text-[#8692a8] leading-snug mt-0.5 ${isProject ? "line-clamp-2" : ""}`}>{e.sub}</div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
-const SceneText = ({ s, onOpen, wide }: { s: Scene; onOpen: (id: string) => void; wide: boolean }) => {
-  const newAct = s.n === 1 || scenes[s.n - 2].year !== s.year;
+const SceneText = ({ s, wide }: { s: Scene; wide: boolean }) => {
   return (
     <div>
-      {newAct && (
-        <div className="rx-mono text-[11px] text-[#5b9cff] mb-3">
-          Act {ROMAN[s.year - firstYear]} — {s.year}
-        </div>
-      )}
       <div className="rx-mono text-[11px] text-[#8692a8] mb-4">
         {fmtTerm(s.date)}
       </div>
@@ -69,13 +27,6 @@ const SceneText = ({ s, onOpen, wide }: { s: Scene; onOpen: (id: string) => void
         {s.title}
       </motion.h3>
       <p className={`mt-4 text-[#c2cbdb] leading-snug ${wide ? "text-[1.2rem] max-w-[440px]" : "text-[1.15rem]"}`}>{s.body}</p>
-      {s.extras.length > 0 && (
-        <div className={`mt-6 flex gap-3 ${wide ? "" : "flex-col"}`}>
-          {s.extras.map((e) => (
-            <ExtraCard key={e.kind + e.title + e.sub} e={e} onOpen={onOpen} />
-          ))}
-        </div>
-      )}
     </div>
   );
 };
@@ -103,7 +54,6 @@ type Props = {
   progress: MotionValue<number>;
   api: MutableRefObject<StoryApi | null>;
   startAt: number;
-  onOpen: (id: string) => void;
   onBack: () => void;
   onAsk: () => void;
 };
@@ -114,10 +64,9 @@ const runLayout = (vw: number) => {
   // the first scene sits where every scene is framed, so the film opens on it
   let x = vw * 0.25 - 40;
   const base = Math.min(Math.max(vw * 0.5, 540), 720);
-  const panels = scenes.map((s) => {
-    const w = Math.max(base, 120 + s.extras.length * 242);
-    const p = { x, w };
-    x += w;
+  const panels = scenes.map(() => {
+    const p = { x, w: base };
+    x += base;
     return p;
   });
   // scroll offset that frames each scene
@@ -139,7 +88,7 @@ export const storyNodes = (vw: number, vh: number, bar: number, at: number) => {
   return runPoints(layout, vh, bar).map((p) => ({ x: p.x - off, y: p.y }));
 };
 
-const HorizontalRun = ({ vw, vh, navH, bar, progress, api, startAt, onOpen, onBack, onAsk }: Props) => {
+const HorizontalRun = ({ vw, vh, navH, bar, progress, api, startAt, onBack, onAsk }: Props) => {
   const runRef = useRef<HTMLDivElement>(null);
   const layout = useMemo(() => runLayout(vw), [vw]);
   // drawn up to the playhead
@@ -222,7 +171,7 @@ const HorizontalRun = ({ vw, vh, navH, bar, progress, api, startAt, onOpen, onBa
         <motion.div style={{ x: trackX, width: layout.W }} className="absolute inset-y-0 left-0">
           {scenes.map((sc, i) => (
             <div key={sc.date + sc.short} className="absolute" style={{ left: layout.panels[i].x + 40, top: navH + vh * 0.07, width: layout.panels[i].w - 60 }}>
-              <SceneText s={sc} onOpen={onOpen} wide />
+              <SceneText s={sc} wide />
             </div>
           ))}
           <div className="absolute flex items-center justify-center" style={{ left: layout.W - vw * 0.7, width: vw * 0.7, top: navH, bottom: vh * 0.3 }}>
@@ -288,7 +237,7 @@ const HorizontalRun = ({ vw, vh, navH, bar, progress, api, startAt, onOpen, onBa
 
 // ── Mobile: the same story, top to bottom ──
 
-const MobileRun = ({ vh, navH, progress, api, startAt, onOpen, onBack, onAsk }: Props) => {
+const MobileRun = ({ vh, navH, progress, api, startAt, onBack, onAsk }: Props) => {
   const refs = useRef<(HTMLDivElement | null)[]>([]);
   const anchors = () => [
     // page offsets: offsetTop would be relative to the positioned scene list
@@ -320,7 +269,7 @@ const MobileRun = ({ vh, navH, progress, api, startAt, onOpen, onBack, onAsk }: 
             <div className="text-[5.5rem] leading-none rx-outline absolute right-0 top-4 select-none" aria-hidden>
               {pad(sc.n)}
             </div>
-            <SceneText s={sc} onOpen={onOpen} wide={false} />
+            <SceneText s={sc} wide={false} />
           </div>
         ))}
       </div>

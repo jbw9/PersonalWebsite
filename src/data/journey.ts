@@ -15,8 +15,8 @@ export const milestones: Milestone[] = [
     date: "2023-08-21",
     emoji: "💼",
     short: "finance major",
-    title: "Week 0: showed up as a finance major",
-    body: "Arrived at UIUC to study finance. Coding was not on the menu.",
+    title: "Came to UIUC as a finance major",
+    body: "Coding was not on the menu.",
     vibe: 18,
   },
   {
@@ -227,6 +227,15 @@ export const milestones: Milestone[] = [
     title: "SDE intern at AWS",
     body: "Worked on Amazon MSK (Managed Streaming for Apache Kafka). Very challenging, and I learned a lot from much smarter people. Started building TaxBuddy on the side.",
     vibe: 90,
+  },
+  {
+    date: "2026-08-17",
+    emoji: "🗽",
+    short: "Rilla onsite",
+    title: "Rilla Voice final round in NYC",
+    body: "Got flown out to NYC for a 6-hour final round with the CTO: build something from scratch to a working demo with Claude Code. Awesome office, team and company. I didn't do well, because I couldn't fully understand all the code I'd generated. Then I realized a lot of people have the same problem.",
+    vibe: 52,
+    dip: true,
   },
   {
     date: new Date().toISOString().slice(0, 10),

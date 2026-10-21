@@ -45,6 +45,9 @@ const HeroCurve = ({ vw, done, reduce, onPick }: { vw: number; done: boolean; re
   const penO = useTransform(pen, (x) => (x > 2 && x < last.x - 6 ? 1 : 0));
 
   const [hover, setHover] = useState<number | null>(null);
+  // anywhere on the graph (not just the dots) opens story mode at the nearest scene
+  const [cursor, setCursor] = useState<number | null>(null);
+  const nearest = (x: number) => pts.reduce((b, p, i) => (Math.abs(p.x - x) < Math.abs(pts[b].x - x) ? i : b), 0);
   const hs = hover === null ? null : scenes[hover];
   const capX = hover === null ? 0 : wide ? Math.min(W - 150, Math.max(150, pts[hover].x)) : pts[hover].x;
 
@@ -65,6 +68,14 @@ const HeroCurve = ({ vw, done, reduce, onPick }: { vw: number; done: boolean; re
         <path d={d} fill="none" stroke="url(#rx-hero-line)" strokeWidth={2} clipPath="url(#rx-hero-drawn)" />
         <motion.circle cx={pen} cy={penY} r={5} fill="#bcd7ff" style={{ opacity: penO, filter: "drop-shadow(0 0 8px rgba(91,156,255,0.9))" }} />
       </svg>
+
+      <button
+        aria-label="Open story mode"
+        className="absolute inset-0 cursor-pointer"
+        onPointerMove={(e) => e.pointerType === "mouse" && setCursor(e.clientX - e.currentTarget.getBoundingClientRect().left)}
+        onPointerLeave={() => setCursor(null)}
+        onClick={(e) => onPick(nearest(e.clientX - e.currentTarget.getBoundingClientRect().left))}
+      />
 
       {scenes.map((s, i) => (
         <motion.button
@@ -92,6 +103,15 @@ const HeroCurve = ({ vw, done, reduce, onPick }: { vw: number; done: boolean; re
         </motion.button>
       ))}
 
+      {wide && cursor !== null && hover === null && reached > 0 && (
+        <div
+          className="absolute pointer-events-none -translate-x-1/2 -translate-y-full rx-btn whitespace-nowrap !py-1.5 !px-3.5 !text-[11px]"
+          style={{ left: Math.min(W - 110, Math.max(110, cursor)), top: curveY(pts, cursor) - 18 }}
+        >
+          🎬 Open story mode →
+        </div>
+      )}
+
       {hs && (
         <div className="absolute pointer-events-none -translate-x-1/2 -translate-y-full text-center w-[280px] pb-1" style={{ left: capX, top: pts[hover as number].y - 30 }}>
           <div className="rx-mono text-[9px] text-[#8692a8]">
@@ -111,8 +131,15 @@ const HeroCurve = ({ vw, done, reduce, onPick }: { vw: number; done: boolean; re
       {art}
     </div>
   ) : (
-    <div ref={scroller} className="overflow-x-auto overflow-y-hidden" style={{ WebkitMaskImage: FADE, maskImage: FADE, scrollbarWidth: "none" }}>
-      {art}
+    <div>
+      <div ref={scroller} className="overflow-x-auto overflow-y-hidden" style={{ WebkitMaskImage: FADE, maskImage: FADE, scrollbarWidth: "none" }}>
+        {art}
+      </div>
+      <div className="flex justify-center">
+        <button onClick={() => onPick(0)} className="rx-btn-ghost !py-1.5 !px-3 !text-[11px] rx-mono">
+          🎬 Open story mode
+        </button>
+      </div>
     </div>
   );
 };

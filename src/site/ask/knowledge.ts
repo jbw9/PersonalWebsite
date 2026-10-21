@@ -13,12 +13,18 @@ export interface KBEntry {
 // Hand-written facts that aren't in the data files. Answers can quote these verbatim, so only
 // add things that are true. Words like "favorite", "hobby" or "live" only ever match entries here.
 export const EXTRA_FACTS: KBEntry[] = [
-  // {
-  //   path: "kb/personal/hobbies.md",
-  //   title: "Hobbies",
-  //   text: "Favorite food: <fill in>\nOutside of code he likes <fill in>",
-  //   tags: ["hobby", "fun", "personal", "free time"],
-  // },
+  {
+    path: "kb/personal/hobbies.md",
+    title: "Outside of code",
+    text: "Jonathan is from Bandung, Indonesia.\nHe loves watching movies.\nFavorite food: Mexican food.\nHe used to bowl competitively (see bowling).",
+    tags: ["hobby", "hobbies", "fun", "personal", "free time", "movies", "food", "favorite", "hometown", "from", "indonesia", "bandung"],
+  },
+  {
+    path: "kb/personal/bowling.md",
+    title: "Competitive bowling",
+    text: "Jonathan bowled competitively starting around 2018. In 2 years he went from zero experience to winning the national junior championships in Indonesia.\nHe then competed in the biggest international junior championship, in Malaysia, against junior bowlers from around the world. Qualifying was brutal (he had to average about 240 just to qualify); he qualified 2nd out of roughly 400 bowlers and finished 7th in the final.\nBowling might seem useless now, but it taught him a lot about life: perseverance, effort over talent, learning from the best, and never giving up. He owes a lot to his coach, Thomas Tan.",
+    tags: ["bowling", "sport", "sports", "hobby", "competition", "championship", "national", "malaysia", "coach", "perseverance", "lesson", "achievement", "personal", "fun"],
+  },
 ];
 
 // Shown on the live site's hero and contact buttons, not stored in the data files

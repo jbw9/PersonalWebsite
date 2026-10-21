@@ -1,6 +1,6 @@
 import { milestones, Milestone } from "../../data/journey";
 
-export type Mark = "flag" | "gedungsate" | "blocki" | "bank" | "laptop" | "heart" | "tulip" | "hand" | "monas" | "card" | "guitar" | "seattle";
+export type Mark = "flag" | "gedungsate" | "blocki" | "bank" | "laptop" | "heart" | "tulip" | "hand" | "mbs" | "card" | "guitar" | "seattle";
 export type GateInfo = { short: string; name: string; place?: string; logo?: string; marks: Mark[] };
 
 // The big chapters: each is a gate you fly through, with its monuments beside the path
@@ -9,7 +9,7 @@ export const GATES: GateInfo[] = [
   { short: "fell in love", name: "Falling for CS", place: "Champaign, IL", marks: ["laptop", "heart"] },
   { short: "iVenture + Tulip", name: "Tulip × iVenture", logo: "/tulip.png", marks: ["tulip"] },
   { short: "We Hear You", name: "We Hear You", logo: "/wehearyouLogo.png", marks: ["hand"] },
-  { short: "Kredivo", name: "Kredivo", logo: "/kredivoLogo.png", marks: ["monas", "card"] },
+  { short: "Kredivo", name: "Kredivo", logo: "/kredivoLogo.png", place: "Singapore", marks: ["mbs", "card"] },
   { short: "Massive", name: "Massive", logo: "/massiveLogo.png", marks: ["guitar"] },
   { short: "AWS", name: "Amazon Web Services", place: "Seattle, WA", logo: "/awsLogo.png", marks: ["seattle"] },
 ];
@@ -18,12 +18,12 @@ export const NOW = milestones[milestones.length - 1];
 
 // ── The route: always east, the long way round ──
 // Three stretches between real places, in eastward-unwrapped longitude: Bandung → Champaign over the
-// South Pacific, Champaign → Jakarta over the Atlantic and Asia, Jakarta → Seattle over the North
+// South Pacific, Champaign → Singapore over the Atlantic and Asia, Singapore → Seattle over the North
 // Pacific. `bow` bends each stretch north or south so the two Pacific crossings never overlap.
 const SEGS = [
   { lon: [107.6, 271.8], lat: [-6.9, 40.1], bow: -22, ends: "finance major" },
-  { lon: [271.8, 466.8], lat: [40.1, -6.2], bow: 12, ends: "Kredivo" },
-  { lon: [466.8, 597.7], lat: [-6.2, 47.6], bow: 20, ends: "AWS" },
+  { lon: [271.8, 463.8], lat: [40.1, 1.35], bow: 12, ends: "Kredivo" },
+  { lon: [463.8, 597.7], lat: [1.35, 47.6], bow: 20, ends: "AWS" },
 ];
 const smooth = (t: number) => t * t * (3 - 2 * t);
 export const geo = (seg: number, t: number) => {

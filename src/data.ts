@@ -49,7 +49,7 @@ export const experiences = [
     summary: "Building on Amazon MSK, managed Apache Kafka",
     tags: ["Java", "Apache Kafka", "AWS"],
     details:
-      "Interned on Amazon MSK (Managed Streaming for Apache Kafka), the service that runs and scales Kafka clusters for AWS customers, at a scale I'm still wrapping my head around. The internship turned into a full-time offer.",
+      "Interned on Amazon MSK (Managed Streaming for Apache Kafka), the service that runs and scales Kafka clusters for AWS customers. Very challenging, and I learned a lot from much smarter people. It turned into a full-time return offer in Sep 2026.",
   },
   {
     title: "Software Engineer Intern",
@@ -61,7 +61,7 @@ export const experiences = [
     summary: "Predicting an artist's yearly revenue from 130+ signals",
     tags: ["Python", "Machine learning", "Data modeling"],
     details:
-      "Massive works with music artists. I built the model behind one of its core numbers: an estimate of an artist's annual revenue, predicted from 130+ parameters.",
+      "I developed an algorithm to predict an artist's annual revenue from 130+ parameters.",
   },
   {
     title: "Software Engineer Intern",
@@ -70,34 +70,34 @@ export const experiences = [
     period: "May 2025 - Jul 2025",
     description:
       "Developing an MCP server, and integrating it with the company's LLM and customer support system",
-    summary: "An MCP server connecting a fintech's LLM to real customer data",
-    tags: ["MCP", "LLMs", "Python"],
+    summary: "MCP servers, agents and a support chatbot for a fintech's LLM",
+    tags: ["MCP", "LangChain", "LangGraph"],
     details:
-      "Kredivo is a buy-now-pay-later and credit fintech in Southeast Asia. I built a Model Context Protocol (MCP) server so the company's LLM could use internal tools, and wired it into the customer support system. The finance major ended up building for a fintech.",
+      "Kredivo is a buy-now-pay-later and credit fintech in Southeast Asia. I built a Model Context Protocol (MCP) server so the company's LLM could use internal tools, and worked on agents and the customer support chatbot with LangChain and LangGraph.",
   },
   {
     title: "Co-Founder & CTO",
     company: "Tulip",
     companyIcon: "/tulip.png",
-    period: "Jan 2024 - May 2025",
+    period: "May 2024 - May 2025",
     description:
       "Led development of Tulip's mobile app, beta website and Automated Market Maker (AMM) algorithm.",
-    summary: "Co-founded a prediction market and built its app and pricing engine",
+    summary: "Co-founded a $1 real estate investing app and led its engineering",
     tags: ["React Native", "TypeScript", "AMM"],
     details:
-      "Tulip is a prediction market. As co-founder and CTO I led the mobile app, the beta website, and the Automated Market Maker (AMM) algorithm that prices every market. Production code with real users, overnight.",
+      "Tulip lets anyone invest in real estate with just $1, backed by the iVenture Accelerator (cohort 10). I joined as a software engineer intern in Jan 2024 and was promoted to co-founder & CTO in May 2024, leading the mobile app, the beta website, and the Automated Market Maker (AMM) algorithm.",
     website: "https://www.tulip.markets/",
   },
   {
     title: "Founder in Residence (iV10)",
     company: "Iventure Accelerator",
     companyIcon: "/iventure_logo.png",
-    period: "Jan 2024 - May 2025",
+    period: "May 2024 - May 2025",
     description: "Building Tulip",
     summary: "Building Tulip in the iV10 founder cohort",
     tags: ["Startups", "Product", "Fundraising"],
     details:
-      "Joined iVenture Accelerator's iV10 cohort as a Founder in Residence to build Tulip: mentorship, investor pitches, and learning to ship before it's perfect.",
+      "Tulip was part of iVenture Accelerator's 10th cohort (iV10), with $10k in non-dilutive funding. I was a Founder in Residence while building it.",
   },
   {
     title: "Software Engineer Intern",
@@ -109,17 +109,17 @@ export const experiences = [
     summary: "Real-time sign language to English, on an Android phone",
     tags: ["Android", "Machine learning", "Computer vision"],
     details:
-      "My first software internship. I built an Android app that translates American Sign Language into English in real time from the camera, and tuned the machine learning behind the translation to make it faster and more accurate.",
+      "I developed a real-time American Sign Language to English Android app, and optimized the translation system through machine learning.",
   },
 ];
 
 export const education = [
   {
-    degree: "Bachelor of Science in Computer Science",
+    degree: "Bachelor of Science in Computer Science + Economics",
     school: "University of Illinois at Urbana - Champaign",
     image: "https://brand.illinois.edu/wp-content/uploads/2024/02/Block-I-orange-blue-background.png",
-    period: "Aug 2023 - May 2027",
-    gpa: "3.90/4.0",
+    period: "Aug 2023 - Dec 2026",
+    gpa: "3.88/4.0",
     relevantCourses: [
       "Data Structures & Algorithms",
       "Database Systems",

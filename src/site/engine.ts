@@ -335,8 +335,8 @@ export const createField = (
     const cy = R.y + R.h / 2;
     if (k === "gpa")
       return sample(vw, vh, N, (c) => {
-        const size = fitText(c, "3.90", R.w * 0.9, R.h * 0.62, 0.04);
-        drawTracked(c, "3.90", cx, cy, size, 0.04);
+        const size = fitText(c, "3.88", R.w * 0.9, R.h * 0.62, 0.04);
+        drawTracked(c, "3.88", cx, cy, size, 0.04);
       });
     if (k === "cloud")
       return sample(vw, vh, N, (c) => {
@@ -366,7 +366,7 @@ export const createField = (
         });
         c.fillRect(cx - 1.15 * u, cy + 1.03 * u - 1.5, 2.1 * u, 3);
       });
-    // Tulip: a prediction market, so a candlestick chart climbing to the right
+    // Tulip: an investing app, so a candlestick chart climbing to the right
     if (k === "chart")
       return sample(vw, vh, N, (c) => {
         const W = Math.min(R.w * 0.92, R.h * 1.1);
@@ -1042,7 +1042,7 @@ export const createField = (
     if (!fonts) return resolve();
     const poll = () => {
       const face = Array.from(fonts as Iterable<FontFace>).some((f) => f.family.replace(/"/g, "") === "Cormorant Garamond");
-      if (face) fonts.load(`${WEIGHT} 100px ${FONT}`, "3.90").then(() => resolve(), () => resolve());
+      if (face) fonts.load(`${WEIGHT} 100px ${FONT}`, "3.88").then(() => resolve(), () => resolve());
       else pollTimer = setTimeout(poll, 60);
     };
     poll();

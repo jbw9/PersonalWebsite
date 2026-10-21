@@ -250,15 +250,13 @@ const monument = (mark: Mark, ticks: Tick[]) => {
     const thumb = add(g, box(0.38, 1.3, 0.46), skin, -1.15, 2.05, 0);
     thumb.rotation.z = 0.9;
     g.scale.setScalar(1.4);
-  } else if (mark === "monas") {
-    // Jakarta's National Monument: white obelisk, gold flame
-    const white = std("#f2efe6");
-    add(g, box(4, 0.7, 4), white, 0, 0.35, 0);
-    add(g, box(2.4, 0.6, 2.4), white, 0, 1, 0);
-    const ob = add(g, cyl(0.3, 0.6, 6.5, 4), white, 0, 4.55, 0);
-    ob.rotation.y = Math.PI / 4;
-    add(g, box(1.3, 0.25, 1.3), white, 0, 7.9, 0);
-    add(g, new THREE.ConeGeometry(0.42, 1.2, 8), std("#e8c15a", { emissive: "#e8a11a", emissiveIntensity: 0.6, metalness: 0.5 }), 0, 8.6, 0);
+  } else if (mark === "mbs") {
+    // Singapore's Marina Bay Sands: three towers, the SkyPark laid across the top
+    const tower = std("#dfe3e8", { roughness: 0.4, metalness: 0.3 });
+    for (const x of [-1.6, 0, 1.6]) add(g, box(0.9, 6.5, 1.1), tower, x, 3.25, 0);
+    const park = add(g, box(5.2, 0.4, 1.3), std("#f2efe6"), 0.4, 6.7, 0);
+    park.rotation.z = 0.03;
+    add(g, box(1.6, 0.12, 0.9), std("#5ec8e8", { emissive: "#2a9fc4", emissiveIntensity: 0.5 }), 1.6, 6.95, 0);
   } else if (mark === "card") {
     const card = new THREE.Group();
     card.position.y = 1.8;

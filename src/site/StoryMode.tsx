@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { MutableRefObject, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { motion, MotionValue, useMotionValue, useMotionValueEvent, useScroll, useSpring, useTransform } from "framer-motion";
 import { scenes, Scene, pad, fmtTerm, lerpAt, curveY, curvePath } from "./timeline";
 
@@ -11,10 +11,47 @@ const FS = range(0, scenes.length);
 
 // ── Scene pieces (from cinema) ──
 
-const SceneText = ({ s, wide }: { s: Scene; wide: boolean }) => {
+// Photos sit under the text. On desktop the row shrinks to whatever room is left above this scene's
+// point on the vibe line; on phones it's a swipeable row.
+const Photos = ({ photos, wide, room }: { photos: NonNullable<Scene["photos"]>; wide: boolean; room?: number }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [h, setH] = useState(190);
+  useLayoutEffect(() => {
+    if (!wide || !room) return;
+    const fit = () => ref.current && setH(Math.max(90, Math.min(190, room - ref.current.offsetTop - 30)));
+    fit();
+    document.fonts?.ready.then(fit);
+  }, [wide, room]);
   return (
-    <div>
-      <div className="rx-mono text-[11px] text-[#8692a8] mb-4">
+    <div ref={ref} className={`mt-6 flex gap-3 items-start ${wide ? "" : "-mx-5 px-5 overflow-x-auto pb-2"}`}>
+      {photos.map((p, i) => (
+        <motion.figure
+          key={p.src}
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.9, delay: 0.1 * i, ease: [0.2, 0.7, 0.2, 1] }}
+          className="shrink-0"
+        >
+          <img
+            src={p.src}
+            alt={p.caption}
+            loading="lazy"
+            style={wide ? { maxHeight: h } : undefined}
+            className={`block w-auto h-auto rounded-xl border border-[#e6ecf5]/15 ${wide ? "max-w-[520px]" : "max-h-40 max-w-[78vw]"}`}
+          />
+          <figcaption className="mt-2 rx-mono text-[10px] text-[#8692a8]">{p.caption}</figcaption>
+        </motion.figure>
+      ))}
+    </div>
+  );
+};
+
+const SceneText = ({ s, wide, room }: { s: Scene; wide: boolean; room?: number }) => {
+  const text = (
+    <div className="min-w-0 flex-1 max-w-[560px]">
+      <div className="rx-mono text-[11px] text-[#8692a8] mb-4 flex items-center gap-2.5">
+        {s.logo && <img src={s.logo} alt="" className="w-6 h-6 rounded-md object-contain bg-white/90 p-0.5" />}
         {fmtTerm(s.date)}
       </div>
       <motion.h3
@@ -27,6 +64,24 @@ const SceneText = ({ s, wide }: { s: Scene; wide: boolean }) => {
         {s.title}
       </motion.h3>
       <p className={`mt-4 text-[#c2cbdb] leading-snug ${wide ? "text-[1.2rem] max-w-[440px]" : "text-[1.15rem]"}`}>{s.body}</p>
+      {s.stat && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="mt-5 inline-flex items-center gap-2 rounded-full border border-[#5b9cff]/40 bg-[#5b9cff]/10 px-3.5 py-1.5 rx-mono text-[11px] text-[#bcd7ff]"
+        >
+          <span className="text-[#5b9cff]">▸</span>
+          {s.stat}
+        </motion.div>
+      )}
+    </div>
+  );
+  return (
+    <div>
+      {text}
+      {s.photos && <Photos photos={s.photos} wide={wide} room={room} />}
     </div>
   );
 };
@@ -171,7 +226,7 @@ const HorizontalRun = ({ vw, vh, navH, bar, progress, api, startAt, onBack, onAs
         <motion.div style={{ x: trackX, width: layout.W }} className="absolute inset-y-0 left-0">
           {scenes.map((sc, i) => (
             <div key={sc.date + sc.short} className="absolute" style={{ left: layout.panels[i].x + 40, top: navH + vh * 0.07, width: layout.panels[i].w - 60 }}>
-              <SceneText s={sc} wide />
+              <SceneText s={sc} wide room={pts[i].y - 44 - (navH + vh * 0.07)} />
             </div>
           ))}
           <div className="absolute flex items-center justify-center" style={{ left: layout.W - vw * 0.7, width: vw * 0.7, top: navH, bottom: vh * 0.3 }}>

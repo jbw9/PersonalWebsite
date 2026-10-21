@@ -16,7 +16,7 @@ const STOP = new Set(
     "had get got tell know knows show give please jonathan jonathans jbw kind sort type thing things stuff " +
     "good great well ever up out all other else etc go went use used using describe explain list share mean " +
     "say want need look see find info information detail details question questions ask anything something " +
-    "someone hey hi hello yo take takes taken took achieve achieved accomplish accomplished"
+    "someone hey hi hello yo take takes taken took achieve achieved accomplish accomplished going gonna"
   ).split(" ")
 );
 

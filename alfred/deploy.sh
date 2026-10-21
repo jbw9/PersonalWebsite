@@ -12,7 +12,7 @@ MODEL_ID=${MODEL_ID:-global.anthropic.claude-haiku-4-5-20251001-v1:0}
 # Hard caps: a Function URL is public, so bound the worst-case Bedrock bill (~1¢ per question)
 DAILY_CAP=${DAILY_CAP:-500}
 IP_CAP=${IP_CAP:-30}
-ORIGINS='["https://jonathanbw.me","https://www.jonathanbw.me","https://jbw9.github.io","http://localhost:3001","http://127.0.0.1:3001"]'
+ORIGINS='["https://jonathanbw.me","https://www.jonathanbw.me","https://jbw9.github.io","http://localhost:3000","http://127.0.0.1:3000","http://localhost:3001","http://127.0.0.1:3001"]'
 export AWS_REGION=$REGION AWS_PAGER=""
 
 ACCOUNT=$(aws sts get-caller-identity --query Account --output text)

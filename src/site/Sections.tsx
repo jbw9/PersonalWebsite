@@ -547,7 +547,6 @@ const Sections = ({ vw, navH, globe, done, fine, reduce, onOpen, onGuide, onAsk,
                   ✻ Ask Alfred
                 </button>
               </div>
-              <div className="mt-24 md:mt-28 italic text-2xl text-[#5d687c]">fin.</div>
             </Reveal>
           </div>
         </section>

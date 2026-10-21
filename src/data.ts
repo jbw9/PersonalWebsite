@@ -155,6 +155,14 @@ export const involvements = [
     image: "/permiasLogo.png",
   },
   {
+    role: "Built Talenta",
+    organization: "Cozad New Venture Competition",
+    period: "Jan 2024 - May 2024",
+    description:
+      "Developed Talenta, a K-12 student development platform that helps teachers identify student strengths and create individualized growth pathways. Won $2k in prizes.",
+    image: "https://brand.illinois.edu/wp-content/uploads/2024/02/Block-I-orange-blue-background.png",
+  },
+  {
     role: "CS128 Course Assistant",
     organization: "Siebel School of Computing and Data Science",
     period: "Jan 2025 - May 2025",

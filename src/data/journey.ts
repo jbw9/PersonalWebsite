@@ -6,6 +6,9 @@ export interface Milestone {
   body: string;
   vibe: number; // 0-100, "how cracked I felt"
   dip?: boolean; // label goes under the dot instead of over it
+  logo?: string; // company / school mark shown beside the semester
+  stat?: string; // one real number from the story, shown as a callout
+  photos?: { src: string; caption: string }[];
 }
 
 export const JOURNEY_START = "2023-08-21";
@@ -18,6 +21,7 @@ export const milestones: Milestone[] = [
     title: "Came to UIUC as a finance major",
     body: "Coding was not on the menu.",
     vibe: 18,
+    logo: "https://brand.illinois.edu/wp-content/uploads/2024/02/Block-I-orange-blue-background.png",
   },
   {
     date: "2023-09-11",
@@ -42,12 +46,13 @@ export const milestones: Milestone[] = [
     title: "SWE intern at Tulip",
     body: "Joined Tulip, an app that lets you invest in real estate with just $1, as a software engineer intern.",
     vibe: 64,
+    logo: "/tulip.png",
   },
   {
     date: "2024-03-04",
     emoji: "😵",
     short: "CS173",
-    title: "CS173 nearly broke me",
+    title: "CS173 tested if I really wanted to switch to CS",
     body: "Discrete structures was really challenging and really theoretical. I hated it, but I had to get through it.",
     vibe: 36,
     dip: true,
@@ -59,14 +64,9 @@ export const milestones: Milestone[] = [
     title: "Built akar.study to survive CS173",
     body: "Built my own flashcard app, with spaced repetition and a Pomodoro timer, to help me learn for CS173.",
     vibe: 56,
-  },
-  {
-    date: "2024-04-08",
-    emoji: "🏆",
-    short: "Cozad: $2k",
-    title: "Cozad New Venture Competition",
-    body: "Competed in Cozad with Talenta, a K-12 platform that helps teachers identify student strengths and build individualized growth pathways. Won $2k in prizes, though I didn't keep going with it. It didn't really match my interests, and I was focused on transferring.",
-    vibe: 70,
+    photos: [
+      { src: "/akar.png", caption: "akar.study" },
+    ],
   },
   {
     date: "2024-04-22",
@@ -83,6 +83,12 @@ export const milestones: Milestone[] = [
     title: "Promoted to co-founder & CTO of Tulip",
     body: "Did well enough to get promoted to co-founder & CTO. Tulip was backed by the iVenture Accelerator (cohort 10) with $10k in non-dilutive funding.",
     vibe: 88,
+    logo: "/tulip.png",
+    stat: "$10k non-dilutive · iVenture cohort 10",
+    photos: [
+      { src: "/story/tulip-app.jpg", caption: "Tulip: real estate from $1" },
+      { src: "/story/iventure-event.jpg", caption: "iVenture Accelerator" },
+    ],
   },
   {
     date: "2024-06-03",
@@ -91,15 +97,19 @@ export const milestones: Milestone[] = [
     title: "SWE intern at We Hear You",
     body: "Built a real-time American Sign Language to English Android app and tuned the ML behind the translation.",
     vibe: 80,
+    logo: "/wehearyouLogo.png",
+    photos: [
+      { src: "/story/wehearyou-app.jpg", caption: "the ASL app" },
+    ],
   },
   {
     date: "2024-08-26",
     emoji: "🔀",
     short: "CS + Econ",
-    title: "Transferred into CS + Econ",
-    body: "Made the switch in my third semester. I was very, very stressed about it.",
-    vibe: 40,
-    dip: true,
+    title: "Made it into CS + Econ",
+    body: "Transferring into CS isn't guaranteed, so trying to get in was very, very stressful. But I made it.",
+    vibe: 72,
+    logo: "https://brand.illinois.edu/wp-content/uploads/2024/02/Block-I-orange-blue-background.png",
   },
   {
     date: "2024-10-07",
@@ -117,6 +127,7 @@ export const milestones: Milestone[] = [
     title: "Became a CS128 course assistant",
     body: "Held office hours and answered forum questions for CS128.",
     vibe: 62,
+    logo: "https://brand.illinois.edu/wp-content/uploads/2024/02/Block-I-orange-blue-background.png",
   },
   {
     date: "2025-02-10",
@@ -126,6 +137,8 @@ export const milestones: Milestone[] = [
     body: "We applied to YC with Tulip and got an additional question back, a huge signal. My co-founder forgot to hit submit. A very low point.",
     vibe: 22,
     dip: true,
+    logo: "/ycLogo.svg",
+    stat: "1 follow-up question · 0 submits",
   },
   {
     date: "2025-04-28",
@@ -135,6 +148,7 @@ export const milestones: Milestone[] = [
     body: "We needed a lot of funding to deal with legal issues, and my co-founder was graduating.",
     vibe: 38,
     dip: true,
+    logo: "/tulip.png",
   },
   {
     date: "2025-05-19",
@@ -143,6 +157,7 @@ export const milestones: Milestone[] = [
     title: "Kredivo: industry experience first",
     body: "Decided to get industry experience first. Built MCP servers, agents and a support chatbot with LangChain and LangGraph.",
     vibe: 80,
+    logo: "/kredivoLogo.png",
   },
   {
     date: "2025-06-16",
@@ -151,6 +166,12 @@ export const milestones: Milestone[] = [
     title: "YC AI Startup School",
     body: "Got into YC's AI Startup School and flew to SF. Talked one-on-one with Nicolas, one of the partners, and heard speakers like Sam Altman in person. So cool.",
     vibe: 92,
+    logo: "/ycLogo.svg",
+    photos: [
+      { src: "/story/yc-badge.jpg", caption: "my badge" },
+      { src: "/story/yc-stage.jpg", caption: "the main stage" },
+      { src: "/story/yc-llm-os.jpg", caption: "the LLM OS talk" },
+    ],
   },
   {
     date: "2025-07-14",
@@ -159,6 +180,8 @@ export const milestones: Milestone[] = [
     title: "Massive: predicting artist revenue",
     body: "Developed an algorithm to predict an artist's annual revenue from 130+ parameters.",
     vibe: 82,
+    logo: "/massiveLogo.png",
+    stat: "130+ parameters",
   },
   {
     date: "2025-08-25",
@@ -167,6 +190,7 @@ export const milestones: Milestone[] = [
     title: "Locked in for recruiting",
     body: "Learned from last year: applied as early as possible. The first two weeks of class were purely applications, with classes as second priority.",
     vibe: 70,
+    stat: "first 2 weeks of class: applications only",
   },
   {
     date: "2025-09-15",
@@ -176,6 +200,7 @@ export const milestones: Milestone[] = [
     body: "It paid off with interviews at great companies like Figma. I hadn't learned my lesson, though: zero LeetCode problems solved, and I failed it.",
     vibe: 50,
     dip: true,
+    stat: "0 LeetCode problems solved",
   },
   {
     date: "2025-10-06",
@@ -184,6 +209,10 @@ export const milestones: Milestone[] = [
     title: "12 hours a day for Google",
     body: "Got a Google interview two weeks out and ground LeetCode 12 hours a day, nonstop. Passed, and was in team matching by October.",
     vibe: 88,
+    stat: "12 hours a day · 2 weeks",
+    photos: [
+      { src: "/story/google-email.jpg", caption: "on to team matching" },
+    ],
   },
   {
     date: "2025-12-15",
@@ -193,6 +222,7 @@ export const milestones: Milestone[] = [
     body: "Months in Google team matching without a single call. The lowest point.",
     vibe: 14,
     dip: true,
+    stat: "0 calls · October → March",
   },
   {
     date: "2026-01-26",
@@ -210,6 +240,11 @@ export const milestones: Milestone[] = [
     title: "Flown to Seattle for Amazon",
     body: "An Amazon interview by some miracle, without a single LeetCode problem since Google. My first onsite. The offer came three days later. The fight was over.",
     vibe: 90,
+    logo: "/awsLogo.png",
+    stat: "offer 3 days later",
+    photos: [
+      { src: "/story/amazon-onsite.jpg", caption: "first onsite, Seattle" },
+    ],
   },
   {
     date: "2026-05-11",
@@ -227,6 +262,10 @@ export const milestones: Milestone[] = [
     title: "SDE intern at AWS",
     body: "Worked on Amazon MSK (Managed Streaming for Apache Kafka). Very challenging, and I learned a lot from much smarter people. Started building TaxBuddy on the side.",
     vibe: 90,
+    logo: "/awsLogo.png",
+    photos: [
+      { src: "/story/aws-team.jpg", caption: "summer in Seattle" },
+    ],
   },
   {
     date: "2026-08-17",
@@ -236,6 +275,10 @@ export const milestones: Milestone[] = [
     body: "Got flown out to NYC for a 6-hour final round with the CTO: build something from scratch to a working demo with Claude Code. Awesome office, team and company. I didn't do well, because I couldn't fully understand all the code I'd generated. Then I realized a lot of people have the same problem.",
     vibe: 52,
     dip: true,
+    stat: "6 hours with the CTO",
+    photos: [
+      { src: "/story/rilla.jpg", caption: "Rilla's NYC office" },
+    ],
   },
   {
     date: new Date().toISOString().slice(0, 10),
@@ -244,5 +287,9 @@ export const milestones: Milestone[] = [
     title: "Now: return offer, building TaxBuddy",
     body: "Got the return offer in September to join AWS full-time. Still building TaxBuddy, and starting something new: a tool that helps people understand the code LLMs generate, especially in big repos.",
     vibe: 96,
+    logo: "/awsLogo.png",
+    photos: [
+      { src: "/story/return-offer.jpg", caption: "the return offer" },
+    ],
   },
 ];

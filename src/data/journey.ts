@@ -36,15 +36,6 @@ export const milestones: Milestone[] = [
     vibe: 74,
   },
   {
-    date: "2023-11-06",
-    emoji: "💀",
-    short: "NullPointerException",
-    title: "Met NullPointerException",
-    body: "Discovered that computers do exactly what you tell them, not what you meant. Confidence: humbled.",
-    vibe: 38,
-    dip: true,
-  },
-  {
     date: "2023-12-18",
     emoji: "🃏",
     short: "built akar.study",

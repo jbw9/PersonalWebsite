@@ -25,6 +25,12 @@ export const EXTRA_FACTS: KBEntry[] = [
     text: "Jonathan bowled competitively starting around 2018. In 2 years he went from zero experience to winning the national junior championships in Indonesia.\nHe then competed in the biggest international junior championship, in Malaysia, against junior bowlers from around the world. Qualifying was brutal (he had to average about 240 just to qualify); he qualified 2nd out of roughly 400 bowlers and finished 7th in the final.\nBowling might seem useless now, but it taught him a lot about life: perseverance, effort over talent, learning from the best, and never giving up. He owes a lot to his coach, Thomas Tan.",
     tags: ["bowling", "sport", "sports", "hobby", "competition", "championship", "national", "malaysia", "coach", "perseverance", "lesson", "achievement", "personal", "fun"],
   },
+  {
+    path: "kb/personal/open-to.md",
+    title: "Open to opportunities",
+    text: "Jonathan is always open to opportunities, especially startups that align with his passion. He's always looking to rejoin the startup space.\nBook a 30-minute call: https://calendly.com/jonathanbernard265/30min",
+    tags: ["looking", "open", "opportunity", "opportunities", "available", "availability", "startup", "startups", "hire", "hiring", "job", "role", "recruit", "interested", "calendly", "call"],
+  },
 ];
 
 // Shown on the live site's hero and contact buttons, not stored in the data files
@@ -32,6 +38,7 @@ export const CONTACT = {
   email: "jbw7@illinois.edu",
   github: "https://github.com/jbw9",
   linkedin: "https://www.linkedin.com/in/jwidjajakusuma/",
+  calendly: "https://calendly.com/jonathanbernard265/30min",
 };
 
 const slug = (s: string) =>
@@ -40,8 +47,11 @@ const slug = (s: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const monthYear = (iso: string) => `${MONTHS[Number(iso.slice(5, 7)) - 1]} ${iso.slice(0, 4)}`;
+
+const fmtTerm = (iso: string) => {
+  const m = Number(iso.slice(5, 7));
+  return `${m <= 4 ? "Spring" : m <= 7 ? "Summer" : "Fall"} ${iso.slice(0, 4)}`;
+};
 
 const taxbuddy = projects.find((p) => p.id === "taxbuddy")!;
 const incoming = experiences[0];
@@ -60,8 +70,8 @@ const about: KBEntry = {
 const contact: KBEntry = {
   path: "kb/contact.md",
   title: "Contact",
-  text: [`Email: ${CONTACT.email}`, `GitHub: ${CONTACT.github}`, `LinkedIn: ${CONTACT.linkedin}`].join("\n"),
-  tags: ["contact", "email", "mail", "reach", "hire", "hiring", "recruit", "message", "connect", "touch", "socials"],
+  text: [`Email: ${CONTACT.email}`, `GitHub: ${CONTACT.github}`, `LinkedIn: ${CONTACT.linkedin}`, `Book a 30-minute call: ${CONTACT.calendly}`].join("\n"),
+  tags: ["contact", "email", "mail", "reach", "hire", "hiring", "recruit", "message", "connect", "touch", "socials", "calendly", "call", "meeting", "meet", "schedule", "book", "chat"],
 };
 
 // One file per company, so both AWS roles land in kb/experience/aws.md
@@ -142,7 +152,7 @@ const skills: KBEntry = {
 const journeyEntries: KBEntry[] = milestones.map((m, i) => ({
   path: `kb/journey/${m.date}-${slug(m.short)}.md`,
   title: m.title,
-  text: `${monthYear(m.date)} · ${m.title}: "${m.body}"`,
+  text: `${fmtTerm(m.date)} · ${m.title}: "${m.body}"`,
   tags: ["journey", "story", "timeline", "milestone", "history", "background"].concat(
     i === milestones.length - 1 ? ["now", "latest"] : []
   ),

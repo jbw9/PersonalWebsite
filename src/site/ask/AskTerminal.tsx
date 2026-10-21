@@ -21,11 +21,14 @@ const COMMANDS = [
 ];
 
 const SUGGESTIONS = [
-  "What does he do at AWS?",
+  "What does he do for fun?",
   "What's TaxBuddy?",
-  "What's his GPA?",
+  "Is he open to opportunities?",
   "Where did he intern?",
+  "What does he do at AWS?",
+  "Tell me about his bowling",
   "What's his tech stack?",
+  "What's his GPA?",
   "How do I contact him?",
   "sudo hire jonathan",
 ];
@@ -194,6 +197,11 @@ const AskTerminal = ({ active, onClose }: AskTerminalProps) => {
                   ✉ Send the offer to {CONTACT.email}
                 </a>
               </div>
+              <div>
+                <a href={CONTACT.calendly} target="_blank" rel="noreferrer" className="ask-accent">
+                  📅 Or book a 30-minute call
+                </a>
+              </div>
             </div>
           </div>
         ),
@@ -238,6 +246,7 @@ const AskTerminal = ({ active, onClose }: AskTerminalProps) => {
         ["Email", `mailto:${CONTACT.email}`, CONTACT.email],
         ["GitHub", CONTACT.github, CONTACT.github.replace("https://", "")],
         ["LinkedIn", CONTACT.linkedin, CONTACT.linkedin.replace("https://www.", "")],
+        ["Calendly", CONTACT.calendly, CONTACT.calendly.replace("https://", "")],
       ].map(([label, href, text]) => (
         <div key={label} className="flex gap-3">
           <span className="w-[9ch] shrink-0 ask-dim">{label}</span>
@@ -333,8 +342,9 @@ const AskTerminal = ({ active, onClose }: AskTerminalProps) => {
       >
         <div className="ask-welcome border rounded-2xl px-4 py-3 max-w-[30rem]">
           <div>
-            <span className="ask-accent">✻</span> Good evening. I'm <span className="ask-bright font-semibold">Alfred</span>, Jonathan's assistant.
+            <span className="ask-accent">✻</span> Welcome to Jonathan's website! I'm <span className="ask-bright font-semibold">Alfred</span>, his assistant.
           </div>
+          <div className="mt-2">Ask me whatever you want to learn about Jonathan.</div>
           <div className="mt-3 ask-dim italic">/help for help, /contact to reach him</div>
           <div className="mt-3 ask-dim">cwd: ~/jonathan</div>
         </div>

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { milestones } from "../../data/journey";
 import { GameProps } from "../contracts";
-import { CONTACT, fmtMonth } from "../timeline";
+import { CONTACT, fmtTerm } from "../timeline";
 import { GATES, NOW } from "./chapters";
 import { createGame, GameApi, GameEvent } from "./scene";
 
@@ -242,7 +242,7 @@ const Game = ({ onExit }: GameProps) => {
             className="absolute bottom-[5vh] left-1/2 -translate-x-1/2 md:left-8 md:translate-x-0 w-[min(94vw,480px)] rx-card !bg-[#0b111e]/90 p-6 md:p-7 cursor-pointer overflow-hidden"
           >
             <div className="rx-mono text-[10px] text-[#4ade80]">
-              ✦ chapter {card.i + 1} of {GATES.length} · {fmtMonth(card.m.date)}
+              ✦ chapter {card.i + 1} of {GATES.length} · {fmtTerm(card.m.date)}
               {cg.place ? ` · ${cg.place}` : ""}
             </div>
             <div className="mt-3 flex items-center gap-3">
@@ -282,7 +282,7 @@ const Game = ({ onExit }: GameProps) => {
             className="absolute bottom-24 left-1/2 -translate-x-1/2 w-[min(92vw,420px)] rx-card !bg-[#0b111e]/85 px-4 py-3 pointer-events-none"
           >
             <div className={`rx-mono text-[9px] ${toast.dip ? "text-[#ff8a8a]" : "text-[#ffd479]"}`}>
-              {toast.dip ? "⛈ rough patch · U-turn" : "✦ small win"} · {fmtMonth(toast.m.date)}
+              {toast.dip ? "⛈ rough patch · U-turn" : "✦ small win"} · {fmtTerm(toast.m.date)}
             </div>
             <div className="mt-1 text-[1.1rem] italic leading-tight">
               {toast.m.emoji} {toast.m.title}

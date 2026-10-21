@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useScroll, useSpring } from "framer-motion";
-import { IconBrandGithub, IconBrandLinkedin, IconMail } from "@tabler/icons-react";
+import { IconBrandGithub, IconBrandLinkedin, IconCalendar, IconMail } from "@tabler/icons-react";
 import { experiences, education, involvements } from "../data";
 import { projects } from "../data/projects";
 import { guides } from "../data/guides";
@@ -21,7 +21,7 @@ const featured = projects.find((p) => p.id === "taxbuddy");
 const rest = projects.filter((p) => p.id !== "taxbuddy");
 const ext = (href: string) => (href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {});
 const imgOf = (src: string) => (src.startsWith("http") || src.startsWith("data:") || src.startsWith("/") ? src : `/${src}`);
-const ICONS: Record<string, typeof IconMail> = { Email: IconMail, GitHub: IconBrandGithub, LinkedIn: IconBrandLinkedin };
+const ICONS: Record<string, typeof IconMail> = { Email: IconMail, GitHub: IconBrandGithub, LinkedIn: IconBrandLinkedin, Calendly: IconCalendar };
 const status = (period: string) => {
   const [a, b] = periodRange(period);
   const now = Date.now();

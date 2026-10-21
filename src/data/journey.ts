@@ -32,7 +32,7 @@ export const milestones: Milestone[] = [
     emoji: "📚",
     short: "all-in on CS",
     title: "Took every CS course I could",
-    body: "The next semester my schedule was all CS, and I started building projects on the side, like akar.study.",
+    body: "The next semester my schedule was all CS.",
     vibe: 58,
   },
   {
@@ -53,6 +53,14 @@ export const milestones: Milestone[] = [
     dip: true,
   },
   {
+    date: "2024-03-25",
+    emoji: "🃏",
+    short: "built akar.study",
+    title: "Built akar.study to survive CS173",
+    body: "Built my own flashcard app, with spaced repetition and a Pomodoro timer, to help me learn for CS173.",
+    vibe: 56,
+  },
+  {
     date: "2024-04-08",
     emoji: "🏆",
     short: "Cozad: $2k",
@@ -61,7 +69,7 @@ export const milestones: Milestone[] = [
     vibe: 70,
   },
   {
-    date: "2024-05-06",
+    date: "2024-04-22",
     emoji: "❤️",
     short: "fell in love",
     title: "Fell in love with CS",
@@ -120,7 +128,7 @@ export const milestones: Milestone[] = [
     dip: true,
   },
   {
-    date: "2025-05-05",
+    date: "2025-04-28",
     emoji: "🥀",
     short: "Tulip ends",
     title: "Tulip didn't work out",
@@ -225,7 +233,7 @@ export const milestones: Milestone[] = [
     emoji: "📍",
     short: "you are here",
     title: "Now: return offer, building TaxBuddy",
-    body: "Got the return offer in September to join AWS full-time. Still building TaxBuddy.",
+    body: "Got the return offer in September to join AWS full-time. Still building TaxBuddy, and starting something new: a tool that helps people understand the code LLMs generate, especially in big repos.",
     vibe: 96,
   },
 ];

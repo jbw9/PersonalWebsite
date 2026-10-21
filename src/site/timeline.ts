@@ -18,9 +18,10 @@ export const periodRange = (period: string): [number, number] => {
   const e = new Date(endStart);
   return [start, new Date(e.getFullYear(), e.getMonth() + 1, 1).getTime()];
 };
-export const fmtMonth = (iso: string) => {
-  const d = new Date(iso);
-  return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+// Milestone dates are approximate, so they're shown as the semester they fell in
+export const fmtTerm = (iso: string) => {
+  const m = Number(iso.slice(5, 7));
+  return `${m <= 4 ? "Spring" : m <= 7 ? "Summer" : "Fall"} ${iso.slice(0, 4)}`;
 };
 export const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -95,4 +96,5 @@ export const CONTACT = [
   { label: "Email", href: "mailto:jbw7@illinois.edu" },
   { label: "GitHub", href: "https://github.com/jbw9" },
   { label: "LinkedIn", href: "https://www.linkedin.com/in/jwidjajakusuma/" },
+  { label: "Calendly", href: "https://calendly.com/jonathanbernard265/30min" },
 ];

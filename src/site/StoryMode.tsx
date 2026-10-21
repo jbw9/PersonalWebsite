@@ -1,6 +1,6 @@
 import { MutableRefObject, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { motion, MotionValue, useMotionValue, useMotionValueEvent, useScroll, useSpring, useTransform } from "framer-motion";
-import { scenes, Scene, Extra, ROMAN, firstYear, pad, fmtMonth, lerpAt, curveY, curvePath } from "./timeline";
+import { scenes, Scene, Extra, ROMAN, firstYear, pad, fmtTerm, lerpAt, curveY, curvePath } from "./timeline";
 
 export type StoryApi = { seek: (f: number) => void };
 
@@ -57,7 +57,7 @@ const SceneText = ({ s, onOpen, wide }: { s: Scene; onOpen: (id: string) => void
         </div>
       )}
       <div className="rx-mono text-[11px] text-[#8692a8] mb-4">
-        {fmtMonth(s.date)}
+        {fmtTerm(s.date)}
       </div>
       <motion.h3
         initial={{ opacity: 0, x: wide ? 40 : 0, y: wide ? 0 : 16 }}

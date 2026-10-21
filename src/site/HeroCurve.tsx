@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { animate, motion, useMotionValue, useMotionValueEvent, useTransform } from "framer-motion";
-import { scenes, curveY, curvePath, fmtMonth, pad } from "./timeline";
+import { scenes, curveY, curvePath, fmtTerm, pad } from "./timeline";
 
 const n = scenes.length;
 const FADE = "linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent)";
@@ -82,7 +82,7 @@ const HeroCurve = ({ vw, done, reduce, onPick }: { vw: number; done: boolean; re
           onFocus={() => setHover(i)}
           onBlur={() => setHover(null)}
           onClick={() => onPick(i)}
-          aria-label={`${s.title}, ${fmtMonth(s.date)}: watch this scene`}
+          aria-label={`${s.title}, ${fmtTerm(s.date)}: watch this scene`}
           className={`absolute rounded-full bg-[#070b14] border flex items-center justify-center transition-colors ${
             wide ? "w-10 h-10 -ml-5 -mt-5 text-xl" : "w-8 h-8 -ml-4 -mt-4 text-base"
           } ${hover === i ? "border-[#5b9cff] shadow-[0_0_24px_rgba(91,156,255,0.45)]" : "border-[#e6ecf5]/25"}`}
@@ -95,7 +95,7 @@ const HeroCurve = ({ vw, done, reduce, onPick }: { vw: number; done: boolean; re
       {hs && (
         <div className="absolute pointer-events-none -translate-x-1/2 -translate-y-full text-center w-[280px] pb-1" style={{ left: capX, top: pts[hover as number].y - 30 }}>
           <div className="rx-mono text-[9px] text-[#8692a8]">
-            scene {pad(hs.n)} · {fmtMonth(hs.date)} · vibe {hs.vibe}
+            scene {pad(hs.n)} · {fmtTerm(hs.date)} · vibe {hs.vibe}
           </div>
           <div className="mt-1 text-[1.2rem] italic leading-tight" style={{ textShadow: "0 0 12px #070b14, 0 0 24px #070b14" }}>
             {hs.title}

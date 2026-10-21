@@ -15,7 +15,7 @@ export interface Education {
   gpa?: string;
   description?: string;
   relevantCourses?: string[];
-  photo?: string;
+  photos?: { src: string; caption: string }[];
 }
 
 export interface Involvement {
@@ -85,7 +85,7 @@ export const experiences = [
     summary: "Co-founded a $1 real estate investing app and led its engineering",
     tags: ["React Native", "TypeScript", "AMM"],
     details:
-      "Tulip lets anyone invest in real estate with just $1, backed by the iVenture Accelerator (cohort 10). I joined as a software engineer intern in Jan 2024 and was promoted to co-founder & CTO in May 2024, leading the mobile app, the beta website, and the Automated Market Maker (AMM) algorithm.",
+      "Tulip lets anyone invest in real estate with just $1. We raised $10k in non-dilutive funding from the iVenture Accelerator (cohort 10). I joined as a software engineer intern in Jan 2024 and was promoted to co-founder & CTO in May 2024, leading the mobile app, the beta website, and the Automated Market Maker (AMM) algorithm.",
     website: "https://www.tulip.markets/",
   },
   {
@@ -97,7 +97,7 @@ export const experiences = [
     summary: "Building Tulip in the iV10 founder cohort",
     tags: ["Startups", "Product", "Fundraising"],
     details:
-      "Tulip was part of iVenture Accelerator's 10th cohort (iV10), with $10k in non-dilutive funding. I was a Founder in Residence while building it.",
+      "We raised $10k in non-dilutive funding for Tulip from iVenture Accelerator's 10th cohort (iV10). I was a Founder in Residence while building it.",
   },
   {
     title: "Software Engineer Intern",
@@ -110,6 +110,18 @@ export const experiences = [
     tags: ["Android", "Machine learning", "Computer vision"],
     details:
       "I developed a real-time American Sign Language to English Android app, and optimized the translation system through machine learning.",
+  },
+  {
+    title: "Software Engineer Intern",
+    company: "Tulip",
+    companyIcon: "/tulip.png",
+    period: "Jan 2024 - May 2024",
+    description: "Software engineer intern at Tulip, before being promoted to co-founder & CTO.",
+    summary: "Joined Tulip as a software engineer intern",
+    tags: ["React Native", "TypeScript", "AMM"],
+    details:
+      "Joined Tulip, an app that lets anyone invest in real estate with just $1, as a software engineer intern. Promoted to co-founder & CTO in May 2024.",
+    website: "https://www.tulip.markets/",
   },
 ];
 
@@ -133,7 +145,11 @@ export const education = [
     period: "June 2025",
     image: "/ycLogo.svg",
     description: "Event Details - https://events.ycombinator.com/ai-sus",
-    photo: "/yc-ai-sus.jpg",
+    photos: [
+      { src: "/story/yc-badge.jpg", caption: "" },
+      { src: "/story/yc-stage.jpg", caption: "Sam Altman and Garry Tan" },
+      { src: "/story/yc-llm-os.jpg", caption: "Andrej Karpathy" },
+    ],
   },
 ];
 

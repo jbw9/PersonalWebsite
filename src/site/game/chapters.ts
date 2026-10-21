@@ -1,12 +1,11 @@
 import { milestones, Milestone } from "../../data/journey";
 
-export type Mark = "flag" | "gedungsate" | "blocki" | "bank" | "laptop" | "heart" | "tulip" | "hand" | "mbs" | "card" | "guitar" | "seattle";
+export type Mark = "flag" | "gedungsate" | "blocki" | "bank" | "tulip" | "hand" | "mbs" | "card" | "guitar" | "seattle";
 export type GateInfo = { short: string; name: string; place?: string; logo?: string; marks: Mark[] };
 
 // The big chapters: each is a gate you fly through, with its monuments beside the path
 export const GATES: GateInfo[] = [
   { short: "finance major", name: "UIUC, as a finance major", place: "Champaign, IL", marks: ["blocki", "bank"] },
-  { short: "fell in love", name: "Falling for CS", place: "Champaign, IL", marks: ["laptop", "heart"] },
   { short: "iVenture + Tulip", name: "Tulip × iVenture", logo: "/tulip.png", marks: ["tulip"] },
   { short: "We Hear You", name: "We Hear You", logo: "/wehearyouLogo.png", marks: ["hand"] },
   { short: "Kredivo", name: "Kredivo", logo: "/kredivoLogo.png", place: "Singapore", marks: ["mbs", "card"] },

@@ -203,27 +203,6 @@ const monument = (mark: Mark, ticks: Tick[]) => {
     const roof = add(g, cyl(1, 1, 2.8, 3), stone, 0, 3.03, 0);
     roof.rotation.x = -Math.PI / 2;
     roof.scale.set(2.2, 1, 0.75);
-  } else if (mark === "laptop") {
-    const shell = std("#c9d1de", { roughness: 0.4, metalness: 0.3 });
-    add(g, box(3, 0.18, 2), shell, 0, 0.09, 0);
-    const lid = new THREE.Group();
-    lid.position.set(0, 0.18, -1);
-    lid.rotation.x = -0.25;
-    g.add(lid);
-    add(lid, box(3, 2, 0.12), shell, 0, 1, 0);
-    add(lid, new THREE.PlaneGeometry(2.7, 1.7), new THREE.MeshBasicMaterial({ color: "#1b3d78" }), 0, 1, 0.07);
-    const code = new THREE.MeshBasicMaterial({ color: "#8ab8ff" });
-    [1.4, 0.9, 1.8, 1.1, 0.6].forEach((w, k) => add(lid, box(w, 0.09, 0.01), code, -1.2 + w / 2 + (k % 2) * 0.25, 1.6 - k * 0.28, 0.08));
-  } else if (mark === "heart") {
-    const s = new THREE.Shape();
-    s.moveTo(0, -1);
-    s.bezierCurveTo(-0.2, -0.7, -1.2, -0.2, -1.2, 0.45);
-    s.bezierCurveTo(-1.2, 1.1, -0.4, 1.3, 0, 0.7);
-    s.bezierCurveTo(0.4, 1.3, 1.2, 1.1, 1.2, 0.45);
-    s.bezierCurveTo(1.2, -0.2, 0.2, -0.7, 0, -1);
-    const h = add(g, extrude(s, 0.5), std("#ff4d6d", { emissive: "#ff2850", emissiveIntensity: 0.35 }), 0, 3.2, 0);
-    h.scale.setScalar(1.2);
-    ticks.push((t) => (h.rotation.y = t * 1.2));
   } else if (mark === "tulip") {
     const green = std("#3f8f5a");
     const petal = std("#f07a2c", { emissive: "#7a2a00", emissiveIntensity: 0.25 });

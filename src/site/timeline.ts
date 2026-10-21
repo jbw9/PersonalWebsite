@@ -16,10 +16,10 @@ export const periodRange = (period: string): [number, number] => {
   const e = new Date(endStart);
   return [start, new Date(e.getFullYear(), e.getMonth() + 1, 1).getTime()];
 };
-// Milestone dates are approximate, so they're shown as the semester they fell in
+// Milestone dates are approximate, so they're shown as the semester they fell in (spring runs to mid-May)
 export const fmtTerm = (iso: string) => {
-  const m = Number(iso.slice(5, 7));
-  return `${m <= 4 ? "Spring" : m <= 7 ? "Summer" : "Fall"} ${iso.slice(0, 4)}`;
+  const m = Number(iso.slice(5, 7)) + (Number(iso.slice(8, 10)) > 15 ? 0.5 : 0);
+  return `${m <= 5 ? "Spring" : m <= 7.5 ? "Summer" : "Fall"} ${iso.slice(0, 4)}`;
 };
 export const pad = (n: number) => String(n).padStart(2, "0");
 

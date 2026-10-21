@@ -31,6 +31,12 @@ export const EXTRA_FACTS: KBEntry[] = [
     text: "Jonathan is always open to opportunities, especially startups that align with his passion. He's always looking to rejoin the startup space.\nBook a 30-minute call: https://calendly.com/jonathanbernard265/30min",
     tags: ["looking", "open", "opportunity", "opportunities", "available", "availability", "startup", "startups", "hire", "hiring", "job", "role", "recruit", "interested", "calendly", "call"],
   },
+  {
+    path: "kb/site/easter-eggs.md",
+    title: "Easter eggs on this website",
+    text: "The globe on the home page hides a game: flick (fling) the globe hard 3 times within 4 seconds and it opens a flight through Jonathan's journey around the world, from home in Bandung to AWS in Seattle. The path climbs when things went well and dips and loops back at the rough patches.\nIn this terminal, try typing: sudo hire jonathan",
+    tags: ["easter", "egg", "eggs", "secret", "hidden", "game", "globe", "surprise", "fun", "trick", "website", "site", "sudo"],
+  },
 ];
 
 // Shown on the live site's hero and contact buttons, not stored in the data files
@@ -49,8 +55,8 @@ const slug = (s: string) =>
 
 
 const fmtTerm = (iso: string) => {
-  const m = Number(iso.slice(5, 7));
-  return `${m <= 4 ? "Spring" : m <= 7 ? "Summer" : "Fall"} ${iso.slice(0, 4)}`;
+  const m = Number(iso.slice(5, 7)) + (Number(iso.slice(8, 10)) > 15 ? 0.5 : 0);
+  return `${m <= 5 ? "Spring" : m <= 7.5 ? "Summer" : "Fall"} ${iso.slice(0, 4)}`;
 };
 
 const taxbuddy = projects.find((p) => p.id === "taxbuddy")!;

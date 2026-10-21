@@ -45,7 +45,6 @@ export const Shell = ({ section, children }: { section: Section; children: React
       <div className="rx-grain z-0" style={{ backgroundImage: `url(${grain})`, opacity: 0.045 }} aria-hidden />
       <button onClick={back} className="rxp-back rx-btn-ghost !text-[10.5px] rx-mono" aria-label="Back to Jonathan's site">
         <ArrowLeft className="w-3.5 h-3.5" strokeWidth={1.75} />
-        Jonathan
       </button>
       <main key={pathname} className="relative z-10 pb-32 md:pb-36">
         {children}

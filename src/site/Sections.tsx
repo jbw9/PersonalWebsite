@@ -12,7 +12,7 @@ import { CONTACT, periodRange } from "./timeline";
 export const SECTIONS = [
   { id: "experience", label: "Experience" },
   { id: "projects", label: "Projects" },
-  { id: "school", label: "School" },
+  { id: "school", label: "Education" },
   { id: "involvement", label: "Involvement" },
   { id: "guides", label: "Guides" },
 ];
@@ -228,40 +228,6 @@ const ExpSheet = ({ e, onClose }: { e: Exp | null; onClose: () => void }) => {
   );
 };
 
-// A card that shows a photo on hover (tap on touch); the hint only appears once the photo loads
-const PhotoPeek = ({ src, caption, children }: { src: string; caption: string; children: ReactNode }) => {
-  const [ok, setOk] = useState(false);
-  const [open, setOpen] = useState(false);
-  useEffect(() => {
-    const img = new Image();
-    img.onload = () => setOk(true);
-    img.src = src;
-  }, [src]);
-  if (!ok) return <>{children}</>;
-  return (
-    <div className="relative cursor-pointer" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)} onClick={() => setOpen((o) => !o)} data-card>
-      {children}
-      <span className="absolute top-4 right-4 rx-chip bg-[#070b14]/70 pointer-events-none">📷 photo</span>
-      <AnimatePresence>
-        {open && (
-          <div className="absolute z-20 left-1/2 -translate-x-1/2 bottom-[calc(100%-12px)] md:left-[calc(100%+32px)] md:translate-x-0 md:bottom-auto md:top-[-30px] pointer-events-none">
-            <motion.figure
-              initial={{ opacity: 0, y: 16, rotate: -8, scale: 0.85 }}
-              animate={{ opacity: 1, y: 0, rotate: -3, scale: 1 }}
-              exit={{ opacity: 0, y: 10, rotate: -6, scale: 0.92 }}
-              transition={{ type: "spring", stiffness: 320, damping: 24 }}
-              className="w-[260px] md:w-[320px] p-2.5 pb-3 rounded-[22px] bg-[#e6ecf5] shadow-[0_30px_80px_rgba(0,0,0,0.6)]"
-            >
-              <img src={src} alt={caption} className="w-full rounded-2xl object-cover" />
-              <figcaption className="mt-2 text-center italic text-[1.05rem] text-[#070b14]">{caption}</figcaption>
-            </motion.figure>
-          </div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-};
-
 type Props = {
   vw: number;
   navH: number;
@@ -413,10 +379,10 @@ const Sections = ({ vw, navH, globe, done, fine, reduce, onOpen, onGuide, onAsk,
           </div>
         </section>
 
-        {/* ── School ── */}
+        {/* ── Education ── */}
         <section id="rx-school" data-shape="gpa" data-sec="school" style={sec} className={`${pad} py-20 md:py-28 md:min-h-[90vh]`}>
           <div className={col}>
-            <Head title="School" />
+            <Head title="Education" />
             <div className="space-y-4">
               {education.map((e) => {
                 const card = (
@@ -458,19 +424,19 @@ const Sections = ({ vw, navH, globe, done, fine, reduce, onOpen, onGuide, onAsk,
                         )}
                       </p>
                     )}
+                    {e.photos && (
+                      <div className="mt-5 grid grid-cols-3 gap-2.5">
+                        {e.photos.map((p) => (
+                          <figure key={p.src}>
+                            <img src={p.src} alt={p.caption} loading="lazy" className="w-full aspect-[3/4] object-cover rounded-xl border border-[#e6ecf5]/15" />
+                            {p.caption && <figcaption className="mt-1.5 rx-mono text-[9px] text-[#8692a8]">{p.caption}</figcaption>}
+                          </figure>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 );
-                return (
-                  <Reveal key={e.school}>
-                    {e.photo ? (
-                      <PhotoPeek src={e.photo} caption={`${e.degree} · ${e.period}`}>
-                        {card}
-                      </PhotoPeek>
-                    ) : (
-                      card
-                    )}
-                  </Reveal>
-                );
+                return <Reveal key={e.school}>{card}</Reveal>;
               })}
             </div>
           </div>

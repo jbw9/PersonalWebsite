@@ -15,10 +15,12 @@ const FS = range(0, scenes.length);
 // point on the vibe line; on phones it's a swipeable row.
 const Photos = ({ photos, wide, room }: { photos: NonNullable<Scene["photos"]>; wide: boolean; room?: number }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const [h, setH] = useState(190);
+  const [h, setH] = useState(280);
+  const [tall, setTall] = useState(false);
+  const square = wide && tall && photos.length === 1;
   useLayoutEffect(() => {
     if (!wide || !room) return;
-    const fit = () => ref.current && setH(Math.max(90, Math.min(190, room - ref.current.offsetTop - 30)));
+    const fit = () => ref.current && setH(Math.max(90, Math.min(280, room - ref.current.offsetTop - 30)));
     fit();
     document.fonts?.ready.then(fit);
   }, [wide, room]);
@@ -37,10 +39,11 @@ const Photos = ({ photos, wide, room }: { photos: NonNullable<Scene["photos"]>; 
             src={p.src}
             alt={p.caption}
             loading="lazy"
-            style={wide ? { maxHeight: h } : undefined}
-            className={`block w-auto h-auto rounded-xl border border-[#e6ecf5]/15 ${wide ? "max-w-[520px]" : "max-h-40 max-w-[78vw]"}`}
+            onLoad={(e) => setTall(e.currentTarget.naturalHeight > e.currentTarget.naturalWidth * 1.1)}
+            style={square ? { width: h, height: h, objectFit: "cover" } : wide ? { maxHeight: h } : undefined}
+            className={`block w-auto h-auto rounded-xl border border-[#e6ecf5]/15 ${wide ? "max-w-[520px]" : "max-h-[min(52vh,340px)] max-w-[78vw]"}`}
           />
-          <figcaption className="mt-2 rx-mono text-[10px] text-[#8692a8]">{p.caption}</figcaption>
+          {p.caption && <figcaption className="mt-2 rx-mono text-[10px] text-[#8692a8]">{p.caption}</figcaption>}
         </motion.figure>
       ))}
     </div>

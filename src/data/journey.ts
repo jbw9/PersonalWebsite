@@ -47,6 +47,9 @@ export const milestones: Milestone[] = [
     body: "Joined Tulip, an app that lets you invest in real estate with just $1, as a software engineer intern.",
     vibe: 64,
     logo: "/tulip.png",
+    photos: [
+      { src: "/story/iventure-event.jpg", caption: "iVenture Accelerator" },
+    ],
   },
   {
     date: "2024-03-04",
@@ -56,6 +59,9 @@ export const milestones: Milestone[] = [
     body: "Discrete structures was really challenging and really theoretical. I hated it, but I had to get through it.",
     vibe: 36,
     dip: true,
+    photos: [
+      { src: "/story/cs173-proof.jpg", caption: "a CS173 proof by induction" },
+    ],
   },
   {
     date: "2024-03-25",
@@ -69,25 +75,15 @@ export const milestones: Milestone[] = [
     ],
   },
   {
-    date: "2024-04-22",
-    emoji: "❤️",
-    short: "fell in love",
-    title: "Fell in love with CS",
-    body: "Not the courses: building things that solve real problems. That's what made me fall in love with it.",
-    vibe: 78,
-  },
-  {
     date: "2024-05-20",
     emoji: "🚀",
     short: "iVenture + Tulip",
     title: "Promoted to co-founder & CTO of Tulip",
-    body: "Did well enough to get promoted to co-founder & CTO. Tulip was backed by the iVenture Accelerator (cohort 10) with $10k in non-dilutive funding.",
+    body: "Did well enough to get promoted to co-founder & CTO. Raised $10k in non-dilutive funding from the iVenture Accelerator (cohort 10).",
     vibe: 88,
     logo: "/tulip.png",
-    stat: "$10k non-dilutive · iVenture cohort 10",
     photos: [
       { src: "/story/tulip-app.jpg", caption: "Tulip: real estate from $1" },
-      { src: "/story/iventure-event.jpg", caption: "iVenture Accelerator" },
     ],
   },
   {
@@ -112,15 +108,6 @@ export const milestones: Milestone[] = [
     logo: "https://brand.illinois.edu/wp-content/uploads/2024/02/Block-I-orange-blue-background.png",
   },
   {
-    date: "2024-10-07",
-    emoji: "📨",
-    short: "recruiting is hard",
-    title: "Learned how hard recruiting is",
-    body: "Hunting for internships showed me how brutal the process is, especially LeetCode. Love-hate: the algorithms are fun, but memorizing really hard ones mostly feels like a chore.",
-    vibe: 46,
-    dip: true,
-  },
-  {
     date: "2025-01-13",
     emoji: "🧑‍🏫",
     short: "CS128 CA",
@@ -130,25 +117,15 @@ export const milestones: Milestone[] = [
     logo: "https://brand.illinois.edu/wp-content/uploads/2024/02/Block-I-orange-blue-background.png",
   },
   {
-    date: "2025-02-10",
-    emoji: "🫥",
-    short: "YC: never sent",
-    title: "YC asked us a follow-up question",
-    body: "We applied to YC with Tulip and got an additional question back, a huge signal. My co-founder forgot to hit submit. A very low point.",
-    vibe: 22,
-    dip: true,
-    logo: "/ycLogo.svg",
-    stat: "1 follow-up question · 0 submits",
-  },
-  {
-    date: "2025-04-28",
+    date: "2025-05-12",
     emoji: "🥀",
     short: "Tulip ends",
-    title: "Tulip didn't work out",
-    body: "We needed a lot of funding to deal with legal issues, and my co-founder was graduating.",
-    vibe: 38,
+    title: "YC never saw our answer, and Tulip didn't work out",
+    body: "We applied to YC with Tulip and got an additional question back, a huge signal. My co-founder forgot to hit submit. A very low point. Then Tulip didn't work out: we needed a lot of funding to deal with legal issues, and my co-founder was graduating.",
+    vibe: 22,
     dip: true,
     logo: "/tulip.png",
+    stat: "1 follow-up question · 0 submits",
   },
   {
     date: "2025-05-19",
@@ -168,9 +145,9 @@ export const milestones: Milestone[] = [
     vibe: 92,
     logo: "/ycLogo.svg",
     photos: [
-      { src: "/story/yc-badge.jpg", caption: "my badge" },
-      { src: "/story/yc-stage.jpg", caption: "the main stage" },
-      { src: "/story/yc-llm-os.jpg", caption: "the LLM OS talk" },
+      { src: "/story/yc-badge.jpg", caption: "" },
+      { src: "/story/yc-stage.jpg", caption: "Sam Altman and Garry Tan" },
+      { src: "/story/yc-llm-os.jpg", caption: "Andrej Karpathy" },
     ],
   },
   {

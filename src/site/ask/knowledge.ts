@@ -26,6 +26,12 @@ export const EXTRA_FACTS: KBEntry[] = [
     tags: ["bowling", "sport", "sports", "hobby", "competition", "championship", "national", "malaysia", "coach", "perseverance", "lesson", "achievement", "personal", "fun"],
   },
   {
+    path: "kb/personal/music.md",
+    title: "Music",
+    text: "Jonathan's top artists right now: Jigitz, Fred again.., and BUNT.\nHe went to 4 Jigitz shows in 2026. Jigitz signed his vinyl, gave him his hat, and invited him to come to one of his shows for free!",
+    tags: ["music", "artist", "artists", "favorite", "listen", "listening", "song", "songs", "concert", "concerts", "show", "shows", "dj", "edm", "jigitz", "fred", "bunt", "vinyl", "fun", "fact", "facts", "hobby", "personal"],
+  },
+  {
     path: "kb/personal/open-to.md",
     title: "Open to opportunities",
     text: "Jonathan is always open to opportunities, especially startups that align with his passion. He's always looking to rejoin the startup space.\nBook a 30-minute call: https://calendly.com/jonathanbernard265/30min",

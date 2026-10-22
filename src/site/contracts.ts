@@ -29,7 +29,7 @@ export interface FieldOptions {
   onFlick: () => void;
 }
 
-// ── Easter egg: the journey game (src/site/game/, lazy, owns three.js) ──
+// ── Easter egg: the journey game (src/site/bowling/, lazy) ──
 // Full-screen overlay; the particle field is paused while it is open.
 export interface GameProps {
   onExit: () => void;

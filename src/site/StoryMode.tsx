@@ -13,7 +13,7 @@ const FS = range(0, scenes.length);
 
 // Photos sit under the text. On desktop the row shrinks to whatever room is left above this scene's
 // point on the vibe line; on phones it's a swipeable row.
-const Photos = ({ photos, wide, room }: { photos: NonNullable<Scene["photos"]>; wide: boolean; room?: number }) => {
+const Photos = ({ photos, wide, room, onOpen }: { photos: NonNullable<Scene["photos"]>; wide: boolean; room?: number; onOpen: (id: string) => void }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [h, setH] = useState(280);
   const [tall, setTall] = useState(false);
@@ -33,7 +33,8 @@ const Photos = ({ photos, wide, room }: { photos: NonNullable<Scene["photos"]>; 
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.9, delay: 0.1 * i, ease: [0.2, 0.7, 0.2, 1] }}
-          className="shrink-0"
+          {...(p.project && { "data-card": true, role: "link", tabIndex: 0, onClick: () => onOpen(p.project!), onKeyDown: (e: React.KeyboardEvent) => e.key === "Enter" && onOpen(p.project!) })}
+          className={`shrink-0 ${p.project ? "group cursor-pointer" : ""}`}
         >
           <img
             src={p.src}
@@ -41,16 +42,16 @@ const Photos = ({ photos, wide, room }: { photos: NonNullable<Scene["photos"]>; 
             loading="lazy"
             onLoad={(e) => setTall(e.currentTarget.naturalHeight > e.currentTarget.naturalWidth * 1.1)}
             style={square ? { width: h, height: h, objectFit: "cover" } : wide ? { maxHeight: h } : undefined}
-            className={`block w-auto h-auto rounded-xl border border-[#e6ecf5]/15 ${wide ? "max-w-[520px]" : "max-h-[min(52vh,340px)] max-w-[78vw]"}`}
+            className={`block w-auto h-auto rounded-xl border border-[#e6ecf5]/15 group-hover:border-[#5b9cff]/70 transition-colors ${wide ? "max-w-[520px]" : "max-h-[min(52vh,340px)] max-w-[78vw]"}`}
           />
-          {p.caption && <figcaption className="mt-2 rx-mono text-[10px] text-[#8692a8]">{p.caption}</figcaption>}
+          {p.caption && <figcaption className="mt-2 rx-mono text-[10px] text-[#8692a8] group-hover:text-[#5b9cff] transition-colors">{p.caption}</figcaption>}
         </motion.figure>
       ))}
     </div>
   );
 };
 
-const SceneText = ({ s, wide, room }: { s: Scene; wide: boolean; room?: number }) => {
+const SceneText = ({ s, wide, room, onOpen }: { s: Scene; wide: boolean; room?: number; onOpen: (id: string) => void }) => {
   const text = (
     <div className="min-w-0 flex-1 max-w-[560px]">
       <div className="rx-mono text-[11px] text-[#8692a8] mb-4 flex items-center gap-2.5">
@@ -84,7 +85,7 @@ const SceneText = ({ s, wide, room }: { s: Scene; wide: boolean; room?: number }
   return (
     <div>
       {text}
-      {s.photos && <Photos photos={s.photos} wide={wide} room={room} />}
+      {s.photos && <Photos photos={s.photos} wide={wide} room={room} onOpen={onOpen} />}
     </div>
   );
 };
@@ -114,6 +115,7 @@ type Props = {
   startAt: number;
   onBack: () => void;
   onAsk: () => void;
+  onOpen: (id: string) => void;
 };
 
 // ── Desktop: vertical scroll scrubs sideways through the scenes ──
@@ -146,7 +148,7 @@ export const storyNodes = (vw: number, vh: number, bar: number, at: number) => {
   return runPoints(layout, vh, bar).map((p) => ({ x: p.x - off, y: p.y }));
 };
 
-const HorizontalRun = ({ vw, vh, navH, bar, progress, api, startAt, onBack, onAsk }: Props) => {
+const HorizontalRun = ({ vw, vh, navH, bar, progress, api, startAt, onBack, onAsk, onOpen }: Props) => {
   const runRef = useRef<HTMLDivElement>(null);
   const layout = useMemo(() => runLayout(vw), [vw]);
   // drawn up to the playhead
@@ -229,7 +231,7 @@ const HorizontalRun = ({ vw, vh, navH, bar, progress, api, startAt, onBack, onAs
         <motion.div style={{ x: trackX, width: layout.W }} className="absolute inset-y-0 left-0">
           {scenes.map((sc, i) => (
             <div key={sc.date + sc.short} className="absolute" style={{ left: layout.panels[i].x + 40, top: navH + vh * 0.07, width: layout.panels[i].w - 60 }}>
-              <SceneText s={sc} wide room={pts[i].y - 44 - (navH + vh * 0.07)} />
+              <SceneText s={sc} wide room={pts[i].y - 44 - (navH + vh * 0.07)} onOpen={onOpen} />
             </div>
           ))}
           <div className="absolute flex items-center justify-center" style={{ left: layout.W - vw * 0.7, width: vw * 0.7, top: navH, bottom: vh * 0.3 }}>
@@ -295,7 +297,7 @@ const HorizontalRun = ({ vw, vh, navH, bar, progress, api, startAt, onBack, onAs
 
 // ── Mobile: the same story, top to bottom ──
 
-const MobileRun = ({ vh, navH, progress, api, startAt, onBack, onAsk }: Props) => {
+const MobileRun = ({ vh, navH, progress, api, startAt, onBack, onAsk, onOpen }: Props) => {
   const refs = useRef<(HTMLDivElement | null)[]>([]);
   const anchors = () => [
     // page offsets: offsetTop would be relative to the positioned scene list
@@ -327,7 +329,7 @@ const MobileRun = ({ vh, navH, progress, api, startAt, onBack, onAsk }: Props) =
             <div className="text-[5.5rem] leading-none rx-outline absolute right-0 top-4 select-none" aria-hidden>
               {pad(sc.n)}
             </div>
-            <SceneText s={sc} wide={false} />
+            <SceneText s={sc} wide={false} onOpen={onOpen} />
           </div>
         ))}
       </div>

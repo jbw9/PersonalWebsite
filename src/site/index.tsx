@@ -9,8 +9,8 @@ import Story, { StoryApi, storyNodes } from "./StoryMode";
 import Bridge, { Pt } from "./Bridge";
 import "./remix.css";
 
-// the hidden game pulls in three.js, so it loads only when someone finds it
-const Game = lazy(() => import("./game"));
+// the hidden game loads only when someone finds it
+const Game = lazy(() => import("./bowling"));
 
 type Mode = "sections" | "story";
 const instant = "instant" as ScrollBehavior;
@@ -103,7 +103,7 @@ const Remix = () => {
   const flicks = useRef<number[]>([]);
   useEffect(() => {
     // eslint-disable-next-line no-console
-    console.log("%c✈  psst: give the globe a few good spins.", "color:#5b9cff;font:12px monospace");
+    console.log("%c🎳  psst: give the globe a few good spins.", "color:#5b9cff;font:12px monospace");
   }, []);
   useEffect(() => {
     if (!game) return;
@@ -323,6 +323,7 @@ const Remix = () => {
           startAt={storyStart}
           onBack={() => switchMode("sections")}
           onAsk={openAsk}
+          onOpen={openProject}
         />
       ) : (
         <Sections
@@ -465,7 +466,7 @@ const Remix = () => {
           className="fixed z-[70] -translate-x-1/2 rx-mono text-[11px] text-[#bcd7ff] pointer-events-none"
           style={{ left: globe.cx, top: globe.cy + globe.r + 18 }}
         >
-          ✈ something stirs… one more spin
+          🎳 something stirs… one more spin
         </motion.div>
       )}
       {game && (

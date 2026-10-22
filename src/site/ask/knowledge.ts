@@ -40,8 +40,8 @@ export const EXTRA_FACTS: KBEntry[] = [
   {
     path: "kb/site/easter-eggs.md",
     title: "Easter eggs on this website",
-    text: "The globe on the home page hides a game: flick (fling) the globe hard 3 times within 4 seconds and it opens a flight through Jonathan's journey around the world, from home in Bandung to AWS in Seattle. The path climbs when things went well and dips and loops back at the rough patches.\nIn this terminal, try typing: sudo hire jonathan",
-    tags: ["easter", "egg", "eggs", "secret", "hidden", "game", "globe", "surprise", "fun", "trick", "website", "site", "sudo"],
+    text: "The globe on the home page hides a game: flick (fling) the globe hard 3 times within 4 seconds and it opens a bowling game: Jonathan's journey in ten frames, one chapter per frame, from finance major to AWS. Rough patches leave splits.\nIn this terminal, try typing: sudo hire jonathan",
+    tags: ["easter", "egg", "eggs", "secret", "hidden", "game", "globe", "surprise", "fun", "trick", "website", "site", "sudo", "bowling"],
   },
 ];
 
@@ -139,7 +139,7 @@ const projectEntries: KBEntry[] = projects.map((p) => ({
     .concat(p.demo ? [`Link: ${p.demo}`] : [])
     .concat(p.github ? [`Code: ${p.github}`] : [])
     .join("\n"),
-  tags: ["project", "build", "made", "app", "portfolio"].concat(p.id === "taxbuddy" ? ["now", "active"] : []),
+  tags: ["project", "build", "made", "app", "portfolio"].concat(p.id === "taxbuddy" || p.id === "tbd" ? ["now", "active"] : []),
 }));
 
 // Which projects used each technology, counted case-insensitively ("Typescript" = "TypeScript")

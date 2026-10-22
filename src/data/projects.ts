@@ -80,6 +80,26 @@ No model ever decides what you owe. The model turns documents into text; every b
 Free to use. The IRS restricts e-filing of 1040-NR for many filers, so TaxBuddy produces complete print-and-mail packets today, with direct e-file support planned.`,
   },
   {
+    id: "tbd",
+    title: "TBD",
+    description:
+      "A visual way to understand code you didn't write — start from what the app does, then drill down level by level to the exact lines behind it.",
+    longDescription:
+      "Code gets written faster than anyone can read it. Generating it with an LLM is cheap; understanding it well enough to trust it long term is not. Reviewing is the bottleneck, and it's capped by how many engineers you have — engineers I talked to had 10 to 15 PRs stuck in their queue, waiting on the first ones to get reviewed.\n\nThe idea came out of my Rilla onsite, where I couldn't understand the code I'd generated with Claude Code fast enough. Today the only way to explore an unfamiliar codebase is to ask an assistant \"how does this work?\", which answers one question and loses the big picture.\n\nTBD starts from the product's features, not the folder structure, because real features cut across directories. You open one, like \"Signing Up\", and each level answers one question with a short explanation and a diagram, then its parts, until you reach the real source code read straight from the repo. When the code alone can't prove something, it says so.\n\nStill heavily under development and not live yet.",
+    technologies: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Motion"],
+    features: [
+      "Top level is the product's features, not the repo's architecture",
+      "One level at a time: an explanation and a diagram, then its parts, down to the code",
+      "The code level reads the real repository on disk, not pasted text",
+      "Arrows only where one step genuinely comes before another",
+      "Flags what the code alone can't prove as \"not certain\"",
+      "Back, Esc and breadcrumbs step out one level at a time",
+    ],
+    github: "https://github.com/jbw9/understand-slop",
+    demo: "",
+    image: "/story/understand-slop.jpg",
+  },
+  {
     id: "visulearn",
     title: "VisuLearn",
     description:

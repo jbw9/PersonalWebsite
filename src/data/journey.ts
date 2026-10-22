@@ -8,7 +8,7 @@ export interface Milestone {
   dip?: boolean; // label goes under the dot instead of over it
   logo?: string; // company / school mark shown beside the semester
   stat?: string; // one real number from the story, shown as a callout
-  photos?: { src: string; caption: string }[];
+  photos?: { src: string; caption: string; project?: string }[]; // project: id the photo opens
 }
 
 export const JOURNEY_START = "2023-08-21";
@@ -249,12 +249,13 @@ export const milestones: Milestone[] = [
     emoji: "🗽",
     short: "Rilla onsite",
     title: "Rilla Voice final round in NYC",
-    body: "Got flown out to NYC for a 6-hour final round with the CTO: build something from scratch to a working demo with Claude Code. Awesome office, team and company. I didn't do well, because I couldn't fully understand all the code I'd generated. Then I realized a lot of people have the same problem.",
+    body: "Got flown out to NYC for a 6-hour final round with the CTO: build something from scratch to a working demo with Claude Code. I couldn't understand the code I'd generated fast enough. The CTO said generating code is cheap; understanding it well enough to trust it is not. My manager at AWS said the same: review is the bottleneck. Engineers I talked to had 10 to 15 PRs stuck in their queue. So I started building TBD.",
     vibe: 52,
     dip: true,
     stat: "6 hours with the CTO",
     photos: [
       { src: "/story/rilla.jpg", caption: "Rilla's NYC office" },
+      { src: "/story/understand-slop.jpg", caption: "what I'm building now: TBD ↗", project: "tbd" },
     ],
   },
   {

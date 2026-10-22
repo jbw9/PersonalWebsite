@@ -17,8 +17,13 @@ export const SECTIONS = [
   { id: "guides", label: "Guides" },
 ];
 
-const featured = projects.find((p) => p.id === "taxbuddy");
-const rest = projects.filter((p) => p.id !== "taxbuddy");
+// what I'm building now, shown side by side above the rest
+const NOW: Record<string, { label: string; color: string }> = {
+  taxbuddy: { label: "active project", color: "#7bd88f" },
+  tbd: { label: "in development", color: "#f2b35b" },
+};
+const featured = projects.filter((p) => p.id in NOW);
+const rest = projects.filter((p) => !(p.id in NOW));
 const ext = (href: string) => (href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {});
 const imgOf = (src: string) => (src.startsWith("http") || src.startsWith("data:") || src.startsWith("/") ? src : `/${src}`);
 const ICONS: Record<string, typeof IconMail> = { Email: IconMail, GitHub: IconBrandGithub, LinkedIn: IconBrandLinkedin, Calendly: IconCalendar };
@@ -398,42 +403,47 @@ const Sections = ({ vw, navH, globe, done, fine, reduce, onOpen, onGuide, onAsk,
         {/* ── Projects: the particles trace every [data-frame] ── */}
         <section id="rx-projects" data-shape="frames" data-sec="projects" style={sec} className="px-5 md:px-[7vw] py-20 md:py-28">
           <Head title="Projects" />
-          {featured && (
-            <Reveal>
-              <div data-frame="28" className="rx-card rx-poster !rounded-[28px] overflow-hidden grid md:grid-cols-[1.25fr_1fr] !border-[#5b9cff]/25">
-                <button data-card onClick={() => onOpen(featured.id)} className="rx-still aspect-[16/10] bg-black block text-left" aria-label={`Open ${featured.title}`}>
-                  <img src={featured.image} alt={featured.title} className="w-full h-full object-cover object-top" />
-                </button>
-                <div className="p-6 md:p-9 flex flex-col">
-                  <div className="rx-mono text-[10px] text-[#7bd88f] flex items-center gap-2">
-                    <span className="relative w-1.5 h-1.5 rx-live">
-                      <span className="absolute inset-0 rounded-full bg-[#7bd88f]" />
-                    </span>
-                    active project
-                  </div>
-                  <h3 className="mt-3 text-[2.6rem] md:text-[3.2rem] italic font-light leading-none">{featured.title}</h3>
-                  <p className="mt-4 text-[1.1rem] text-[#c2cbdb] leading-snug">{featured.description}</p>
-                  <div className="mt-5 flex flex-wrap gap-1.5">
-                    {featured.technologies.slice(0, 6).map((t) => (
-                      <span key={t} className="rx-chip">
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="mt-auto pt-7 flex flex-wrap gap-2.5">
-                    <button data-card onClick={() => onOpen(featured.id)} className="rx-btn">
-                      View project →
+          <div className="grid gap-7 md:grid-cols-2">
+            {featured.map((p, i) => {
+              const link = p.demo || p.github;
+              return (
+                <Reveal key={p.id} delay={i * 0.08} className="flex">
+                  <div data-frame="28" className="rx-card rx-poster !rounded-[28px] overflow-hidden flex flex-col lg:grid lg:grid-cols-[0.9fr_1fr] w-full !border-[#5b9cff]/25">
+                    <button data-card onClick={() => onOpen(p.id)} className="rx-still aspect-[2/1] lg:aspect-auto lg:h-full bg-black block text-left" aria-label={`Open ${p.title}`}>
+                      <img src={p.image} alt={p.title} className="w-full h-full object-cover object-top" />
                     </button>
-                    {featured.demo && (
-                      <a href={featured.demo} {...ext(featured.demo)} className="rx-btn-ghost">
-                        {featured.demo.replace(/^https?:\/\/(www\.)?/, "")} ↗
-                      </a>
-                    )}
+                    <div className="p-5 md:p-7 flex flex-col flex-1">
+                      <div className="rx-mono text-[10px] flex items-center gap-2" style={{ color: NOW[p.id].color }}>
+                        <span className="relative w-1.5 h-1.5 rx-live">
+                          <span className="absolute inset-0 rounded-full" style={{ background: NOW[p.id].color }} />
+                        </span>
+                        {NOW[p.id].label}
+                      </div>
+                      <h3 className="mt-2 text-[2.2rem] md:text-[2.6rem] italic font-light leading-none">{p.title}</h3>
+                      <p className="mt-3 text-[1.05rem] text-[#c2cbdb] leading-snug">{p.description}</p>
+                      <div className="mt-4 flex flex-wrap gap-1.5">
+                        {p.technologies.slice(0, 6).map((t) => (
+                          <span key={t} className="rx-chip">
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="mt-auto pt-5 flex flex-wrap gap-2.5">
+                        <button data-card onClick={() => onOpen(p.id)} className="rx-btn">
+                          View project →
+                        </button>
+                        {link && (
+                          <a href={link} {...ext(link)} className="rx-btn-ghost">
+                            {p.demo ? p.demo.replace(/^https?:\/\/(www\.)?/, "") : "GitHub"} ↗
+                          </a>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </Reveal>
-          )}
+                </Reveal>
+              );
+            })}
+          </div>
           <div className="mt-14 grid gap-x-7 gap-y-11 sm:grid-cols-2 lg:grid-cols-3">
             {rest.map((p, i) => {
               const img = p.image || p.screenshots?.[0];

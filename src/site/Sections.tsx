@@ -228,6 +228,80 @@ const ExpSheet = ({ e, onClose }: { e: Exp | null; onClose: () => void }) => {
   );
 };
 
+// Phones: no globe and no vibe line, just the words over a soft glow and a way into each section
+const PhoneHero = ({ reduce, onOpen, onAsk }: { reduce: boolean; onOpen: (id: string) => void; onAsk: () => void }) => {
+  const rise = (delay: number) => ({
+    initial: reduce ? false : { opacity: 0, y: 14 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.9, delay },
+  });
+  return (
+    <div className="absolute inset-0 flex flex-col px-6" style={{ paddingBottom: "calc(28px + env(safe-area-inset-bottom))" }}>
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: "radial-gradient(85% 50% at 10% 38%, rgba(91,156,255,0.17), transparent 72%), radial-gradient(60% 35% at 100% 90%, rgba(188,215,255,0.07), transparent 70%)" }}
+      />
+      <div className="relative flex-1 flex flex-col justify-center">
+        <motion.div {...rise(0.1)} className="rx-mono text-[10px] text-[#7bd88f] flex items-center gap-2">
+          <span className="relative w-1.5 h-1.5 rx-live">
+            <span className="absolute inset-0 rounded-full bg-[#7bd88f]" />
+          </span>
+          Incoming SDE @ AWS
+        </motion.div>
+        <motion.h1 {...rise(0.2)} className="mt-5 text-[3.4rem] font-light italic leading-[0.95]">
+          Hi, I'm
+          <br />
+          Jonathan.
+        </motion.h1>
+        <motion.p {...rise(0.3)} className="mt-5 text-[1.3rem] italic text-[#c2cbdb] leading-snug">
+          CS &amp; Econs @ UIUC — building software that solves real problems.
+        </motion.p>
+        <motion.div {...rise(0.4)}>
+          <button data-card onClick={() => onOpen("taxbuddy")} className="mt-3 rx-plain text-[12px] text-[#8692a8] active:text-[#e6ecf5]">
+            currently building TaxBuddy ↗
+          </button>
+        </motion.div>
+        <motion.div {...rise(0.5)} className="mt-8 flex flex-wrap items-center gap-2.5">
+          <button onClick={onAsk} className="rx-btn whitespace-nowrap">
+            <span className="text-sm leading-none">✻</span> Ask Alfred about me
+          </button>
+          <span className="flex items-center gap-2">
+            {CONTACT.map((c) => {
+              const Icon = ICONS[c.label];
+              return (
+                <a
+                  key={c.label}
+                  href={c.href}
+                  {...ext(c.href)}
+                  aria-label={c.label}
+                  className="w-11 h-11 rounded-full border border-[#e6ecf5]/15 bg-black/30 flex items-center justify-center text-[#c2cbdb] active:text-[#5b9cff] active:border-[#5b9cff]/60"
+                >
+                  <Icon size={18} stroke={1.6} />
+                </a>
+              );
+            })}
+          </span>
+        </motion.div>
+      </div>
+      <motion.nav {...rise(0.65)} aria-label="Sections" className="relative">
+        <div className="rx-mono text-[9px] text-[#8692a8] mb-3">jump to ↓</div>
+        <div className="flex flex-wrap gap-2">
+          {SECTIONS.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => document.getElementById(`rx-${s.id}`)?.scrollIntoView({ behavior: reduce ? "auto" : "smooth" })}
+              className="rx-chip !text-[11px] !px-3.5 !py-1.5 !text-[#c2cbdb] bg-[#0b111e]/60 active:!border-[#5b9cff]/60"
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+      </motion.nav>
+    </div>
+  );
+};
+
 type Props = {
   vw: number;
   navH: number;
@@ -251,7 +325,8 @@ const Sections = ({ vw, navH, globe, done, fine, reduce, onOpen, onGuide, onAsk,
     <div>
       {/* ── Hero: the canvas draws the name ── */}
       <section data-shape="globe" className="relative z-10 h-[100svh]">
-        {globe && (
+        {!wide && <PhoneHero reduce={reduce} onOpen={onOpen} onAsk={onAsk} />}
+        {globe && wide && (
           // desktop: a column left of the globe, centred on it; phone: centred below it
           <div
             className={`absolute flex flex-col ${wide ? "items-start text-left" : "inset-x-0 items-center text-center px-5"}`}
@@ -304,9 +379,11 @@ const Sections = ({ vw, navH, globe, done, fine, reduce, onOpen, onGuide, onAsk,
           </div>
         )}
         {/* the vibe line runs along the foot of the hero, part of the same frame */}
-        <div className="absolute inset-x-0" style={{ bottom: vw >= 768 ? 4 : 44 }}>
-          <HeroCurve vw={vw} done={done} reduce={reduce} onPick={onPick} />
-        </div>
+        {wide && (
+          <div className="absolute inset-x-0" style={{ bottom: vw >= 768 ? 4 : 44 }}>
+            <HeroCurve vw={vw} done={done} reduce={reduce} onPick={onPick} />
+          </div>
+        )}
       </section>
 
       <div className="relative z-10">

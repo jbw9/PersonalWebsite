@@ -117,7 +117,9 @@ const Remix = () => {
   }, [game]);
 
   // ── Particles ──
+  // phones get no particles at all: no globe, no shapes, so no game either
   useEffect(() => {
+    if (!wide) return;
     const f = createField(canvasRef.current as HTMLCanvasElement, {
       reduce,
       resume: true,
@@ -142,7 +144,12 @@ const Remix = () => {
       field.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reduce]);
+  }, [reduce, wide]);
+
+  // Story is desktop-only; a window narrowed to phone width drops back to Sections
+  useEffect(() => {
+    if (!wide) setMode("sections");
+  }, [wide]);
 
   // after VariantPage's scroll-to-top; the stamp is consumed so a reload plays the intro again
   useEffect(() => {
@@ -295,11 +302,13 @@ const Remix = () => {
 
   return (
     <div ref={rootRef} className="v-remix relative min-h-screen">
-      <canvas
-        ref={canvasRef}
-        className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-500"
-        style={{ opacity: story ? 0 : 1 }}
-      />
+      {wide && (
+        <canvas
+          ref={canvasRef}
+          className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-500"
+          style={{ opacity: story ? 0 : 1 }}
+        />
+      )}
       <div className="rx-vignette z-[5]" />
 
       <motion.div key={mode} initial={{ opacity: 0 }} animate={{ opacity: leaving ? 0 : 1 }} transition={{ duration: leaving ? 0.38 : 0.6 }}>
@@ -341,7 +350,23 @@ const Remix = () => {
       >
       </motion.header>
 
+      {/* ── Phones: one Ask pill at thumb height, once the hero's own Ask button has scrolled away ── */}
+      {!wide && (
+        <motion.button
+          data-chrome
+          initial={false}
+          animate={{ opacity: active && !askOpen ? 1 : 0, y: active && !askOpen ? 0 : 16 }}
+          transition={{ duration: 0.35 }}
+          onClick={openAsk}
+          className="rx-btn fixed right-4 z-[58] !py-2.5 !px-4 !text-[11px] rx-mono"
+          style={{ bottom: "calc(16px + env(safe-area-inset-bottom))", pointerEvents: active && !askOpen ? "auto" : "none" }}
+        >
+          <span className="text-sm leading-none">✻</span> Ask Alfred
+        </motion.button>
+      )}
+
       {/* ── Floating controls: no bar, just two pills in the corner ── */}
+      {wide && (
       <motion.div
         data-chrome
         initial={{ opacity: 0, y: -8 }}
@@ -363,6 +388,7 @@ const Remix = () => {
           </span>
         </button>
       </motion.div>
+      )}
 
       {/* ── Section rail: where you are, one click to anywhere ── */}
       {!story && (

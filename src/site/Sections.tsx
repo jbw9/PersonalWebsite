@@ -12,9 +12,9 @@ import { CONTACT, periodRange } from "./timeline";
 export const SECTIONS = [
   { id: "experience", label: "Experience" },
   { id: "projects", label: "Projects" },
+  { id: "guides", label: "Guides" },
   { id: "school", label: "Education" },
   { id: "involvement", label: "Involvement" },
-  { id: "guides", label: "Guides" },
 ];
 
 // what I'm building now, shown side by side above the rest
@@ -326,6 +326,7 @@ const Sections = ({ vw, navH, globe, done, fine, reduce, onOpen, onGuide, onAsk,
   const col = "w-full md:w-[52%] max-w-[620px]";
   const pad = "px-5 md:pl-[7vw] md:pr-0";
   const sec = { scrollMarginTop: navH };
+  const [allProjects, setAllProjects] = useState(false);
   return (
     <div>
       {/* ── Hero: the canvas draws the name ── */}
@@ -444,9 +445,10 @@ const Sections = ({ vw, navH, globe, done, fine, reduce, onOpen, onGuide, onAsk,
               );
             })}
           </div>
+          <div className="relative">
           <div className="mt-14 grid gap-x-7 gap-y-11 sm:grid-cols-2 lg:grid-cols-3">
-            {rest.map((p, i) => {
-              const img = p.image || p.screenshots?.[0];
+            {(allProjects ? rest : rest.slice(0, 6)).map((p, i) => {
+              const img = p.thumbnail || p.image || p.screenshots?.[0];
               return (
                 <Reveal key={p.id} delay={(i % 3) * 0.08}>
                   <button data-card onClick={() => onOpen(p.id)} className="rx-poster text-left group w-full">
@@ -463,6 +465,40 @@ const Sections = ({ vw, navH, globe, done, fine, reduce, onOpen, onGuide, onAsk,
                 </Reveal>
               );
             })}
+          </div>
+          {!allProjects && rest.length > 6 && (
+            // the second row fades into the page, with the way to the rest sitting on it
+            <div className="absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-b from-transparent via-[#070b14]/85 to-[#070b14] flex items-end justify-center pb-2">
+              <button onClick={() => setAllProjects(true)} className="rx-btn">
+                See all {rest.length + featured.length} projects ↓
+              </button>
+            </div>
+          )}
+          </div>
+        </section>
+
+        {/* ── Guides ── */}
+        <section id="rx-guides" data-shape="book" data-sec="guides" style={sec} className={`${pad} py-20 md:py-28`}>
+          <div className={col}>
+            <Head title="Guides" />
+            <div className="space-y-2">
+              {guides.map((g) => (
+                <Reveal key={g.id}>
+                  <button data-card onClick={() => onGuide(g.id)} className="group w-full text-left rounded-3xl px-5 py-5 -mx-5 flex items-center gap-5 transition-colors hover:bg-[#e6ecf5]/[0.04]">
+                    <span className="flex-1 min-w-0">
+                      <span className="block rx-mono text-[9px] text-[#8692a8]">
+                        {g.category} · {g.publishDate}
+                      </span>
+                      <span className="block text-[1.45rem] md:text-[1.65rem] italic leading-tight mt-1 group-hover:text-[#5b9cff] transition-colors">{g.title}</span>
+                      <span className="block text-[1rem] text-[#8692a8] mt-1 line-clamp-1">{g.description}</span>
+                    </span>
+                    <span className="hidden md:flex w-10 h-10 shrink-0 rounded-full border border-[#e6ecf5]/15 items-center justify-center text-[#8692a8] transition-colors group-hover:bg-[#5b9cff] group-hover:border-[#5b9cff] group-hover:text-[#070b14]">
+                      →
+                    </span>
+                  </button>
+                </Reveal>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -549,31 +585,6 @@ const Sections = ({ vw, navH, globe, done, fine, reduce, onOpen, onGuide, onAsk,
                     </div>
                     <p className="mt-3 text-[1rem] text-[#8692a8] leading-snug">{v.description}</p>
                   </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── Guides + contact ── */}
-        <section id="rx-guides" data-shape="book" data-sec="guides" style={sec} className={`${pad} pt-20 md:pt-28 pb-16`}>
-          <div className={col}>
-            <Head title="Guides" />
-            <div className="space-y-2">
-              {guides.map((g) => (
-                <Reveal key={g.id}>
-                  <button data-card onClick={() => onGuide(g.id)} className="group w-full text-left rounded-3xl px-5 py-5 -mx-5 flex items-center gap-5 transition-colors hover:bg-[#e6ecf5]/[0.04]">
-                    <span className="flex-1 min-w-0">
-                      <span className="block rx-mono text-[9px] text-[#8692a8]">
-                        {g.category} · {g.publishDate}
-                      </span>
-                      <span className="block text-[1.45rem] md:text-[1.65rem] italic leading-tight mt-1 group-hover:text-[#5b9cff] transition-colors">{g.title}</span>
-                      <span className="block text-[1rem] text-[#8692a8] mt-1 line-clamp-1">{g.description}</span>
-                    </span>
-                    <span className="hidden md:flex w-10 h-10 shrink-0 rounded-full border border-[#e6ecf5]/15 items-center justify-center text-[#8692a8] transition-colors group-hover:bg-[#5b9cff] group-hover:border-[#5b9cff] group-hover:text-[#070b14]">
-                      →
-                    </span>
-                  </button>
                 </Reveal>
               ))}
             </div>

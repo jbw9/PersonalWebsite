@@ -5,9 +5,32 @@ export interface Guide {
   category: string;
   publishDate: string;
   content: string;
+  page?: string; // a standalone HTML page in public/, shown in place of content
 }
 
 export const guides = [
+  {
+    id: "cc-setup",
+    title: "Jonathan's current Claude Code setup",
+    description: "My status line, system prompt, settings and skills, installable on any machine in one line.",
+    category: "AI/ML",
+    publishDate: "October 2026",
+    page: "/cc-setup.html",
+    content: `# Jonathan's current Claude Code setup
+
+A status line, a few skills, a short global CLAUDE.md and a settings.json, plus scripts that install and reverse them. Code: https://github.com/jbw9/cc-setup
+
+\`\`\`sh
+curl -fsSL https://github.com/jbw9/cc-setup/archive/refs/heads/main.tar.gz | tar xz -C ~ && ~/cc-setup-main/install.sh
+\`\`\`
+
+- Defaults: model opus, effort high, auto permission mode, auto-compact at 400,000 tokens, fullscreen interface, terminal bell notifications.
+- Status line: directory, branch, lines added/removed, model, effort, context used (green to red as it nears 40%), and session cost.
+- System prompt: act when there's enough to act, finish the whole task, report real failures, minimum code, surgical edits, no docs/dependencies/git push unless asked.
+- Blocked: sudo, rm -rf /, and reading ~/.ssh, ~/.aws, gcloud, keychains, gnupg and kube credentials.
+- Skills: eli5, recap, karpathy-guidelines, frontend-design.
+- install.sh backs up anything it overwrites; uninstall.sh puts the machine back exactly as it was.`,
+  },
   {
     id: "mcp-overview-guide",
     title: "Understanding Model Context Protocol (MCP)",

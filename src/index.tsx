@@ -10,6 +10,7 @@ import "./index.css";
 
 const SiteProject = lazy(() => import("./site/pages/ProjectPage"));
 const SiteGuide = lazy(() => import("./site/pages/GuidePage"));
+const Stats = lazy(() => import("./site/pages/StatsPage"));
 const dark = <div className="min-h-screen bg-[#070b14]" />;
 
 // Old URLs from before the remix became the live site: /v/remix/* moved to the root, /v/<slug> to /archive
@@ -17,10 +18,27 @@ const Moved = ({ to }: { to: (p: Record<string, string | undefined>) => string }
 
 ReactGA.initialize("G-VN6BJFZWJT");
 
+// Self-hosted visit counter (pulse/); skips local dev and Jonathan's own browser (set by opening /stats)
+const PULSE = process.env.REACT_APP_PULSE_URL;
+let ignored = true;
+try {
+  ignored = !PULSE || /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname) || localStorage.getItem("pulse-ignore") === "1";
+} catch {}
+let firstHit = true;
+
 function RouteTracker() {
   const location = useLocation();
   useEffect(() => {
     ReactGA.send({ hitType: "pageview", page: location.pathname });
+    if (ignored || location.pathname === "/stats") return;
+    // text/plain keeps it a simple request (no CORS preflight); the referrer only matters on landing
+    fetch(PULSE!, {
+      method: "POST",
+      headers: { "content-type": "text/plain" },
+      body: JSON.stringify({ path: location.pathname, ref: firstHit ? document.referrer : "" }),
+      keepalive: true,
+    }).catch(() => {});
+    firstHit = false;
   }, [location.pathname]);
   return null;
 }
@@ -38,6 +56,7 @@ ReactDOM.createRoot(rootElement).render(
         <Route path="/" element={<Site />} />
         <Route path="/project/:id" element={<Suspense fallback={dark}><SiteProject /></Suspense>} />
         <Route path="/guide/:id" element={<Suspense fallback={dark}><SiteGuide /></Suspense>} />
+        <Route path="/stats" element={<Suspense fallback={dark}><Stats /></Suspense>} />
         <Route path="/archive/:slug" element={<VariantPage />} />
         <Route path="/v/remix" element={<Navigate to="/" replace />} />
         <Route path="/v/remix/project/:id" element={<Moved to={(p) => `/project/${p.id}`} />} />

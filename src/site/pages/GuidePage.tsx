@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { motion, useReducedMotion, useScroll, useSpring } from "framer-motion";
 import { guides } from "../../data/guides";
@@ -8,6 +9,20 @@ import { NotFound, PrevNext, Rise, Shell } from "./shared";
 const neighbour = (i: number) => {
   const g = guides[(i + guides.length) % guides.length];
   return { to: guidePath(g.id), title: g.title, meta: g.category };
+};
+
+// Same-origin page, sized to its content so the site scrolls instead of the frame (skills expand on click)
+const Page = ({ src, title }: { src: string; title: string }) => {
+  const ref = useRef<HTMLIFrameElement>(null);
+  const [h, setH] = useState(900);
+  const fit = () => {
+    const body = ref.current?.contentDocument?.body;
+    if (!body) return;
+    const measure = () => setH(body.scrollHeight);
+    measure();
+    new ResizeObserver(measure).observe(body);
+  };
+  return <iframe ref={ref} src={src} title={title} onLoad={fit} style={{ height: h }} className="block w-full rounded-3xl border border-[#e6ecf5]/10" />;
 };
 
 const GuidePage = () => {
@@ -46,10 +61,20 @@ const GuidePage = () => {
             <div className="mt-12 md:mt-14 h-px bg-gradient-to-r from-[#5b9cff]/50 via-[#e6ecf5]/10 to-transparent" />
           </Rise>
         </header>
-        <Rise d={0.3} className="mt-12 md:mt-14">
-          <Markdown>{g.content}</Markdown>
-        </Rise>
+        {!g.page && (
+          <Rise d={0.3} className="mt-12 md:mt-14">
+            <Markdown>{g.content}</Markdown>
+          </Rise>
+        )}
       </article>
+      {g.page && (
+        <Rise d={0.3} className="mx-auto max-w-[1128px] px-5 md:px-8 mt-12 md:mt-14">
+          <Page src={g.page} title={g.title} />
+          <a href={g.page} target="_blank" rel="noopener noreferrer" className="mt-4 inline-block rx-mono text-[11px] text-[#8692a8] hover:text-[#5b9cff] transition-colors">
+            open full page ↗
+          </a>
+        </Rise>
+      )}
       <div className="mx-auto max-w-[60rem] px-5 md:px-8 mt-24 md:mt-32">
         <Rise view>
           <PrevNext prev={neighbour(i - 1)} next={neighbour(i + 1)} />

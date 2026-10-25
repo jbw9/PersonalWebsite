@@ -10,7 +10,7 @@ const ext = { target: "_blank", rel: "noopener noreferrer" };
 const num = (i: number) => String(i + 1).padStart(2, "0");
 const neighbour = (i: number) => {
   const p = projects[(i + projects.length) % projects.length];
-  return { to: projectPath(p.id), title: p.title, meta: num(projects.indexOf(p)), img: p.image || p.screenshots?.[0] };
+  return { to: projectPath(p.id), title: p.title, meta: num(projects.indexOf(p)), img: p.thumbnail || p.image || p.screenshots?.[0] };
 };
 
 const Block = ({ label, title, children }: { label: string; title?: string; children: ReactNode }) => (
@@ -22,6 +22,20 @@ const Block = ({ label, title, children }: { label: string; title?: string; chil
     </section>
   </Rise>
 );
+
+// VisuLearn's exported animations report their height to the parent, so the frame fits without scrolling
+const Player = ({ url, title }: { url: string; title: string }) => {
+  const ref = useRef<HTMLIFrameElement>(null);
+  const [h, setH] = useState(560);
+  useEffect(() => {
+    const onMsg = (e: MessageEvent) => {
+      if (e.source === ref.current?.contentWindow && e.data?.type === "resize" && e.data.height > 0) setH(e.data.height);
+    };
+    window.addEventListener("message", onMsg);
+    return () => window.removeEventListener("message", onMsg);
+  }, []);
+  return <iframe ref={ref} src={url} title={title} style={{ height: h }} className="block w-full rounded-3xl bg-[#ece7dd]" />;
+};
 
 const Notebook = ({ url, title }: { url: string; title: string }) => {
   const [loading, setLoading] = useState(true);
@@ -148,11 +162,21 @@ const ProjectPage = () => {
           </Rise>
         </aside>
 
-        {(p.videoUrl && hero) || p.howItWorks || p.notebookUrl ? (
+        {(p.videoUrl && hero) || p.playerUrl || p.howItWorks || p.notebookUrl ? (
           <div className="lg:col-start-1 space-y-24 min-w-0">
             {p.videoUrl && hero && (
               <Block label="Demo" title="See it run">
                 <video src={p.videoUrl} controls playsInline preload="metadata" className="rxp-media block w-full max-h-[80vh] rounded-3xl bg-black" />
+              </Block>
+            )}
+            {p.playerUrl && (
+              <Block label="Try it" title="Click through it">
+                <Player url={p.playerUrl} title={`${p.title} demo`} />
+                {p.demo && (
+                  <a href={p.demo} {...ext} className="mt-6 rx-btn rx-mono inline-flex">
+                    Ask your own question on {p.demo.replace(/^https?:\/\/(www\.)?/, "")} <ArrowUpRight className="w-3.5 h-3.5" />
+                  </a>
+                )}
               </Block>
             )}
             {p.howItWorks && (

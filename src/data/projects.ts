@@ -6,16 +6,18 @@ export interface Project {
   technologies: string[];
   features: string[];
   github?: string;
-  demo: string;
+  demo?: string;
   image?: string;
+  thumbnail?: string; // card image when it should differ from the page hero
   screenshots?: string[];
   howItWorks?: string;
   notebookUrl?: string;
+  playerUrl?: string; // a self-contained interactive demo embedded on the page
   videoUrl?: string;
   dmgUrl?: string;
 }
 
-export const projects = [
+export const projects: Project[] = [
   {
     id: "taxbuddy",
     title: "TaxBuddy",
@@ -100,6 +102,30 @@ Free to use. The IRS restricts e-filing of 1040-NR for many filers, so TaxBuddy 
     image: "/story/understand-slop.jpg",
   },
   {
+    id: "tv-launcher",
+    title: "Custom TV Launcher",
+    description:
+      "A custom home screen for my Samsung TV — clock, weather, my apps and HDMI inputs, plus four arcade games with shared leaderboards.",
+    longDescription:
+      "It's my own home screen, sideloaded onto my Samsung TV: a greeting, the time, the date and the weather in a dot-matrix font under a rainbow LED light bar, and one list of everything I actually open.\n\nThe list is built from what's really on the TV. It asks Tizen for the installed apps and matches them against YouTube, Netflix, Hulu, Disney+, Prime Video and others, and an HDMI input only shows up while something is plugged into that port.\n\nThe same list has four games you play with the remote: Flappy Bird, Dino Run, Snake and Stack. A new record lets you type your name on an on-screen keyboard, and the leaderboards are shared through Supabase. They're cached so the menus work offline, and scores that couldn't be sent are retried on the next launch.\n\nEverything is drawn on a single 1920×1080 canvas in plain JavaScript, no framework. A small platform layer keeps the TV-only parts separate, so the whole launcher also runs in a desktop browser for previewing. One deploy script packages it as a signed Tizen widget and installs it on the TV in Developer Mode.",
+    technologies: ["JavaScript", "HTML Canvas", "Tizen", "Supabase", "Bash"],
+    features: [
+      "My own home screen on a real Samsung TV",
+      "Finds installed streaming apps through the Tizen app API",
+      "HDMI inputs appear only while something is plugged in",
+      "Clock, date and local weather, city detected automatically",
+      "Flappy Bird, Dino Run, Snake and Stack, played with the remote",
+      "Shared leaderboards on Supabase, cached offline with retry",
+      "Settings for apps, game speed, light bar and 12/24h clock",
+      "Runs in a desktop browser too, for previewing",
+      "One script signs, installs and launches it on the TV",
+    ],
+    demo: "",
+    github: "https://github.com/jbw9/tv-setup",
+    image: "/tv.jpg",
+    screenshots: ["/tv.jpg", "/tv-home-games.jpg", "/tv-dino.jpg", "/tv-flappy.jpg"],
+  },
+  {
     id: "visulearn",
     title: "VisuLearn",
     description:
@@ -129,7 +155,8 @@ Free to use. The IRS restricts e-filing of 1040-NR for many filers, so TaxBuddy 
     ],
     github: undefined,
     demo: "https://visulearn.xyz",
-    screenshots: ["/visulearn-landing.png", "/visulearn-chat.png"],
+    playerUrl: "/visulearn-dijkstra.html",
+    screenshots: ["/visulearn-dijkstra.jpg", "/visulearn-landing.png"],
     howItWorks: `
 ### How Animations Are Generated
 
@@ -306,6 +333,7 @@ Signals: 187 | Win Rate: 67.4% | Avg P&L: +5.8% | Sharpe: 2.34
     github: "https://github.com/jbw9/HabitReminder",
     demo: undefined,
     videoUrl: "/ht_demo.mp4",
+    thumbnail: "/ht_thumb.jpg",
     dmgUrl: "https://drive.google.com/file/d/1sOWpxBZVLRALjHhmPOwoJvWf_edi7Mzz/view?usp=sharing",
     howItWorks: `
 ### Mouth Aspect Ratio (MAR)
@@ -359,28 +387,6 @@ PyInstaller's BUNDLE step strips the hardened runtime flag, which is required fo
 Two mechanisms prevent alert fatigue:
 - An \`alert_triggered\` boolean suppresses re-alerting within the same continuous open-mouth event
 - A 60-second cooldown timer between separate events prevents notification overload`,
-  },
-  {
-    id: "movie-recommendation",
-    title: "Movie Recommendation System",
-    description:
-      "A collaborative filtering system using Matrix Factorization and Neural Networks to predict movie ratings and generate personalized recommendations.",
-    longDescription:
-      "This project explores different approaches to building movie recommendation systems, comparing traditional matrix factorization techniques with modern neural network architectures. Built using PyTorch and trained on the MovieLens dataset containing 100,000+ ratings.\n\nThe system implements three models: basic Matrix Factorization using embedding layers, Matrix Factorization with user/item bias terms, and a Neural Collaborative Filtering network that learns non-linear interactions. Each model progressively improves prediction accuracy while demonstrating different trade-offs between simplicity and performance.\n\nThe final section includes a personalized recommendation engine that finds similar users based on your ratings and generates tailored movie suggestions, showcasing the practical application of collaborative filtering in real-world recommendation systems.",
-    technologies: ["Python", "PyTorch", "Pandas", "NumPy", "Jupyter Notebook"],
-    features: [
-      "Matrix Factorization using embedding layers with 100-dimensional latent factors",
-      "User and item bias terms to normalize rating tendencies",
-      "Neural Collaborative Filtering with fully connected layers and dropout",
-      "Trained on MovieLens 100K dataset (100,836 ratings from 610 users)",
-      "Achieved test loss of 1.05 with neural network approach",
-      "Hyperparameter tuning with various learning rates and weight decay",
-      "Personalized recommendation engine based on user taste profiles",
-      "Interactive rating system for generating custom recommendations",
-    ],
-    github: "https://github.com/jbw9/MovieRecommendation",
-    demo: undefined,
-    notebookUrl: "/notebooks/movie_recommendation.html",
   },
   {
     id: "seam-carving",

@@ -1,0 +1,451 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 16px;
+      background-color: #EEE9DF;
+      color: #2c2c2c;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    /* Prevent LLM-generated fixed-width containers from rendering narrower than the iframe */
+    body > * { max-width: 100%; }
+  </style>
+  <script>
+    // Auto-fix canvas DPR: patch getContext('2d') so every canvas the LLM creates
+    // renders at the physical pixel density of the screen (Retina-crisp, not blurry).
+    // This runs before any LLM code so it applies transparently to all canvas elements.
+    ;(function() {
+      var dpr = window.devicePixelRatio || 1;
+      if (dpr > 1) {
+        var _origGetContext = HTMLCanvasElement.prototype.getContext;
+        HTMLCanvasElement.prototype.getContext = function(type, opts) {
+          var ctx = _origGetContext.call(this, type, opts);
+          if (type === '2d' && ctx && !this.__dprFixed) {
+            this.__dprFixed = true;
+            // Read declared dimensions from HTML attribute (set before getContext is called)
+            var attrW = parseInt(this.getAttribute('width') || '0', 10);
+            var attrH = parseInt(this.getAttribute('height') || '0', 10);
+            var cssW = attrW || this.clientWidth || 300;
+            var cssH = attrH || this.clientHeight || 150;
+            // Scale backing store to physical pixels, keep CSS size unchanged
+            this.width = Math.round(cssW * dpr);
+            this.height = Math.round(cssH * dpr);
+            if (attrW) this.style.width = cssW + 'px';
+            if (attrH) this.style.height = cssH + 'px';
+            ctx.scale(dpr, dpr);
+          }
+          return ctx;
+        };
+      }
+    })();
+  </script>
+  <script>
+    // Safety stubs: installed in <head> BEFORE the LLM code so they survive even
+    // if the generated code is truncated mid-<script> (context overflow).
+    // Real function declarations at global scope naturally override these stubs.
+    ;(function() {
+      var navFns = ['next', 'prev', 'reset', 'togglePlay', 'stopPlay'];
+      function installStub(fn) {
+        window[fn] = function() {
+          console.warn('[visulearn] "' + fn + '()" stub called — function was not defined at global scope. Use top-level function declarations, not const/let/arrow or closures.');
+        };
+        window[fn]._isStub = true;
+      }
+      navFns.forEach(function(fn) {
+        installStub(fn);
+      });
+      // Re-check after load: real global function declarations will have replaced stubs by then
+      window.addEventListener('load', function() {
+        navFns.forEach(function(fn) {
+          if (typeof window[fn] !== 'function' || window[fn]._isStub) {
+            installStub(fn);
+          }
+        });
+      });
+    })();
+  </script>
+</head>
+<body>
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:#EEE9DF; --surface:#F4F0E8; --border:#C9C1B1; --text:#1B2632;
+  --muted:#8A7F72; --accent-blue:#2C3B4D; --accent-green:#3D6B52;
+  --accent-yellow:#FFB162; --accent-red:#A35139;
+  --inactive:#E5DFD3; --inactive-text:#C9C1B1;
+}
+body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; padding:16px; }
+h1 { font-weight:700; font-size:1.05rem; margin-bottom:3px; }
+.subtitle { color:var(--muted); font-size:.82rem; margin-bottom:12px; }
+svg { width:100%; max-width:680px; display:block; margin:0 auto; }
+.edge { stroke:var(--border); stroke-width:2.2; transition:all .35s; }
+.edge.active { stroke:var(--accent-yellow); stroke-width:3.8; }
+.edge.tree { stroke:var(--accent-green); stroke-width:3.2; }
+.ew { fill:var(--muted); font-family:'JetBrains Mono',monospace; font-size:12px; text-anchor:middle; dominant-baseline:central; }
+.node circle { fill:var(--surface); stroke:var(--border); stroke-width:2.5; transition:all .35s; }
+.node text { fill:var(--text); font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; text-anchor:middle; dominant-baseline:central; pointer-events:none; }
+.node.source circle { fill:rgba(44,59,77,.12); stroke:var(--accent-blue); stroke-width:3.2; }
+.node.source text { fill:var(--accent-blue); }
+.node.current circle { fill:rgba(255,177,98,.22); stroke:var(--accent-yellow); stroke-width:3.8; }
+.node.current text { fill:#8B5E30; }
+.node.visited circle { fill:rgba(61,107,82,.14); stroke:var(--accent-green); stroke-width:3; }
+.node.visited text { fill:var(--accent-green); }
+.node.path circle { fill:rgba(44,59,77,.15); stroke:var(--accent-blue); stroke-width:3.5; }
+.node.path text { fill:var(--accent-blue); }
+.dist-lbl { fill:var(--text); font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; text-anchor:middle; }
+.dist-lbl.updated { fill:var(--accent-green); }
+.controls { display:flex; gap:8px; align-items:center; margin:10px 0; flex-wrap:wrap; justify-content:center; }
+button { font-family:'JetBrains Mono',monospace; font-size:.78rem; font-weight:600; padding:8px 16px; border-radius:8px; border:none; cursor:pointer; transition:all .2s; }
+.btn-step { background:var(--accent-blue); color:#fff; }
+.btn-step:hover { filter:brightness(1.15); }
+.btn-step:disabled { background:var(--inactive); color:var(--inactive-text); cursor:not-allowed; }
+.btn-play { background:var(--accent-yellow); color:var(--text); }
+.btn-play:hover { filter:brightness(.9); }
+.btn-reset { background:transparent; border:1px solid var(--border); color:var(--muted); }
+.btn-reset:hover { border-color:var(--text); color:var(--text); }
+.step-label { font-family:'JetBrains Mono',monospace; font-size:.78rem; color:var(--muted); margin:0 6px; }
+.desc { font-size:.88rem; line-height:1.7; color:var(--text); background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:13px 17px; margin:10px auto; max-width:680px; }
+.legend { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; margin-bottom:8px; }
+.legend-item { display:flex; align-items:center; gap:5px; font-size:.75rem; color:var(--muted); font-family:'JetBrains Mono',monospace; }
+.legend-dot { width:10px; height:10px; border-radius:3px; }
+</style></head><body>
+<h1>Dijkstra's Shortest Path</h1>
+<p class="subtitle">Source = A &nbsp;·&nbsp; Greedy: always visit the unvisited node with lowest known distance</p>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--accent-blue);opacity:.7"></div>Source / Path</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--accent-yellow)"></div>Currently visiting</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--accent-green)"></div>Finalized (visited)</div>
+</div>
+
+<svg viewBox="0 0 680 300">
+  <g id="edges"></g>
+  <!-- Nodes — drawn after edges so circles cover line endpoints -->
+  <g id="nA" class="node source"><circle cx="80" cy="150" r="26"/><text x="80" y="150">A</text></g>
+  <text id="dA" class="dist-lbl" x="80" y="116">0</text>
+
+  <g id="nB" class="node"><circle cx="240" cy="60" r="26"/><text x="240" y="60">B</text></g>
+  <text id="dB" class="dist-lbl" x="240" y="26">∞</text>
+
+  <g id="nC" class="node"><circle cx="240" cy="240" r="26"/><text x="240" y="240">C</text></g>
+  <text id="dC" class="dist-lbl" x="240" y="274">∞</text>
+
+  <g id="nD" class="node"><circle cx="420" cy="60" r="26"/><text x="420" y="60">D</text></g>
+  <text id="dD" class="dist-lbl" x="420" y="26">∞</text>
+
+  <g id="nE" class="node"><circle cx="420" cy="240" r="26"/><text x="420" y="240">E</text></g>
+  <text id="dE" class="dist-lbl" x="420" y="274">∞</text>
+
+  <g id="nF" class="node"><circle cx="600" cy="150" r="26"/><text x="600" y="150">F</text></g>
+  <text id="dF" class="dist-lbl" x="600" y="116">∞</text>
+</svg>
+
+<div class="controls">
+  <button class="btn-step" id="prevBtn" onclick="prev()">← Prev</button>
+  <button class="btn-play" id="playBtn" onclick="togglePlay()">Play ▶</button>
+  <span class="step-label" id="stepLabel">Step 1 / 10</span>
+  <button class="btn-step" id="nextBtn" onclick="next()">Next →</button>
+  <button class="btn-reset" onclick="reset()">Reset</button>
+</div>
+<div class="desc" id="desc"></div>
+
+<script>
+console.log('Dijkstra init');
+
+var R = 26;
+var NODES = {
+  A:{cx:80,cy:150}, B:{cx:240,cy:60}, C:{cx:240,cy:240},
+  D:{cx:420,cy:60}, E:{cx:420,cy:240}, F:{cx:600,cy:150}
+};
+var EDGES_DEF = [
+  {id:'eAB',from:'A',to:'B',w:4},
+  {id:'eAC',from:'A',to:'C',w:2},
+  {id:'eBC',from:'B',to:'C',w:1},
+  {id:'eBD',from:'B',to:'D',w:5},
+  {id:'eCE',from:'C',to:'E',w:3},
+  {id:'eBE',from:'B',to:'E',w:8},
+  {id:'eDE',from:'D',to:'E',w:2},
+  {id:'eDF',from:'D',to:'F',w:3},
+  {id:'eEF',from:'E',to:'F',w:1}
+];
+var ALL_NODE_IDS = ['A','B','C','D','E','F'];
+var ALL_EDGE_IDS = EDGES_DEF.map(function(e){return e.id;});
+
+function buildGraph() {
+  var g = document.getElementById('edges');
+  EDGES_DEF.forEach(function(e) {
+    var a = NODES[e.from], b = NODES[e.to];
+    var dx = b.cx-a.cx, dy = b.cy-a.cy, len = Math.sqrt(dx*dx+dy*dy);
+    var ux = dx/len, uy = dy/len;
+    var line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.id = e.id; line.setAttribute('class','edge');
+    line.setAttribute('x1', (a.cx+ux*R).toFixed(1));
+    line.setAttribute('y1', (a.cy+uy*R).toFixed(1));
+    line.setAttribute('x2', (b.cx-ux*R).toFixed(1));
+    line.setAttribute('y2', (b.cy-uy*R).toFixed(1));
+    g.appendChild(line);
+    var lbl = document.createElementNS('http://www.w3.org/2000/svg','text');
+    lbl.setAttribute('class','ew');
+    var mx = (a.cx+b.cx)/2 + uy*12, my = (a.cy+b.cy)/2 - ux*12;
+    lbl.setAttribute('x', mx.toFixed(1));
+    lbl.setAttribute('y', my.toFixed(1));
+    lbl.textContent = e.w;
+    g.appendChild(lbl);
+  });
+  console.log('Graph built:', EDGES_DEF.length, 'edges');
+}
+
+var STEPS = [
+  {
+    nodes:{A:'source'},
+    edges:{},
+    dists:{A:'0',B:'∞',C:'∞',D:'∞',E:'∞',F:'∞'},
+    updated:[],
+    desc:'<strong>Initialize:</strong> Set dist[A] = 0, all others = ∞. The priority queue starts with just A. We will always pick the unvisited node with the smallest known distance.'
+  },
+  {
+    nodes:{A:'current'},
+    edges:{eAB:'active',eAC:'active'},
+    dists:{A:'0',B:'4',C:'2',D:'∞',E:'∞',F:'∞'},
+    updated:['B','C'],
+    desc:'<strong>Visit A (dist=0):</strong> Relax neighbors — dist[B] = 0+4 = <strong>4</strong>, dist[C] = 0+2 = <strong>2</strong>. Mark A visited. Next pick: C (dist=2, lowest unvisited).'
+  },
+  {
+    nodes:{A:'visited',C:'current'},
+    edges:{eAC:'tree',eAB:'active',eCE:'active',eBC:'active'},
+    dists:{A:'0',B:'3',C:'2',D:'∞',E:'5',F:'∞'},
+    updated:['B','E'],
+    desc:'<strong>Visit C (dist=2):</strong> Relax — dist[E] = 2+3 = <strong>5</strong>. Also C→B: 2+1=3 < 4, so dist[B] updated to <strong>3</strong>. Next pick: B (dist=3).'
+  },
+  {
+    nodes:{A:'visited',C:'visited',B:'current'},
+    edges:{eAC:'tree',eBC:'tree',eBD:'active',eBE:'active'},
+    dists:{A:'0',B:'3',C:'2',D:'8',E:'5',F:'∞'},
+    updated:['D'],
+    desc:'<strong>Visit B (dist=3):</strong> Relax — dist[D] = 3+5 = <strong>8</strong>. B→E: 3+8=11 > 5, no update. Next pick: E (dist=5).'
+  },
+  {
+    nodes:{A:'visited',C:'visited',B:'visited',E:'current'},
+    edges:{eAC:'tree',eBC:'tree',eCE:'tree',eDE:'active',eEF:'active'},
+    dists:{A:'0',B:'3',C:'2',D:'7',E:'5',F:'6'},
+    updated:['D','F'],
+    desc:'<strong>Visit E (dist=5):</strong> Relax — dist[F] = 5+1 = <strong>6</strong>. E→D: 5+2=7 < 8, update dist[D] = <strong>7</strong>. Next pick: F (dist=6).'
+  },
+  {
+    nodes:{A:'visited',C:'visited',B:'visited',E:'visited',F:'current'},
+    edges:{eAC:'tree',eBC:'tree',eCE:'tree',eEF:'tree',eDF:'active'},
+    dists:{A:'0',B:'3',C:'2',D:'7',E:'5',F:'6'},
+    updated:[],
+    desc:'<strong>Visit F (dist=6):</strong> Relax — F→D: 6+3=9 > 7, no update. F has no other unvisited neighbors. Next pick: D (dist=7).'
+  },
+  {
+    nodes:{A:'visited',C:'visited',B:'visited',E:'visited',F:'visited',D:'current'},
+    edges:{eAC:'tree',eBC:'tree',eCE:'tree',eEF:'tree',eDE:'active',eDF:'active',eBD:'active'},
+    dists:{A:'0',B:'3',C:'2',D:'7',E:'5',F:'6'},
+    updated:[],
+    desc:'<strong>Visit D (dist=7):</strong> All neighbors already finalized with shorter/equal distances. No updates needed. All nodes visited — algorithm complete!'
+  },
+  {
+    nodes:{A:'visited',C:'visited',B:'visited',E:'visited',F:'visited',D:'visited'},
+    edges:{eAC:'tree',eBC:'tree',eCE:'tree',eEF:'tree',eDE:'tree'},
+    dists:{A:'0',B:'3',C:'2',D:'7',E:'5',F:'6'},
+    updated:[],
+    desc:'<strong>Final shortest-path tree:</strong> All distances finalized. A→B=3, A→C=2, A→D=7, A→E=5, A→F=6. The green edges form the shortest-path tree.'
+  },
+  {
+    nodes:{A:'path',C:'path',E:'path',F:'path'},
+    edges:{eAC:'tree',eCE:'tree',eEF:'tree'},
+    dists:{A:'0',B:'3',C:'2',D:'7',E:'5',F:'6'},
+    updated:[],
+    desc:'<strong>Shortest path A → F:</strong> Trace back — F came from E, E from C, C from A. Path: <strong>A → C → E → F</strong>, total cost = 0+2+3+1 = <strong>6</strong>.'
+  },
+  {
+    nodes:{A:'source'},
+    edges:{},
+    dists:{A:'0',B:'3',C:'2',D:'7',E:'5',F:'6'},
+    updated:[],
+    desc:'<strong>Summary:</strong> Dijkstra\'s runs in O((V+E) log V) with a priority queue. Key insight: once a node is finalized (visited), its distance is optimal — greedy choice is safe because all weights are non-negative.'
+  }
+];
+
+var totalSteps = STEPS.length;
+var step = 0;
+var playInterval = null;
+
+function render() {
+  console.log('render() step:', step);
+  var s = STEPS[step];
+  ALL_NODE_IDS.forEach(function(id) {
+    document.getElementById('n'+id).setAttribute('class','node');
+  });
+  ALL_EDGE_IDS.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.setAttribute('class','edge');
+  });
+  Object.keys(s.nodes).forEach(function(id) {
+    document.getElementById('n'+id).setAttribute('class','node '+s.nodes[id]);
+  });
+  Object.keys(s.edges).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.setAttribute('class','edge '+s.edges[id]);
+  });
+  Object.keys(s.dists).forEach(function(id) {
+    var el = document.getElementById('d'+id);
+    if (el) {
+      el.textContent = s.dists[id];
+      el.setAttribute('class', s.updated.indexOf(id) >= 0 ? 'dist-lbl updated' : 'dist-lbl');
+    }
+  });
+  document.getElementById('desc').innerHTML = s.desc;
+  console.log('render() done');
+}
+
+function update() {
+  document.getElementById('stepLabel').textContent = 'Step '+(step+1)+' / '+totalSteps;
+  document.getElementById('prevBtn').disabled = step === 0;
+  document.getElementById('nextBtn').disabled = step === totalSteps-1;
+  render();
+}
+
+function next() {
+  if (step < totalSteps-1) { step++; update(); }
+  if (step === totalSteps-1) stopPlay();
+}
+function prev() { if (step > 0) { step--; update(); } }
+function reset() { step = 0; stopPlay(); update(); }
+function togglePlay() {
+  if (playInterval) { stopPlay(); return; }
+  if (step === totalSteps-1) { step = 0; update(); }
+  playInterval = setInterval(function() {
+    if (step < totalSteps-1) { next(); } else stopPlay();
+  }, 1300);
+  document.getElementById('playBtn').textContent = 'Pause ⏸';
+}
+function stopPlay() {
+  clearInterval(playInterval); playInterval = null;
+  document.getElementById('playBtn').textContent = 'Play ▶';
+}
+
+window.addEventListener('load', function() {
+  console.log('Page loaded');
+  buildGraph();
+  update();
+});
+</script>
+
+<style>
+  /* Override any min-height:100vh from LLM templates — iframe must size to content, not viewport */
+  body { min-height: 0 !important; }
+  /* Prevent LLM-generated code from overriding the page background (dark space themes must stay on the canvas, not the body) */
+  body { background-color: #EEE9DF !important; }
+  /* Center block-level canvas and SVG elements regardless of what the LLM generates */
+  canvas, svg:not([class]) { display: block; margin-left: auto; margin-right: auto; }
+</style>
+<script>
+  // Report height to parent
+  function reportHeight() {
+    var height = document.body.scrollHeight + 32;
+    window.parent.postMessage({ type: 'resize', height: height }, '*');
+  }
+
+  // Report height on load (+ delayed re-measures for canvas/async content)
+  window.addEventListener('load', function() {
+    reportHeight();
+    requestAnimationFrame(function() { reportHeight(); });
+    setTimeout(function() { reportHeight(); }, 300);
+  });
+
+  // Also report height on DOM mutations
+  new MutationObserver(reportHeight).observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+  });
+
+  // Error handling
+  window.addEventListener('error', (e) => {
+    window.parent.postMessage({
+      type: 'error',
+      message: e.message || 'Animation error',
+      stack: e.error?.stack
+    }, '*');
+  });
+
+  // Console logging forwarding
+  const originalLog = console.log;
+  const originalError = console.error;
+  const originalWarn = console.warn;
+
+  console.log = (...args) => {
+    originalLog(...args);
+    window.parent.postMessage({ type: 'log', level: 'log', message: args.join(' ') }, '*');
+  };
+
+  console.error = (...args) => {
+    originalError(...args);
+    window.parent.postMessage({ type: 'log', level: 'error', message: args.join(' ') }, '*');
+  };
+
+  console.warn = (...args) => {
+    originalWarn(...args);
+    window.parent.postMessage({ type: 'log', level: 'warn', message: args.join(' ') }, '*');
+  };
+
+  // Add initialization check
+  setTimeout(() => {
+    const hasContent = document.body.children.length > 0;
+    console.log('Initialization check - body has', document.body.children.length, 'children');
+    if (!hasContent) {
+      document.body.innerHTML = '<div style="color:#dc2626;padding:20px;font-family:Inter,sans-serif;background:#fef2f2;border:2px solid #fca5a5;border-radius:12px;margin:20px;">⚠️ ERROR: No content rendered. Check console for details.</div>';
+    }
+  }, 1000);
+
+  // Messages from parent
+  window.addEventListener('message', function(e) {
+    if (!e.data) return;
+    // Arrow key navigation
+    if (e.data.type === 'keydown') {
+      var key = e.data.key;
+      if (key === 'ArrowLeft' && typeof prev === 'function') prev();
+      if (key === 'ArrowRight' && typeof next === 'function') next();
+    }
+    // Zoom: apply CSS zoom to html element and report new height
+    if (e.data.type === 'zoom') {
+      document.documentElement.style.zoom = e.data.factor;
+      reportHeight();
+    }
+  });
+
+  // Double-click: bubble to parent (dblclick doesn't cross iframe boundary)
+  document.addEventListener('dblclick', function() {
+    window.parent.postMessage({ type: 'dblclick' }, '*');
+  });
+
+  // Forward wheel events so parent can zoom-to-cursor without needing a modifier key
+  document.addEventListener('wheel', function(e) {
+    e.preventDefault();
+    window.parent.postMessage({ type: 'wheel', deltaY: e.deltaY, deltaX: e.deltaX, iframeX: e.clientX, iframeY: e.clientY }, '*');
+  }, { passive: false });
+
+  // Forward mouse events so parent can drag-to-pan.
+  // Use capture phase so animation elements that call stopPropagation don't block pan.
+  document.addEventListener('mousedown', function(e) {
+    if (e.button !== 0) return;
+    window.parent.postMessage({ type: 'mousedown', iframeX: e.clientX, iframeY: e.clientY }, '*');
+  }, true);
+  document.addEventListener('mouseup', function(e) {
+    if (e.button !== 0) return;
+    window.parent.postMessage({ type: 'mouseup' }, '*');
+  }, true);
+</script>
+</body>
+</html>
+    

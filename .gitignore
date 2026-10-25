@@ -27,3 +27,7 @@ yarn-error.log*
 /alfred/.build
 /alfred/dist
 /alfred/alfred.zip
+
+# pulse lambda build output and stats key
+/pulse/pulse.zip
+/pulse/.key

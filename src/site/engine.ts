@@ -6,10 +6,10 @@ const FONT = '"Cormorant Garamond"';
 const WEIGHT = 500;
 
 // How bright each formation sits beside the content; mobile dims further since text overlaps it
-const DIM: Record<ShapeKey, number> = { globe: 1, cloud: 0.62, frames: 0.5, gpa: 0.6, people: 0.62, book: 0.6, chart: 0.62, card: 0.62, guitar: 0.62, tulip: 0.66, hand: 0.62 };
+const DIM: Record<ShapeKey, number> = { globe: 1, cloud: 0.62, frames: 0.3, gpa: 0.6, people: 0.62, book: 0.6, chart: 0.62, card: 0.62, guitar: 0.62, tulip: 0.66, hand: 0.62 };
 // Share of the particles each formation uses (the globe needs them all for small islands); the rest
 // drift as faint dust, so the side formations stay airy
-const USE: Record<ShapeKey, number> = { globe: 1, cloud: 0.4, frames: 0.75, gpa: 0.5, people: 0.5, book: 0.55, chart: 0.5, card: 0.45, guitar: 0.5, tulip: 0.45, hand: 0.5 };
+const USE: Record<ShapeKey, number> = { globe: 1, cloud: 0.4, frames: 0.3, gpa: 0.5, people: 0.5, book: 0.55, chart: 0.5, card: 0.45, guitar: 0.5, tulip: 0.45, hand: 0.5 };
 // px of slow drift per particle, so a formation breathes instead of sitting rigid
 const SWAY: Record<ShapeKey, number> = { globe: 0, cloud: 5, frames: 1, gpa: 2.2, people: 2.2, book: 2, chart: 1.6, card: 1.6, guitar: 2, tulip: 2.2, hand: 2 };
 
@@ -664,7 +664,7 @@ export const createField = (
       }
     }
     // phones have fewer particles for as much border, so they hug the line instead of haloing
-    const spread = wide ? 1 : 0.35;
+    const spread = wide ? 0.5 : 0.35;
     for (let i = 0; i < N; i++) {
       const b = boxes[fe[i]];
       let s = ff[i] * b.per;
@@ -912,8 +912,10 @@ export const createField = (
             gy = p.y;
             hz[i] = p.z;
           }
-          ax = (gx + Math.sin(t * 0.7 + phase[i]) * sw - x[i]) * (waving ? k * 2.2 : k) * kmul[i];
-          ay = (gy + Math.cos(t * 0.55 + phase[i]) * sw - y[i]) * (waving ? k * 2.2 : k) * kmul[i];
+          // frames ride cards as the page scrolls; a stiff spring keeps them on the card instead of trailing
+          const kk = waving ? k * 2.2 : shape === "frames" ? k * 3 : k;
+          ax = (gx + Math.sin(t * 0.7 + phase[i]) * sw - x[i]) * kk * kmul[i];
+          ay = (gy + Math.cos(t * 0.55 + phase[i]) * sw - y[i]) * kk * kmul[i];
         } else {
           // dust: a slow wander around a home spot anywhere on screen
           const hx = dustX[i] * vw + Math.sin(t * 0.15 + phase[i]) * 30;
@@ -930,7 +932,7 @@ export const createField = (
         ax += (-dy / d) * f - (dx / d) * f * 0.18;
         ay += (dx / d) * f - (dy / d) * f * 0.18;
       }
-      if (mouse.on && shape !== "globe") {
+      if (mouse.on && shape !== "globe" && shape !== "frames") {
         const dx = x[i] - mouse.x;
         const dy = y[i] - mouse.y;
         const d2 = dx * dx + dy * dy;

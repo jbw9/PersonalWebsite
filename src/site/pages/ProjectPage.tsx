@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { ArrowUpRight, Download, Github } from "lucide-react";
 import { projects } from "../../data/projects";
 import { projectPath } from "../contracts";
+import { BonitoLive, BonitoWordle } from "./bonito";
 import { Markdown } from "./markdown";
 import { Label, NotFound, PrevNext, Rise, Shell } from "./shared";
 
@@ -120,13 +121,17 @@ const ProjectPage = () => {
 
       {(hero || p.videoUrl) && (
         <Rise d={0.32} className={`${pad} mt-14 md:mt-20`}>
-          <div className="rxp-hero rounded-3xl overflow-hidden">
-            {hero ? (
-              <img src={hero} alt={p.title} className="block w-full h-auto" />
-            ) : (
-              <video src={p.videoUrl} controls playsInline preload="metadata" className="block w-full max-h-[80vh] bg-black" />
-            )}
-          </div>
+          {p.id === "bonito" ? (
+            <BonitoLive />
+          ) : (
+            <div className="rxp-hero rounded-3xl overflow-hidden">
+              {hero ? (
+                <img src={hero} alt={p.title} className="block w-full h-auto" />
+              ) : (
+                <video src={p.videoUrl} controls playsInline preload="metadata" className="block w-full max-h-[80vh] bg-black" />
+              )}
+            </div>
+          )}
         </Rise>
       )}
 
@@ -162,7 +167,7 @@ const ProjectPage = () => {
           </Rise>
         </aside>
 
-        {(p.videoUrl && hero) || p.playerUrl || p.howItWorks || p.notebookUrl ? (
+        {(p.videoUrl && hero) || p.playerUrl || p.howItWorks || p.notebookUrl || p.id === "bonito" ? (
           <div className="lg:col-start-1 space-y-24 min-w-0">
             {p.videoUrl && hero && (
               <Block label="Demo" title="See it run">
@@ -177,6 +182,11 @@ const ProjectPage = () => {
                     Ask your own question on {p.demo.replace(/^https?:\/\/(www\.)?/, "")} <ArrowUpRight className="w-3.5 h-3.5" />
                   </a>
                 )}
+              </Block>
+            )}
+            {p.id === "bonito" && (
+              <Block label="Party games" title="Watch it play">
+                <BonitoWordle />
               </Block>
             )}
             {p.howItWorks && (

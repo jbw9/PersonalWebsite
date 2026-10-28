@@ -31,3 +31,4 @@ yarn-error.log*
 # pulse lambda build output and stats key
 /pulse/pulse.zip
 /pulse/.key
+/public/snapshots

@@ -6,7 +6,7 @@ import { HOME, Resume } from "../contracts";
 import "../remix.css";
 import "./pages.css";
 
-type Section = "projects" | "guides";
+type Section = "projects" | "guides" | "involvement";
 const ease = [0.2, 0.7, 0.2, 1];
 
 // Same film grain as the remix (one noise tile, jittered by .rx-grain), lighter for reading
@@ -32,7 +32,8 @@ export const useHome = (section: Section) => {
   return () => (window.history.state?.idx > 0 ? navigate(-1) : navigate(HOME, { state }));
 };
 
-export const Shell = ({ section, children }: { section: Section; children: ReactNode }) => {
+// onBack overrides "go back": pages whose history can't be trusted (an embedded site pushes its own entries)
+export const Shell = ({ section, children, onBack }: { section: Section; children: ReactNode; onBack?: () => void }) => {
   const { pathname } = useLocation();
   const grain = useGrain();
   const back = useHome(section);
@@ -43,7 +44,7 @@ export const Shell = ({ section, children }: { section: Section; children: React
     <div className="v-remix relative min-h-screen">
       <div className="rxp-glow" aria-hidden />
       <div className="rx-grain z-0" style={{ backgroundImage: `url(${grain})`, opacity: 0.045 }} aria-hidden />
-      <button onClick={back} className="rxp-back rx-btn-ghost !text-[10.5px] rx-mono" aria-label="Back to Jonathan's site">
+      <button onClick={onBack ?? back} className="rxp-back rx-btn-ghost !text-[10.5px] rx-mono" aria-label="Back to Jonathan's site">
         <ArrowLeft className="w-3.5 h-3.5" strokeWidth={1.75} />
       </button>
       <main key={pathname} className="relative z-10 pb-32 md:pb-36">

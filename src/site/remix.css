@@ -163,12 +163,12 @@
   .v-remix .rx-poster img {
     filter: none;
   }
+}
 
-  /* the beige body would flash through on iOS overscroll */
-  html:has(.v-remix),
-  body:has(.v-remix) {
-    background: #070b14;
-  }
+/* the beige body would flash through on overscroll (iOS, and trackpad bounce on desktop) */
+html:has(.v-remix),
+body:has(.v-remix) {
+  background: #070b14;
 }
 
 /* ── Journey game: the next-gate marker ── */

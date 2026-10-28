@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion, useMotionValue, useReducedMotion } from "framer-motion";
 import AskTerminal from "./ask/AskTerminal";
 import { createField, Field } from "./engine";
-import { GlobeBox, guidePath, projectPath, Resume, ShapeKey } from "./contracts";
+import { GlobeBox, guidePath, projectPath, Resume, ShapeKey, WAYBACK } from "./contracts";
 import Sections, { SECTIONS } from "./Sections";
 import Story, { StoryApi, storyNodes } from "./StoryMode";
 import Bridge, { Pt } from "./Bridge";
@@ -289,6 +289,7 @@ const Remix = () => {
   };
   const openProject = (id: string) => leave(projectPath(id), "projects");
   const openGuide = (id: string) => leave(guidePath(id), "guides");
+  const openWayback = () => leave(WAYBACK, "involvement");
 
   const story = mode === "story";
   // no bar in Sections; Story keeps its letterbox
@@ -324,6 +325,7 @@ const Remix = () => {
           onBack={() => switchMode("sections")}
           onAsk={openAsk}
           onOpen={openProject}
+          onWayback={openWayback}
         />
       ) : (
         <Sections
@@ -335,6 +337,7 @@ const Remix = () => {
           reduce={reduce}
           onOpen={openProject}
           onGuide={openGuide}
+          onWayback={openWayback}
           onAsk={openAsk}
           onPick={(i) => switchMode("story", { at: i })}
         />

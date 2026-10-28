@@ -90,7 +90,7 @@ const SceneText = ({ s, wide, room, onOpen }: { s: Scene; wide: boolean; room?: 
   );
 };
 
-const EndCard = ({ onBack, onAsk }: { onBack: () => void; onAsk: () => void }) => (
+const EndCard = ({ onBack, onAsk, onWayback }: { onBack: () => void; onAsk: () => void; onWayback: () => void }) => (
   <div className="flex flex-col items-center justify-center text-center px-5">
     <div className="rx-mono text-[11px] text-[#5b9cff] mb-4">— end of reel one —</div>
     <div className="text-[clamp(2.4rem,4.6vw,4.2rem)] italic font-light leading-none">To be continued.</div>
@@ -102,6 +102,9 @@ const EndCard = ({ onBack, onAsk }: { onBack: () => void; onAsk: () => void }) =
         ✻ ask alfred about it
       </button>
     </div>
+    <button onClick={onWayback} className="mt-8 rx-mono text-[10px] text-[#5d687c] hover:text-[#5b9cff] transition-colors">
+      ↺ older versions of this site
+    </button>
   </div>
 );
 
@@ -116,6 +119,7 @@ type Props = {
   onBack: () => void;
   onAsk: () => void;
   onOpen: (id: string) => void;
+  onWayback: () => void;
 };
 
 // ── Desktop: vertical scroll scrubs sideways through the scenes ──
@@ -148,7 +152,7 @@ export const storyNodes = (vw: number, vh: number, bar: number, at: number) => {
   return runPoints(layout, vh, bar).map((p) => ({ x: p.x - off, y: p.y }));
 };
 
-const HorizontalRun = ({ vw, vh, navH, bar, progress, api, startAt, onBack, onAsk, onOpen }: Props) => {
+const HorizontalRun = ({ vw, vh, navH, bar, progress, api, startAt, onBack, onAsk, onOpen, onWayback }: Props) => {
   const runRef = useRef<HTMLDivElement>(null);
   const layout = useMemo(() => runLayout(vw), [vw]);
   // drawn up to the playhead
@@ -235,7 +239,7 @@ const HorizontalRun = ({ vw, vh, navH, bar, progress, api, startAt, onBack, onAs
             </div>
           ))}
           <div className="absolute flex items-center justify-center" style={{ left: layout.W - vw * 0.7, width: vw * 0.7, top: navH, bottom: vh * 0.3 }}>
-            <EndCard onBack={onBack} onAsk={onAsk} />
+            <EndCard onBack={onBack} onAsk={onAsk} onWayback={onWayback} />
           </div>
 
           <svg className="absolute top-0 left-0 overflow-visible pointer-events-none" width={layout.W} height={vh}>
@@ -297,7 +301,7 @@ const HorizontalRun = ({ vw, vh, navH, bar, progress, api, startAt, onBack, onAs
 
 // ── Mobile: the same story, top to bottom ──
 
-const MobileRun = ({ vh, navH, progress, api, startAt, onBack, onAsk, onOpen }: Props) => {
+const MobileRun = ({ vh, navH, progress, api, startAt, onBack, onAsk, onOpen, onWayback }: Props) => {
   const refs = useRef<(HTMLDivElement | null)[]>([]);
   const anchors = () => [
     // page offsets: offsetTop would be relative to the positioned scene list
@@ -334,7 +338,7 @@ const MobileRun = ({ vh, navH, progress, api, startAt, onBack, onAsk, onOpen }: 
         ))}
       </div>
       <div className="py-24">
-        <EndCard onBack={onBack} onAsk={onAsk} />
+        <EndCard onBack={onBack} onAsk={onAsk} onWayback={onWayback} />
       </div>
     </div>
   );

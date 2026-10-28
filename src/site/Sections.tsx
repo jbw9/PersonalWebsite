@@ -213,6 +213,7 @@ const ExpSheet = ({ e, onClose }: { e: Exp | null; onClose: () => void }) => {
               {st && <span className="rx-mono text-[9px] px-2.5 py-0.5 rounded-full bg-[#5b9cff] text-[#070b14]">{st}</span>}
             </div>
             <p className="mt-4 text-[1.12rem] leading-relaxed text-[#c2cbdb]">{e.details}</p>
+            {e.screenshot && <img src={e.screenshot} alt={`${e.company}'s website`} loading="lazy" className="mt-5 w-full rounded-xl border border-[#e6ecf5]/15" />}
             <div className="mt-5 flex flex-wrap gap-1.5">
               {e.tags.map((t) => (
                 <span key={t} className="rx-chip">
@@ -318,9 +319,10 @@ type Props = {
   onGuide: (id: string) => void;
   onAsk: () => void;
   onPick: (i: number) => void; // a moment on the vibe line → Story at that scene
+  onWayback: () => void;
 };
 
-const Sections = ({ vw, navH, globe, done, fine, reduce, onOpen, onGuide, onAsk, onPick }: Props) => {
+const Sections = ({ vw, navH, globe, done, fine, reduce, onOpen, onGuide, onAsk, onPick, onWayback }: Props) => {
   const show = { opacity: done ? 1 : 0, y: done ? 0 : 14 };
   const wide = vw >= 768;
   const col = "w-full md:w-[52%] max-w-[620px]";
@@ -612,6 +614,9 @@ const Sections = ({ vw, navH, globe, done, fine, reduce, onOpen, onGuide, onAsk,
                 </button>
               </div>
             </Reveal>
+            <button onClick={onWayback} className="mt-20 rx-mono text-[10px] text-[#5d687c] hover:text-[#5b9cff] transition-colors">
+              ↺ older versions of this site
+            </button>
           </div>
         </section>
       </div>

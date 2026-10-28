@@ -39,6 +39,7 @@ export interface GameProps {
 export const HOME = "/";
 export const projectPath = (id: string) => `/project/${id}`;
 export const guidePath = (id: string) => `/guide/${id}`;
+export const WAYBACK = "/wayback";
 // Router location state the remix reads on mount: skip the intro and land where the visitor left
 // off (y) or on a section (one of SECTIONS' ids)
 export type Resume = { resume: { y?: number; section?: string } };

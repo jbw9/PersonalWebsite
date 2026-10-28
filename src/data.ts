@@ -87,6 +87,7 @@ export const experiences = [
     details:
       "Tulip lets anyone invest in real estate with just $1. We raised $10k in non-dilutive funding from the iVenture Accelerator (cohort 10). I joined as a software engineer intern in Jan 2024 and was promoted to co-founder & CTO in May 2024, leading the mobile app, the beta website, and the Automated Market Maker (AMM) algorithm.",
     website: "https://www.tulip.markets/",
+    screenshot: "/tulip-website.jpg",
   },
   {
     title: "Founder in Residence (iV10)",

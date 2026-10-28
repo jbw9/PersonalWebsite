@@ -16,10 +16,11 @@ build() {
 
   # Served from a subpath instead of the domain root: router basename, and absolute asset paths in the source
   perl -pi -e "s#<BrowserRouter>#<BrowserRouter basename=\"$base\">#" "$dir/src/index.tsx"
-  find "$dir/src" -name '*.ts*' -exec perl -pi -e "s#([\"'\`(])/(?=[\w./-]+\.(?:png|jpe?g|svg|mp4|gif|webp|ico|pdf|dmg)\b)#\$1$base/#g" {} +
-  # Old analytics would count every snapshot visit as a hit on today's homepage
+  find "$dir/src" -name '*.ts*' -print0 | xargs -0 perl -pi -e "s#([\"'\`(])/(?=[\w./-]+\.(?:png|jpe?g|svg|mp4|gif|webp|ico|pdf|dmg)\b)#\$1$base/#g"
+  # Old analytics would count every snapshot visit as a hit on today's homepage.
+  # xargs, not find -exec: GNU find (CI) rejects the {} in the stub as a second placeholder
   perl -0pi -e "s#<!-- Google tag.*?gtag\('config'.*?</script>##s" "$dir/public/index.html"
-  find "$dir/src" -name '*.ts*' -exec perl -pi -e 's#ReactGA\.(initialize|send)\(#((..._: unknown[]) => {})(#g' {} +
+  find "$dir/src" -name '*.ts*' -print0 | xargs -0 perl -pi -e 's#ReactGA\.(initialize|send)\(#((..._: unknown[]) => {})(#g'
   rm -f "$dir/public/404.html" "$dir/public/CNAME"
 
   (cd "$dir" && npm ci --no-audit --no-fund --loglevel=error && CI=false PUBLIC_URL="$base" GENERATE_SOURCEMAP=false npx react-scripts build)
